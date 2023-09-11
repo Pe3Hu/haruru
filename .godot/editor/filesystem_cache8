@@ -1,0 +1,48 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1694425504
+::res://asset/::1694424603
+default_env.tres::Environment::-1::1690116911::0::1::::<><>::
+icon.png::CompressedTexture2D::2432420761471245026::1690116911::1690116911::1::::<><>::
+icon.svg::CompressedTexture2D::9162371498834860976::1690116911::1690116911::1::::<><>::
+README.md::TextFile::-1::1690795285::0::1::::<><>::
+::res://asset/font/::1694424603
+::res://asset/font/digital/::1694424603
+Cilok There.otf::FontFile::5203477456367898423::1692120832::1693215257::1::::<><>::
+Montserrat-Regular.ttf::FontFile::8955316622152098618::1390883084::1693215257::1::::<><>::
+SwilyBright-Italic.otf::FontFile::4711532664557462683::1689611680::1693215257::1::::<><>::
+::res://asset/font/letter/::1694424603
+Chunk Five Print.otf::FontFile::7482982434189746187::1693025532::1693215257::1::::<><>::
+JosefinSans-Bold.ttf::FontFile::3888160851700023909::1693025548::1693215257::1::::<><>::
+LeagueGothic-Regular.otf::FontFile::2105460648084705691::1693025542::1693215257::1::::<><>::
+::res://asset/json/::1690795113
+::res://scene/::1694424819
+::res://scene/0/::1694427059
+blank.tscn::PackedScene::706186300528003691::1694426942::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+game.gd::GDScript::-1::1693571279::0::1::::<>Node<>::
+game.tscn::PackedScene::8246655032211948728::1694426942::0::1::::<><>::res://scene/0/game.gd
+sketch.gd::GDScript::-1::1694427059::0::1::::<>MarginContainer<>::
+sketch.tscn::PackedScene::7122070728214644470::1694427059::0::1::::<><>::res://scene/0/sketch.gd<>uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+::res://scene/1/::1694426942
+ancestor.tscn::PackedScene::7426289485366761566::1694426942::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+member.gd::GDScript::-1::1694426939::0::1::::<>MarginContainer<>::
+member.tscn::PackedScene::911408615733002794::1694426942::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf<>res://scene/1/member.gd<>uid://rgtjtuf31pht::::res://scene/3/icon.tscn
+diplomacy.tscn::PackedScene::4210346495796597080::1694427081::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+tribe.gd::GDScript::-1::1694426816::0::1::::<>MarginContainer<>::
+tribe.tscn::PackedScene::429030734552246133::1694426942::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf<>res://scene/1/tribe.gd<>uid://dlm17rhsmtvrb::::res://scene/3/carton.tscn<>uid://dd2l5xw2t7mmg::::res://scene/1/ancestor.tscn
+::res://scene/2/::1694427067
+chamber.tscn::PackedScene::7094630313923485491::1694426942::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+storey.tscn::PackedScene::3456990150255194117::1694426942::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+structure.tscn::PackedScene::3822495007079364367::1694427071::0::1::::<><>::uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+::res://scene/3/::1694426942
+carton.gd::GDScript::-1::1694425584::0::1::::<>MarginContainer<>::
+carton.tscn::PackedScene::7957748555908490095::1694426942::0::1::::<><>::res://scene/3/carton.gd<>uid://bvnpo88mdytkv::::res://asset/font/letter/JosefinSans-Bold.ttf
+dice.gd::GDScript::-1::1694425849::0::1::::<>MarginContainer<>::
+dice.tscn::PackedScene::8867107619945943476::1694426942::0::1::::<><>::res://scene/3/dice.gd
+facet.gd::GDScript::-1::1692289045::0::1::::<>MarginContainer<>::
+facet.tscn::PackedScene::1376893502277098245::1694424810::0::1::::<><>::res://scene/3/facet.gd<>uid://rgtjtuf31pht
+icon.gd::GDScript::-1::1692289000::0::1::::<>MarginContainer<>::
+icon.tscn::PackedScene::1206767332483991149::1694426942::0::1::::<><>::res://scene/3/icon.gd<>uid://deu2vlj4q8un0::::res://asset/font/letter/Chunk Five Print.otf
+indicator.gd::GDScript::-1::1692192191::0::1::::<>MarginContainer<>::
+indicator.tscn::PackedScene::3739802612801790678::1694424810::0::1::::<><>::res://scene/3/indicator.gd<>res://asset/font/neuropolitical rg.otf<>res://asset/font/metal lord ot.otf
+::res://script/::1694426254
+Global.gd::GDScript::-1::1694426254::0::1::::<>Node<>::

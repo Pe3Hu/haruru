@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://tu8h8pg4rd2l"]
+
+[ext_resource type="Script" path="res://scene/3/facet.gd" id="1_iwim4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m8g83"]
+bg_color = Color(0.364706, 0.364706, 0.364706, 1)
+
+[node name="Facet" type="MarginContainer"]
+custom_minimum_size = Vector2(5, 5)
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_iwim4")
+
+[node name="BG" type="Panel" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_m8g83")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="Icons" type="VBoxContainer" parent="HBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Quantities" type="VBoxContainer" parent="HBox"]
+layout_mode = 2
+alignment = 1
