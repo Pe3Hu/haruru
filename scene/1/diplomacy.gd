@@ -15,3 +15,8 @@ func init_tribes() -> void:
 	var tribe = Global.scene.tribe.instantiate()
 	tribes.add_child(tribe)
 	tribe.set_attributes(input)
+
+
+func do_it() -> void:
+	for tribe in tribes.get_children():
+		tribe.follow_phase()

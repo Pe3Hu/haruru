@@ -7,6 +7,7 @@ extends MarginContainer
 var tween = null
 
 var member = null
+var box = null
 var pace = null
 var tick = null
 var time = null
@@ -18,12 +19,13 @@ var temp = true
 
 func set_attributes(input_: Dictionary) -> void:
 	member = input_.member
+	box = input_.box
 	#time = Time.get_unix_time_from_system()
 	
-	for input in input_.inputs:
-		input.dice = self
+	for facet_ in member.facets.get_children():
 		var facet = Global.scene.facet.instantiate()
 		facets.add_child(facet)
+		var input = facet_.get_attributes()
 		facet.set_attributes(input)
 	
 	anchor = Vector2(0, -Global.vec.size.facet.y)
@@ -103,15 +105,15 @@ func skip_animation() -> void:
 	
 	for _i in salvo:
 		var facet = facets.get_children().pick_random()
-		flip_to_value(facet.value)
+		flip_to_index(facet.index)
 	
 	#get_parent().remove_child(self)
 	#queue_free()
 
 
-func flip_to_value(value_) -> void:
+func flip_to_index(index_) -> void:
 	for facet in facets.get_children():
-		if facet.value == value_:
+		if facet.index == index_:
 			var index = facet.get_index()
 			var step = 1 - index
 			
@@ -124,9 +126,13 @@ func flip_to_value(value_) -> void:
 			return
 
 
-func get_current_facet_value() -> int:
-	var facet =  facets.get_child(1)
-	return facet.value
+func get_current_facet_index() -> int:
+	var facet = facets.get_child(1)
+	return facet.index
+
+
+func get_current_facet() -> MarginContainer:
+	return facets.get_child(1)
 
 
 func crush() -> void:

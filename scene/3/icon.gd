@@ -12,4 +12,8 @@ func set_attributes(input_: Dictionary) -> void:
 		set(key_, input_[key_])
 	
 	label.text = str(key)
+	
+	if Global.arr.token.has(key):
+		label.text = key[0]
+	
 	custom_minimum_size = Vector2(Global.vec.size.letter)

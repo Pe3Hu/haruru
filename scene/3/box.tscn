@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://dlmitcs6dwfl"]
+
+[ext_resource type="Script" path="res://scene/3/box.gd" id="1_2r4sq"]
+[ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_ejtlt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
+bg_color = Color(0.631373, 0.490196, 1, 1)
+
+[node name="Box" type="MarginContainer"]
+custom_minimum_size = Vector2(5, 5)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_2r4sq")
+
+[node name="BG" type="Panel" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7paps")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_ejtlt")
+text = "Title"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Dices" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1

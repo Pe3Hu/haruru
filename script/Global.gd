@@ -24,6 +24,13 @@ func _ready() -> void:
 
 func init_arr() -> void:
 	arr.edge = [1, 2, 3, 4, 5, 6]
+	arr.token = ["gold", "influence"]
+	arr.phase = [
+		"select dices",
+		"roll dices",
+		"active dices",
+		"discard dices"
+	]
 
 
 func init_num() -> void:
@@ -134,6 +141,7 @@ func init_vec():
 	vec.size = {}
 	
 	vec.size.letter = Vector2(20, 20)
+	vec.size.facet = vec.size.letter + Vector2(vec.size.letter.x, 0)
 	init_window_size()
 
 

@@ -8,8 +8,10 @@ bg_color = Color(0.435294, 0.615686, 0.619608, 1)
 [node name="Dice" type="MarginContainer"]
 clip_children = 1
 custom_minimum_size = Vector2(5, 5)
-offset_right = 50.0
-offset_bottom = 50.0
+offset_right = 5.0
+offset_bottom = 5.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_u8huh")
 
 [node name="BG" type="Panel" parent="."]
@@ -19,6 +21,8 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_bpe7t")
 
 [node name="Facets" type="VBoxContainer" parent="BG"]
 layout_mode = 2
+offset_right = 5.0
+offset_bottom = 5.0
 theme_override_constants/separation = 0
 alignment = 1
 

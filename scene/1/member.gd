@@ -25,11 +25,19 @@ func set_attributes(input_: Dictionary) -> void:
 func init_facets() -> void:
 	var inputs = []
 	var descriptions = Global.dict.facet.type[type.key][subtype.key]
+	var index = 0
 	
 	for description in descriptions:
 		for _i in description.repeats:
 			var input = Dictionary(description)
+			input.member = self
+			input.index = index
+			index += 1
 			input.erase("repeats")
 			var facet = Global.scene.facet.instantiate()
 			facets.add_child(facet)
 			facet.set_attributes(input)
+
+
+func get_population() -> int:
+	return int(population.label.text)

@@ -1,36 +1,77 @@
 extends MarginContainer
 
 
-@onready var dices = $Dices
+@onready var preparation = $Boxs/Preparation
+@onready var roll = $Boxs/Roll
+@onready var reserve = $Boxs/Reserve
+@onready var active = $Boxs/Active
+@onready var discard = $Boxs/Discard
 
 var tribe = null
+var chain = {}
 
 
-func roll_dices(count_: int) -> void:
-	for _i in count_:
-		var dice = Global.scene.dice.instantiate()
-		dices.add_child(dice)
+func _ready() -> void:
+	preparation.title.text = "preparation"
+	roll.title.text = "roll"
+	reserve.title.text = "reserve"
+	active.title.text = "active"
+	discard.title.text = "discard"
+	
+	chain["Preparation"] = "roll"
+	chain["Roll"] = "reserve"
+	chain["Reserve"] = "active"
+	chain["Active"] = "discard"
+	chain["Discard"] = "preparation"
 
 
-func flip_dices(values_: Array) -> void:
-	for _i in range(dices.get_child_count()-1, -1, -1):
-		var dice = dices.get_child(_i)
+func add_dice(member_: MarginContainer) -> void:
+	var input = {}
+	input.member = member_
+	input.box = preparation
+	var dice = Global.scene.dice.instantiate()
+	preparation.dices.add_child(dice)
+	dice.set_attributes(input)
+
+
+func push_dice_in_next_box(dice_) -> void:
+	var next_box = get(chain[dice_.box.name])
+	dice_.box.dices.remove_child(dice_)
+	next_box.dices.add_child(dice_)
+	dice_.box = next_box
+
+
+func select_dices() -> void:
+	var dices = []
+	dices.append_array(preparation.dices.get_children())
+	
+	for dice in dices:
+		push_dice_in_next_box(dice)
+	
+	while reserve.dices.get_child_count() < 3:
+		reroll_dices()
+
+
+func roll_dices() -> void:
+	for dice in reserve.dices.get_children():
+		push_dice_in_next_box(dice)
+	
+
+
+func reroll_dices() -> void:
+	for dice in roll.dices.get_children():
+		dice.skip_animation()
+		var facet = dice.get_current_facet()
 		
-		if _i < values_.size():
-			var value = values_[_i]
-			dice.flip_to_value(value)
+		if !facet.fail:
+			push_dice_in_next_box(dice)
 
 
-func get_facet_value_on_dices() -> Array:
-	var values = []
-	
-	for dice in dices.get_children():
-		values.append(dice.get_current_facet_value())
-	
-	return values
+func active_dices() -> void:
+	for dice in active.dices.get_children():
+		push_dice_in_next_box(dice)
 
 
-func crush_dices() -> void:
-	for dice in dices.get_children():
-		dices.remove_child(dice)
-		dice.queue_free()
+func discard_dices() -> void:
+	for dice in discard.dices.get_children():
+		push_dice_in_next_box(dice)

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dlm17rhsmtvrb"]
+[gd_scene load_steps=5 format=3 uid="uid://dlm17rhsmtvrb"]
 
 [ext_resource type="Script" path="res://scene/3/carton.gd" id="1_oxpks"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_ygxmi"]
+[ext_resource type="PackedScene" uid="uid://dlmitcs6dwfl" path="res://scene/3/box.tscn" id="3_ta4ed"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
@@ -35,6 +36,21 @@ theme_override_fonts/font = ExtResource("1_ygxmi")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Dices" type="HBoxContainer" parent="."]
+[node name="Boxs" type="HBoxContainer" parent="."]
 layout_mode = 2
 alignment = 1
+
+[node name="Preparation" parent="Boxs" instance=ExtResource("3_ta4ed")]
+layout_mode = 2
+
+[node name="Roll" parent="Boxs" instance=ExtResource("3_ta4ed")]
+layout_mode = 2
+
+[node name="Reserve" parent="Boxs" instance=ExtResource("3_ta4ed")]
+layout_mode = 2
+
+[node name="Active" parent="Boxs" instance=ExtResource("3_ta4ed")]
+layout_mode = 2
+
+[node name="Discard" parent="Boxs" instance=ExtResource("3_ta4ed")]
+layout_mode = 2
