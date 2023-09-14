@@ -1,0 +1,137 @@
+[
+ {
+  "type": "servant",
+  "subtype": "farmer",
+  "outcome": "success",
+  "resource": "food",
+  "value": 1,
+  "dice": 6,
+  "facets": 2
+ },
+ {
+  "type": "servant",
+  "subtype": "hunter",
+  "outcome": "success",
+  "resource": "food",
+  "value": 2,
+  "dice": 6,
+  "facets": 2
+ },
+ {
+  "type": "servant",
+  "subtype": "hunter",
+  "outcome": "critical success",
+  "resource": "corpse",
+  "value": 1,
+  "dice": 6,
+  "facets": 1
+ },
+ {
+  "type": "servant",
+  "subtype": "fisher",
+  "outcome": "success",
+  "resource": "food",
+  "value": 1,
+  "dice": 6,
+  "facets": 3
+ },
+ {
+  "type": "servant",
+  "subtype": "fisher",
+  "outcome": "critical success",
+  "resource": "food",
+  "value": 3,
+  "dice": 6,
+  "facets": 1
+ },
+ {
+  "type": "servant",
+  "subtype": "cook",
+  "outcome": "success",
+  "resource": "canned",
+  "value": 1,
+  "dice": 6,
+  "facets": 4
+ },
+ {
+  "type": "servant",
+  "subtype": "cook",
+  "outcome": "critical failure",
+  "resource": "food",
+  "value": -1,
+  "dice": 6,
+  "facets": 1
+ },
+ {
+  "type": "servant",
+  "subtype": "logger",
+  "outcome": "success",
+  "resource": "wood",
+  "value": 1,
+  "dice": 6,
+  "facets": 5
+ },
+ {
+  "type": "servant",
+  "subtype": "miner",
+  "outcome": "success",
+  "resource": "ore",
+  "value": 1,
+  "dice": 6,
+  "facets": 3
+ },
+ {
+  "type": "servant",
+  "subtype": "miner",
+  "outcome": "critical success",
+  "resource": "gem",
+  "value": 1,
+  "dice": 6,
+  "facets": 1
+ },
+ {
+  "type": "servant",
+  "subtype": "carpenter",
+  "outcome": "success",
+  "resource": "plank",
+  "value": 1,
+  "dice": 6,
+  "facets": 4
+ },
+ {
+  "type": "servant",
+  "subtype": "blacksmith",
+  "outcome": "success",
+  "resource": "ingot",
+  "value": 1,
+  "dice": 6,
+  "facets": 3
+ },
+ {
+  "type": "servant",
+  "subtype": "jeweler",
+  "outcome": "success",
+  "resource": "jewel",
+  "value": 1,
+  "dice": 6,
+  "facets": 1
+ },
+ {
+  "type": "servant",
+  "subtype": "jeweler",
+  "outcome": "critical success",
+  "resource": "jewel",
+  "value": 1,
+  "dice": 6,
+  "facets": 1
+ },
+ {
+  "type": "servant",
+  "subtype": "jeweler",
+  "outcome": "critical failure",
+  "resource": "gem",
+  "value": -1,
+  "dice": 6,
+  "facets": 1
+ }
+]

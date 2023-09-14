@@ -3,6 +3,8 @@ extends MarginContainer
 
 @onready var carton = $VBox/Carton
 @onready var members = $VBox/Members
+@onready var squads = $VBox/Squads
+@onready var warehouse = $VBox/Warehouse
 
 var diplomacy = null
 var type = null
@@ -13,19 +15,20 @@ func set_attributes(input_: Dictionary) -> void:
 	diplomacy = input_.diplomacy
 	type = input_.type
 	init_members()
+	#fill_warehouse()
 	fill_carton()
-	follow_phase()
+	#follow_phase()
 
 
 func init_members() -> void:
 	var input = {}
 	input.tribe = self
-	input.type = type
-	input.subtype = "ancestor"
-	input.population = 1
+#	input.type = type
+#	input.subtype = "ancestor"
+#	input.population = 1
 	var member = Global.scene.member.instantiate()
-	members.add_child(member)
-	member.set_attributes(input)
+#	members.add_child(member)
+#	member.set_attributes(input)
 	
 	input.type = "servant"
 	input.subtype = "farmer"
@@ -33,6 +36,10 @@ func init_members() -> void:
 	member = Global.scene.member.instantiate()
 	members.add_child(member)
 	member.set_attributes(input)
+
+
+func fill_warehouse() -> void:
+	warehouse.init_resources()
 
 
 func fill_carton() -> void:
@@ -72,3 +79,23 @@ func next_phase() -> void:
 	else:
 		var index = (Global.arr.phase.find(phase) + 1) % Global.arr.phase.size()
 		phase = Global.arr.phase[index]
+
+
+func prepare_squad() -> void:
+	var input = {}
+	input.tribe = self
+	var squad = Global.scene.squad.instantiate()
+	squads.add_child(squad)
+	squad.set_attributes(input)
+	
+	choose_mercenaries()
+
+
+func choose_mercenaries() -> void:
+	var squad = squads.get_children().back()
+	
+	for member in members.get_children():
+		if member.type == "mercenary":
+			var troop = member.get_population()
+			squad.add_member(member, troop)
+			member.change_population(troop)

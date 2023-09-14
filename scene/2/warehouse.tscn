@@ -1,0 +1,174 @@
+[gd_scene load_steps=5 format=3 uid="uid://x7srwbaim07d"]
+
+[ext_resource type="Script" path="res://scene/2/warehouse.gd" id="1_5ivje"]
+[ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_d4r2k"]
+[ext_resource type="PackedScene" uid="uid://rgtjtuf31pht" path="res://scene/3/icon.tscn" id="3_3hg3y"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
+
+[node name="Warehouse" type="MarginContainer"]
+custom_minimum_size = Vector2(5, 5)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_5ivje")
+
+[node name="BG" type="Panel" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7paps")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Businesses" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 1
+
+[node name="Resources" type="HBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="Food" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Food" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Food"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Canned" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Canned" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Canned"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Wood" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Wood" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Wood"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Plank" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Plank" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Plank"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ore" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Ore" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Ore"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ingot" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Ingot" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Ingot"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Gem" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Gem" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Gem"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Jewel" type="HBoxContainer" parent="Resources"]
+layout_mode = 2
+alignment = 1
+
+[node name="Icon" parent="Resources/Jewel" instance=ExtResource("3_3hg3y")]
+layout_mode = 2
+
+[node name="Value" type="Label" parent="Resources/Jewel"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_d4r2k")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1

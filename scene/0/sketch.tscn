@@ -47,3 +47,7 @@ layout_mode = 2
 
 [node name="Diplomacy" parent="HBox" instance=ExtResource("4_fc1hj")]
 layout_mode = 2
+
+[node name="Encounters" type="HBoxContainer" parent="HBox"]
+layout_mode = 2
+alignment = 1

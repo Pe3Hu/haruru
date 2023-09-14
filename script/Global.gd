@@ -24,7 +24,8 @@ func _ready() -> void:
 
 func init_arr() -> void:
 	arr.edge = [1, 2, 3, 4, 5, 6]
-	arr.token = ["gold", "influence"]
+	arr.token = ["food", "influence"]
+	
 	arr.phase = [
 		"select dices",
 		"roll dices",
@@ -38,8 +39,27 @@ func init_num() -> void:
 
 
 func init_dict() -> void:
+	init_business()
 	init_neighbor()
-	init_facet()
+	#init_facet()
+	init_servant()
+	#init_mercenary()
+
+
+func init_business() -> void:
+	dict.business = {}
+	dict.business["culinary"] = {}
+	dict.business["culinary"].raw = "food"
+	dict.business["culinary"].product = "canned"
+	dict.business["carpentry"] = {}
+	dict.business["carpentry"].raw = "wood"
+	dict.business["carpentry"].product = "plank"
+	dict.business["metallurgy"] = {}
+	dict.business["metallurgy"].raw = "ore"
+	dict.business["metallurgy"].product = "ingot"
+	dict.business["jewelry"] = {}
+	dict.business["jewelry"].raw = "gem"
+	dict.business["jewelry"].product = "jewel"
 
 
 func init_neighbor() -> void:
@@ -113,7 +133,65 @@ func init_facet() -> void:
 							data[key] = facet[key]
 		
 		dict.facet.type[facet.type][facet.subtype].append(data)
+
+
+func init_mercenary() -> void:
+	var path = "res://asset/json/haruru_facet.json"
+	var array = load_data(path)
 	
+	for facet in array:
+		var data = {}
+		
+		if !dict.facet.type.has(facet.type):
+			dict.facet.type[facet.type] = {}
+		
+		if !dict.facet.type[facet.type].has(facet.subtype):
+			dict.facet.type[facet.type][facet.subtype] = []
+		
+		for key in facet:
+			match typeof(facet[key]):
+				TYPE_FLOAT:
+					data[key] = int(facet[key])
+				TYPE_STRING:
+					if facet[key] != "no":
+						if key != "type" and key != "subtype":
+							data[key] = facet[key]
+		
+		dict.facet.type[facet.type][facet.subtype].append(data)
+
+
+func init_servant() -> void:
+	dict.facet = {}
+	dict.facet.type = {}
+	var path = "res://asset/json/haruru_servant.json"
+	var array = load_data(path)
+
+	for facet in array:
+		var data = {}
+		
+		if !dict.facet.type.has(facet.type):
+			dict.facet.type[facet.type] = {}
+		
+		if !dict.facet.type[facet.type].has(facet.subtype):
+			dict.facet.type[facet.type][facet.subtype] = {}
+			dict.facet.type[facet.type][facet.subtype]["failure"] = {}
+			dict.facet.type[facet.type][facet.subtype]["failure"]["facets"] = facet.dice
+		
+		for key in facet:
+			match typeof(facet[key]):
+				TYPE_FLOAT:
+					data[key] = int(facet[key])
+				TYPE_STRING:
+					if !key.contains("type"):
+						data[key] = facet[key]
+		
+		dict.facet.type[facet.type][facet.subtype][data.outcome] = data
+		dict.facet.type[facet.type][facet.subtype][data.outcome].erase("dice")
+		dict.facet.type[facet.type][facet.subtype][data.outcome].erase("outcome")
+		dict.facet.type[facet.type][facet.subtype]["failure"]["facets"] -= data.facets
+	
+	#print(dict.facet.type["servant"])
+
 
 func init_node() -> void:
 	node.game = get_node("/root/Game")
@@ -134,6 +212,9 @@ func init_scene() -> void:
 	scene.facet = load("res://scene/3/facet.tscn")
 	scene.icon = load("res://scene/3/icon.tscn")
 	
+	scene.encounter = load("res://scene/4/encounter.tscn")
+	scene.squad = load("res://scene/4/squad.tscn")
+	
 	pass
 
 
@@ -141,7 +222,11 @@ func init_vec():
 	vec.size = {}
 	
 	vec.size.letter = Vector2(20, 20)
-	vec.size.facet = vec.size.letter + Vector2(vec.size.letter.x, 0)
+	vec.size.resource = Vector2(32, 32)#Vector2(32, 32) Vector2(64, 64)
+	vec.size.servant = Vector2(32, 32)
+	vec.size.outcome = Vector2(32, 32)
+	vec.size.facet = vec.size.outcome#vec.size.letter + Vector2(vec.size.letter.x, 0)
+	
 	init_window_size()
 
 
@@ -168,3 +253,15 @@ func load_data(path_: String):
 	var json_object = JSON.new()
 	var parse_err = json_object.parse(text)
 	return json_object.get_data()
+
+
+func get_resource_path(resource_: String) -> Variant:
+	for business in dict.business:
+		for key in dict.business[business]:
+			if resource_ == dict.business[business][key]:
+				var path = {}
+				path.business = business
+				path.key = key
+				return path
+	
+	return null

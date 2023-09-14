@@ -1,43 +1,56 @@
 extends MarginContainer
 
 
-@onready var type = $HBox/Type
-@onready var subtype = $HBox/Subtype
+@onready var icon = $HBox/Icon
 @onready var population = $HBox/Population
 @onready var facets = $HBox/Facets
 
 var tribe = null
+var type = null
+var subtype = null
 
 
 func set_attributes(input_: Dictionary) -> void:
 	tribe = input_.tribe
+	type = input_.type
+	subtype = input_.subtype
+	change_population(input_.population)
 	
-	for key in input_:
-		if key != "tribe":
-			var input = {}
-			input.parent = self
-			input.key = input_[key]
-			get(key).set_attributes(input)
-	
+	icon.set_attributes(input_)
 	init_facets()
 
 
 func init_facets() -> void:
-	var inputs = []
-	var descriptions = Global.dict.facet.type[type.key][subtype.key]
+	var outcomes = Global.dict.facet.type[type][subtype]
 	var index = 0
 	
-	for description in descriptions:
-		for _i in description.repeats:
-			var input = Dictionary(description)
+	for outcome in outcomes:
+		for _i in outcomes[outcome].facets:
+			var input = Dictionary(outcomes[outcome])
 			input.member = self
+			input.outcome = outcome
 			input.index = index
 			index += 1
-			input.erase("repeats")
+			input.erase("facets")
 			var facet = Global.scene.facet.instantiate()
 			facets.add_child(facet)
 			facet.set_attributes(input)
 
 
 func get_population() -> int:
-	return int(population.label.text)
+	return int(population.text)
+
+
+func change_population(value_: int) -> void:
+	var value = get_population() + value_
+	population.text = str(value)
+
+
+func get_attributes() -> Dictionary:
+	var input = {}
+	input.tribe = tribe
+	input.type = type
+	input.subtype = subtype
+	input.population = population.text
+	
+	return input

@@ -1,2 +1,4 @@
-VBoxContainer
 HBoxContainer
+TextureRect
+Label
+VBoxContainer
