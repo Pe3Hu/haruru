@@ -1,6 +1,6 @@
 extends MarginContainer
 
-
+@onready var boxs = $Boxs
 @onready var preparation = $Boxs/Preparation
 @onready var roll = $Boxs/Roll
 @onready var reserve = $Boxs/Reserve
@@ -32,13 +32,16 @@ func add_dice(member_: MarginContainer) -> void:
 	var dice = Global.scene.dice.instantiate()
 	preparation.dices.add_child(dice)
 	dice.set_attributes(input)
+	preparation.update_dices_columns()
 
 
 func push_dice_in_next_box(dice_) -> void:
 	var next_box = get(chain[dice_.box.name])
 	dice_.box.dices.remove_child(dice_)
+	dice_.box.update_dices_columns()
 	next_box.dices.add_child(dice_)
 	dice_.box = next_box
+	next_box.update_dices_columns()
 
 
 func select_dices() -> void:
@@ -48,14 +51,14 @@ func select_dices() -> void:
 	for dice in dices:
 		push_dice_in_next_box(dice)
 	
-	while reserve.dices.get_child_count() < 3:
-		reroll_dices()
+	reroll_dices()
+	#while reserve.dices.get_child_count() < 3:
+	#	reroll_dices()
 
 
 func roll_dices() -> void:
 	for dice in reserve.dices.get_children():
 		push_dice_in_next_box(dice)
-	
 
 
 func reroll_dices() -> void:
@@ -69,9 +72,16 @@ func reroll_dices() -> void:
 
 func active_dices() -> void:
 	for dice in active.dices.get_children():
+		dice.apply_outcome()
+		#print(1)
 		push_dice_in_next_box(dice)
 
 
 func discard_dices() -> void:
 	for dice in discard.dices.get_children():
 		push_dice_in_next_box(dice)
+
+
+#func reset() -> void:
+#	for box in boxs.get_children():
+#		box.crush_excess_dices()

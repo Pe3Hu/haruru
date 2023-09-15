@@ -42,6 +42,15 @@ vertical_alignment = 1
 layout_mode = 2
 alignment = 1
 
+[node name="Day" type="Label" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_b8lal")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Structure" parent="HBox" instance=ExtResource("3_130xv")]
 layout_mode = 2
 

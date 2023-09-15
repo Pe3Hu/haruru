@@ -20,6 +20,7 @@ var temp = true
 func set_attributes(input_: Dictionary) -> void:
 	member = input_.member
 	box = input_.box
+	member.dices.append(self)
 	#time = Time.get_unix_time_from_system()
 	
 	for facet_ in member.facets.get_children():
@@ -31,7 +32,7 @@ func set_attributes(input_: Dictionary) -> void:
 	anchor = Vector2(0, -Global.vec.size.facet.y)
 	update_size()
 	reset()
-	skip_animation()
+	#skip_animation()
 
 
 func update_size() -> void:
@@ -138,3 +139,24 @@ func get_current_facet() -> MarginContainer:
 func crush() -> void:
 	get_parent().remove_child(self)
 	queue_free()
+
+
+func apply_outcome() -> void:
+	var facet = get_current_facet()
+	
+	if facet.outcome.subtype != "failure":
+		var description = Global.dict.facet.type[facet.member.type][facet.member.subtype][facet.outcome.subtype]
+		
+		if Global.dict.raw.has(description.resource):
+			member.extract_raw(description.resource, description.value)
+			
+		if Global.dict.product.has(description.resource):
+			member.produce_product(description.resource, description.value)
+		
+		match facet.outcome.subtype:
+			"success":
+				pass
+			"critical success":
+				pass
+			"critical failure":
+				pass

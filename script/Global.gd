@@ -44,6 +44,20 @@ func init_dict() -> void:
 	#init_facet()
 	init_servant()
 	#init_mercenary()
+	
+	dict.endowment = {}
+	
+	for raw in dict.raw:
+		var value = 1000
+		dict.endowment[raw] = value
+		#warehouse.change_resource_value(raw, value)
+	
+	dict.time = {}
+	dict.time.day = 1
+	dict.time.week = dict.time.day * 7
+	dict.time.month = dict.time.week * 4
+	dict.time.season = dict.time.month * 3
+	dict.time.year = dict.time.season * 4
 
 
 func init_business() -> void:
@@ -60,6 +74,24 @@ func init_business() -> void:
 	dict.business["jewelry"] = {}
 	dict.business["jewelry"].raw = "gem"
 	dict.business["jewelry"].product = "jewel"
+	
+	dict.conversion = {}
+	dict.conversion["food"] = "canned"
+	dict.conversion["wood"] = "plank"
+	dict.conversion["ore"] = "ingot"
+	dict.conversion["gem"] = "jewel"
+	
+	dict.raw = {}
+	dict.raw["food"] = "canned"
+	dict.raw["wood"] = "plank"
+	dict.raw["ore"] = "ingot"
+	dict.raw["gem"] = "jewel"
+	
+	dict.product = {}
+	dict.product["canned"] = "food"
+	dict.product["plank"] = "wood"
+	dict.product["ingot"] = "ore"
+	dict.product["jewel"] = "gem"
 
 
 func init_neighbor() -> void:
@@ -242,8 +274,7 @@ func init_color():
 
 
 func save(path_: String, data_: String):
-	var path = path_ + ".json"
-	var file = FileAccess.open(path, FileAccess.WRITE)
+	var file = FileAccess.open(path_, FileAccess.WRITE)
 	file.store_string(data_)
 
 
@@ -260,8 +291,24 @@ func get_resource_path(resource_: String) -> Variant:
 		for key in dict.business[business]:
 			if resource_ == dict.business[business][key]:
 				var path = {}
+				
+#				var key = ""
+#
+#				if Global.dict.raw.has(resource_):
+#					key = "Raw"
+#				if Global.dict.product.has(resource_):
+#					key = "Product"
 				path.business = business
 				path.key = key
 				return path
 	
 	return null
+
+
+func save_statistics(statistics_: Dictionary) -> void:
+	var time = Time.get_datetime_string_from_datetime_dict(Time.get_datetime_dict_from_system(), true)
+	var path = "res://asset/stat/stat.json"# + "stat" + ".json"
+	var file_dict = load_data(path)
+	file_dict[time] = statistics_
+	var str = JSON.stringify(file_dict)
+	save(path, str)

@@ -6,6 +6,7 @@ extends MarginContainer
 @onready var facets = $HBox/Facets
 
 var tribe = null
+var dices = []
 var type = null
 var subtype = null
 
@@ -26,7 +27,7 @@ func init_facets() -> void:
 	
 	for outcome in outcomes:
 		for _i in outcomes[outcome].facets:
-			var input = Dictionary(outcomes[outcome])
+			var input = outcomes[outcome].duplicate()
 			input.member = self
 			input.outcome = outcome
 			input.index = index
@@ -54,3 +55,14 @@ func get_attributes() -> Dictionary:
 	input.population = population.text
 	
 	return input
+
+
+func extract_raw(raw_: String, value_: int) -> void:
+	tribe.warehouse.change_resource_value(raw_, value_)
+
+
+func produce_product(product_: String, value_: int) -> void:
+	var raw = Global.dict.product[product_]
+	var available = tribe.warehouse.get_value_of_resource_available_for_withdraw(raw, -value_)
+	tribe.warehouse.change_resource_value(raw, -available)
+	tribe.warehouse.change_resource_value(product_, available)

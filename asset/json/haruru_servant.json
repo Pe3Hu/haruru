@@ -6,14 +6,14 @@
   "resource": "food",
   "value": 1,
   "dice": 6,
-  "facets": 2
+  "facets": 3
  },
  {
   "type": "servant",
   "subtype": "hunter",
   "outcome": "success",
   "resource": "food",
-  "value": 2,
+  "value": 1,
   "dice": 6,
   "facets": 2
  },
@@ -21,10 +21,10 @@
   "type": "servant",
   "subtype": "hunter",
   "outcome": "critical success",
-  "resource": "corpse",
-  "value": 1,
+  "resource": "food",
+  "value": 2,
   "dice": 6,
-  "facets": 1
+  "facets": 2
  },
  {
   "type": "servant",

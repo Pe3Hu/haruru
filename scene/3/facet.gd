@@ -22,38 +22,6 @@ func set_attributes(input_: Dictionary) -> void:
 	input.subtype = input_.outcome
 	outcome.set_attributes(input)
 	
-#	for token in Global.arr.token:
-#		var value = get(token)
-#
-#		if value != null:
-#			var input = {}
-#			input.parent = self
-#			input.key = token
-#			var icon = Global.scene.icon.instantiate()
-#			icons.add_child(icon)
-#			icon.set_attributes(input)
-#
-#			icon = Global.scene.icon.instantiate()
-#			input.key = value
-#			quantities.add_child(icon)
-#			icon.set_attributes(input)
-	
-#	if input_.keys().size() == 3:
-#		fail = true
-#		var input = {}
-#		input.parent = self
-#		input.key = ""
-#		var icon = Global.scene.icon.instantiate()
-#		icons.add_child(icon)
-#		icon.set_attributes(input)
-#		icon.visible = false
-#
-#		icon = Global.scene.icon.instantiate()
-#		input.key = ""
-#		quantities.add_child(icon)
-#		icon.set_attributes(input)
-#		icon.visible = false
-	
 	paint_bg()
 	custom_minimum_size = Vector2(Global.vec.size.facet)
 
@@ -61,19 +29,38 @@ func set_attributes(input_: Dictionary) -> void:
 func paint_bg() -> void:
 	var style = StyleBoxFlat.new()
 	bg.set("theme_override_styles/panel", style)
-	var color = null
+	var h = null
+	var s = 1.0
+	var v = 1.0
 	
 	match member.type:
-		"vampire":
+		"servant":
 			match member.subtype:
-				"ancestor":
-					color = Color.RED
+				"farmer":
+					h = 60.0 / 360.0
+				"fisher":
+					h = 180.0 / 360.0
+				"hunter":
+					h = 120.0 / 360.0
+				"cook":
+					h = 240.0 / 360.0
+				"logger":
+					h = 30.0 / 360.0
+				"carpenter":
+					h = 150.0 / 360.0
+				"miner":
+					h = 320.0 / 360.0
+				"blacksmith":
+					h = 0.0 / 360.0
+				"jeweler":
+					h = 280.0 / 360.0
+	
+	
+	var color = Color.from_hsv(h, s, v)
+	
 	
 	if color == null:
 		color = Color.DIM_GRAY
-	
-	#if fail:
-	#	color = Color.WHITE
 	
 	style.bg_color = color
 
@@ -83,11 +70,5 @@ func get_attributes() -> Dictionary:
 	input.member = member
 	input.index = index
 	input.outcome = outcome.subtype
-	
-#	if influence != null:
-#		input.influence = influence
-#
-#	if gold != null:
-#		input.gold = gold
 	
 	return input
