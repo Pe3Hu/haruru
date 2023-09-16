@@ -51,28 +51,28 @@ func get_resource_value_label(resource_: String) -> Label:
 
 
 func check_resource_availability(resource_: String, value_: int) -> bool:
-	var label = get_resource_value_label(resource_)
-	return int(label.text) + value_ >= 0
+	var label_ = get_resource_value_label(resource_)
+	return int(label_.text) + value_ >= 0
 
 
 func change_resource_value(resource_: String, value_: int) -> void:
-	var label = get_resource_value_label(resource_)
-	var value = int(label.text) + value_
-	label.text = str(value)
+	var label_ = get_resource_value_label(resource_)
+	var value = int(label_.text) + value_
+	label_.text = str(value)
 
 
 func get_value_of_resource_available_for_withdraw(resource_: String, value_: int) -> int:
-	var label = get_resource_value_label(resource_)
+	var label_ = get_resource_value_label(resource_)
 	
 	if check_resource_availability(resource_, value_):
 		return -value_
 	
-	return int(label.text)
+	return int(label_.text)
 
 
 func get_value_of_resource(resource_: String) -> int:
-	var label = get_resource_value_label(resource_)
-	return int(label.text)
+	var label_ = get_resource_value_label(resource_)
+	return int(label_.text)
 
 
 func reset() -> void:

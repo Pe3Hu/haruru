@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://c8p8p11wpyu27"]
+[gd_scene load_steps=7 format=3 uid="uid://c8p8p11wpyu27"]
 
 [ext_resource type="Script" path="res://scene/0/sketch.gd" id="1_0xhw1"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_b8lal"]
 [ext_resource type="PackedScene" uid="uid://bupv61bpqtdj0" path="res://scene/2/structure.tscn" id="3_130xv"]
 [ext_resource type="PackedScene" uid="uid://b08r16e4wbqaq" path="res://scene/1/diplomacy.tscn" id="4_fc1hj"]
+[ext_resource type="PackedScene" uid="uid://ba8ehrd2knrux" path="res://scene/5/cloth.tscn" id="5_gj0xe"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 bg_color = Color(0.372549, 0.372549, 0.372549, 1)
@@ -43,6 +44,7 @@ layout_mode = 2
 alignment = 1
 
 [node name="Day" type="Label" parent="HBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0, 0, 0, 1)
@@ -52,11 +54,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Structure" parent="HBox" instance=ExtResource("3_130xv")]
+visible = false
 layout_mode = 2
 
 [node name="Diplomacy" parent="HBox" instance=ExtResource("4_fc1hj")]
+visible = false
 layout_mode = 2
 
 [node name="Encounters" type="HBoxContainer" parent="HBox"]
+visible = false
 layout_mode = 2
 alignment = 1
+
+[node name="Cloth" parent="HBox" instance=ExtResource("5_gj0xe")]
+layout_mode = 2

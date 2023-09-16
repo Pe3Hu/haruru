@@ -42,13 +42,13 @@ func init_members() -> void:
 #	members.add_child(member)
 #	member.set_attributes(input)
 	
-	var type = "servant"
+	var type_ = "servant"
 	var subtype = "farmer"
 	
 	#for subtype in Global.dict.facet.type[type]:
 	var input = {}
 	input.tribe = self
-	input.type = type
+	input.type = type_
 	input.subtype = subtype
 	input.population = 50
 	var member = Global.scene.member.instantiate()

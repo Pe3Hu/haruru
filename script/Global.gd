@@ -24,7 +24,8 @@ func _ready() -> void:
 
 func init_arr() -> void:
 	arr.edge = [1, 2, 3, 4, 5, 6]
-	arr.token = ["food", "influence"]
+	#arr.token = ["food", "influence"]
+	arr.delta = [3,4,5,6,7,8,9]#[2,3,4,5,6,7,8,9,10]
 	
 	arr.phase = [
 		"select dices",
@@ -36,9 +37,28 @@ func init_arr() -> void:
 
 func init_num() -> void:
 	num.index = {}
+	num.index.flap = 0
+	
+	num.size = {}
+	
+	num.size = {}
+	num.size.delta = 12
+	
+	num.size.flap = {}
+	num.size.flap.col = 12
+	num.size.flap.row = 12
+	num.size.flap.a = 64
+	num.size.flap.R = num.size.flap.a
+	num.size.flap.r = num.size.flap.R * sqrt(3) / 2
+	
+	num.size.knob = {}
+	num.size.knob.a = 4
+	num.size.knob.R = num.size.knob.a
 
 
 func init_dict() -> void:
+	init_time()
+	init_polygon()
 	init_business()
 	init_neighbor()
 	#init_facet()
@@ -50,8 +70,9 @@ func init_dict() -> void:
 	for raw in dict.raw:
 		var value = 1000
 		dict.endowment[raw] = value
-		#warehouse.change_resource_value(raw, value)
-	
+
+
+func init_time() -> void:
 	dict.time = {}
 	dict.time.day = 1
 	dict.time.week = dict.time.day * 7
@@ -59,6 +80,30 @@ func init_dict() -> void:
 	dict.time.season = dict.time.month * 3
 	dict.time.year = dict.time.season * 4
 
+
+func init_polygon() -> void:
+	dict.order = {}
+	dict.pair = {}
+	dict.pair["even"] = "odd"
+	dict.pair["odd"] = "even"
+	var polygons = [3,4,6]
+	dict.polygon = {}
+	
+	for polygons_ in polygons:
+		dict.polygon[polygons_] = {}
+		dict.polygon[polygons_].even = {}
+		
+		for order_ in dict.pair.keys():
+			dict.polygon[polygons_][order_] = {}
+		
+			for _i in polygons_:
+				var angle = 2 * PI * _i / polygons_ - PI/2
+				
+				if order_ == "odd":
+					angle += PI/polygons_
+				
+				var vertex = Vector2(1,0).rotated(angle)
+				dict.polygon[polygons_][order_][_i] = vertex
 
 func init_business() -> void:
 	dict.business = {}
@@ -247,6 +292,11 @@ func init_scene() -> void:
 	scene.encounter = load("res://scene/4/encounter.tscn")
 	scene.squad = load("res://scene/4/squad.tscn")
 	
+	
+	scene.flap = load("res://scene/5/flap.tscn")
+	scene.knob = load("res://scene/5/knob.tscn")
+	scene.seam = load("res://scene/5/seam.tscn")
+	
 	pass
 
 
@@ -282,8 +332,10 @@ func load_data(path_: String):
 	var file = FileAccess.open(path_, FileAccess.READ)
 	var text = file.get_as_text()
 	var json_object = JSON.new()
-	var parse_err = json_object.parse(text)
-	return json_object.get_data()
+	var error = json_object.parse(text)
+	
+	if error == OK:
+		return json_object.get_data()
 
 
 func get_resource_path(resource_: String) -> Variant:
@@ -310,5 +362,14 @@ func save_statistics(statistics_: Dictionary) -> void:
 	var path = "res://asset/stat/stat.json"# + "stat" + ".json"
 	var file_dict = load_data(path)
 	file_dict[time] = statistics_
-	var str = JSON.stringify(file_dict)
-	save(path, str)
+	var str_ = JSON.stringify(file_dict)
+	save(path, str_)
+
+
+func split_two_point(points_: Array, delta_: float):
+	var a = points_.front()
+	var b = points_.back()
+	var x = (a.x+b.x*delta_)/(1+delta_)
+	var y = (a.y+b.y*delta_)/(1+delta_)
+	var point = Vector2(x, y)
+	return point

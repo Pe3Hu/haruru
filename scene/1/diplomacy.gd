@@ -37,27 +37,36 @@ func servants_simulation() -> void:
 	#var deadline = Global.dict.time.day
 	var data = {}
 	data.type = "servant"
-	data.population = 10
+	data.population = 100
 	data.deadline = Global.dict.time.month#month
 	data.time = 0
+	var total = data.population * data.deadline
+	#var subtype = "farmer"
 	
 	for subtype in Global.dict.facet.type[data.type]:
 		tribe.init_servants(subtype, data.population)
 		simulation(data.deadline)
-		var input = {}
-		input.resource = get_resource_analytics()
+		data.resource = get_resource_analytics()
 		data.time += Time.get_unix_time_from_system() - time
 		#input.time = Time.get_unix_time_from_system() - time
 		#input.type = type
-		#input.subtype = subtype
+		data.subtype = subtype
 		#input.population = population
 		#input.deadline = deadline
 		tribe.reset()
+		data.avg = {}
+			
+		for key in data.resource:
+			data.avg[key] = snapped(float(data.resource[key]) / total, 0.01)
+		
 		Global.node.sketch.day.text = str(0)
-		data[subtype] = input
+		data.time = snapped(data.time, 0.01)
+		Global.save_statistics(data)
+		print(data)
+		#data[subtype] = input
 	
-	Global.save_statistics(data)
-	print(data)
+	#Global.save_statistics(data)
+	#print(data)
 
 
 

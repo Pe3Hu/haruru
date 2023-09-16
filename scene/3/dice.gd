@@ -81,13 +81,13 @@ func decelerate_spin() -> void:
 
 func _on_timer_timeout():
 	if pace >= 0.5:
-		var time = 1.0 / pace
+		var time_ = 1.0 / pace
 		tween = create_tween()
-		tween.tween_property(facets, "position", Vector2(0, 0), time).from(anchor)
+		tween.tween_property(facets, "position", Vector2(0, 0), time_).from(anchor)
 		tween.tween_callback(pop_up)
 		decelerate_spin()
 	else:
-		#print("end at", Time.get_unix_time_from_system() - time)
+		#print("end at", Time.get_unix_time_from_system() - time_)
 		#var unit = facets.get_child(3).unit
 		pass
 

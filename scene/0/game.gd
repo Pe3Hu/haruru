@@ -6,7 +6,7 @@ func _ready() -> void:
 	Global.node.game.get_node("Layer0").add_child(Global.node.sketch)
 	#datas.sort_custom(func(a, b): return a.value < b.value)
 	#012 description
-	Global.node.sketch.diplomacy.servants_simulation()
+	#Global.node.sketch.diplomacy.servants_simulation()
 	pass
 
 
@@ -18,5 +18,5 @@ func _input(event) -> void:
 					Global.node.sketch.diplomacy.do_it()
 
 
-func _process(delta_) -> void:
-	$FPS.text = str(Engine.get_frames_per_second())
+#func _process(delta_) -> void:
+#	$FPS.text = str(Engine.get_frames_per_second())
