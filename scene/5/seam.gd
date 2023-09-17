@@ -3,7 +3,8 @@ extends Line2D
 
 var cloth = null
 var knobs = []
-var flops = []
+var flaps = []
+var boundary = true
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -17,8 +18,8 @@ func set_attributes(input_: Dictionary) -> void:
 
 
 func add_flap(flap_: Polygon2D) -> void:
-	if !flops.has(flap_):
-		flops.append(flap_)
+	if !flaps.has(flap_):
+		flaps.append(flap_)
 	
 	if !flap_.seams.has(self):
 		flap_.seams.append(self)
@@ -42,7 +43,6 @@ func cut():
 	var knob = Global.scene.knob.instantiate()
 	cloth.knobs.add_child(knob)
 	knob.set_attributes(input)
-	cloth.grid.knob[input.position] = knob
 	
 	cloth.couplers[first].erase(second)
 	cloth.couplers[second].erase(first)
@@ -54,10 +54,16 @@ func cut():
 	var seam = Global.scene.seam.instantiate()
 	cloth.seams.add_child(seam)
 	seam.set_attributes(input)
-	cloth.couplers[first][knob] = seam
 	
 	input.knobs = [second, knob]
 	seam = Global.scene.seam.instantiate()
 	cloth.seams.add_child(seam)
 	seam.set_attributes(input)
-	cloth.couplers[second][knob] = seam
+
+
+func set_boundary() -> void:
+	if flaps.size() > 1:
+		boundary = flaps.front().patch != flaps.back().patch
+	
+	if !boundary:
+		visible = false

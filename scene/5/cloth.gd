@@ -4,6 +4,9 @@ extends MarginContainer
 @onready var flaps = $Flaps
 @onready var knobs = $Knobs
 @onready var seams = $Seams
+@onready var patchs = $Patchs
+@onready var frontiers = $Frontiers
+
 
 var grid = {}
 var couplers = {}
@@ -13,12 +16,18 @@ func _ready() -> void:
 	init_knobs()
 	init_flaps()
 	add_new_seams()
+	glue_flaps()
+	calc_flap_squares()
+	init_lairs()
+	init_frontiers()
+	update_seam_boundaries()
 	
-	var flap = flaps.get_child(1)
-	
-	for seam in flap.neighbors:
-		var neighbor = flap.neighbors[seam]
-		neighbor.paint_gray()
+#	var flap = flaps.get_child(1)
+#	flap.paint_gray()
+#
+#	for seam in flap.neighbors:
+#		var neighbor = flap.neighbors[seam]
+#		neighbor.paint_gray()
 
 
 func init_knobs() -> void:
@@ -35,7 +44,6 @@ func init_knobs() -> void:
 			var knob = Global.scene.knob.instantiate()
 			knobs.add_child(knob)
 			knob.set_attributes(input)
-			grid.knob[input.position] = knob
 
 
 func init_flaps() -> void:
@@ -55,7 +63,9 @@ func init_flaps() -> void:
 			var flap = Global.scene.flap.instantiate()
 			flaps.add_child(flap)
 			flap.set_attributes(input)
-		
+			flap.init_seams()
+			var a = null
+	
 	#set_flap_neighbors()
 
 
@@ -84,7 +94,7 @@ func add_new_seams() -> void:
 	for seam in unsliced_seams:
 		seam.cut()
 
-		rework_flaps()
+	rework_flaps()
 
 
 func rework_flaps() -> void:
@@ -100,7 +110,7 @@ func rework_flaps() -> void:
 				for _i in couplers[knob].keys().size():
 					var first = couplers[knob].keys()[_i]
 					
-					for _j in range(_i,couplers[knob].keys().size()):
+					for _j in range(_i,couplers[knob].size()):
 						var second = couplers[knob].keys()[_j]
 						
 						if first.position.x != second.position.x && first.position.y != second.position.y:
@@ -121,22 +131,23 @@ func rework_flaps() -> void:
 			centers[center] = []
 			
 			for edge in edges:
-				var d = abs(edge.vec.position.x - center.x) + abs(edge.vec.position.y - center.y)
+				var d = abs(edge.position.x - center.x) + abs(edge.position.y - center.y)
 				
 				if d < Global.num.size.flap.a:
 					centers[center].append(edge)
 	
-	for key in centers.keys():
+	
+	for center in centers:
 		var trios = [[],[]]
-		trios[0].append_array(centers[key])
-		trios[1].append_array(centers[key])
+		trios[0].append_array(centers[center])
+		trios[1].append_array(centers[center])
 		var first = trios[0].pick_random()
 		trios[0].erase(first)
 		var second = null
 		
 		for knob in trios[0]:
-			var x = abs(knob.vec.position.x - first.vec.position.x)
-			var y = abs(knob.vec.position.y - first.vec.position.y)
+			var x = abs(knob.position.x - first.position.x)
+			var y = abs(knob.position.y - first.position.y)
 			
 			if x == Global.num.size.flap.a || y == Global.num.size.flap.a:
 				second = knob
@@ -150,16 +161,164 @@ func rework_flaps() -> void:
 			input.knobs = trio
 			input.type = "center"
 			var flap = Global.scene.flap.instantiate()
-			new_flabs.append(flap)
+			new_flabs.add_child(flap)
 			flap.set_attributes(input)
 	
 	for flap in flaps.get_children():
 		flaps.remove_child(flap)
 		flap.queue_free()
 	
-	
 	for flap in new_flabs.get_children():
 		new_flabs.remove_child(flap)
 		flaps.add_child(flap)
 	
 	set_flap_neighbors()
+
+
+func glue_flaps() -> void:
+	var unglueds = []
+	var glueds = []
+	unglueds.append_array(flaps.get_children())
+	
+	while unglueds.size() > 0:
+		var flaps = []
+		var current_flap = unglueds.pick_random()
+		var options = []
+		
+		for component in Global.dict.flap.component:
+			for types in Global.dict.flap.component[component]:
+				if types.has(current_flap.type):
+					for _i in Global.dict.flap.duplicate[component]:
+						options.append(types)
+		
+		var types = []
+		var origin_types = []
+		types.append_array(options.pick_random())
+		origin_types.append_array(types)
+		flaps.append(current_flap)
+		unglueds.erase(current_flap)
+		types.erase(current_flap.type)
+		
+		while types.size() > 0:
+			var neighbors = []
+			
+			for flap in flaps:
+				for seam in flap.neighbors.keys():
+					var neighbor = flap.neighbors[seam]
+					
+					if unglueds.has(neighbor) && types.has(neighbor.type):
+						neighbors.append(neighbor)
+			
+			if neighbors.size() == 0:
+				types = []
+			else:
+				current_flap = neighbors.pick_random()
+				flaps.append(current_flap)
+				unglueds.erase(current_flap)
+				types.erase(current_flap.type)
+		
+		if origin_types == ["corner", "corner", "corner", "corner"] && flaps.size() != origin_types.size():
+			unglueds.append_array(flaps)
+		else:
+			glueds.append(flaps)
+	
+	for glued in glueds:
+		var input = {}
+		input.cloth = self
+		input.flaps = glued
+		
+		var patch = Global.scene.patch.instantiate()
+		patchs.add_child(patch)
+		patch.set_attributes(input)
+	
+	for patch in patchs.get_children():
+		patch.connect_flaps()
+
+	set_patch_elements()
+
+
+func set_patch_elements() -> void:
+	var origin = patchs.get_child(0)
+	var unpainted = [origin]
+	
+	while unpainted.size() > 0:
+		var patch = unpainted.pop_front()
+		var elements = []
+		elements.append_array(Global.arr.element)
+		
+		for seam in patch.neighbors.keys():
+			var neighbor = patch.neighbors[seam]
+			elements.erase(neighbor.element)
+			
+			if neighbor.element == null && !unpainted.has(neighbor):
+				unpainted.append(neighbor)
+		
+		patch.element = elements.pick_random()
+		patch.set_element_flaps()
+	
+	for patch in patchs.get_children():
+		patch.init_polygon()
+
+
+func calc_flap_squares() -> void:
+	var square_area = Global.num.size.flap.a * Global.num.size.flap.a / 4
+	
+	for flap in flaps.get_children():
+		flap.calc_square()
+		flap.patch.square += flap.square
+	
+	var n = 6
+	var counts = {}
+	
+	for _i in range(2, n * 3):
+		counts[_i] = 0
+	
+	for patch in patchs.get_children():
+		var area = patch.square / square_area * n
+		
+		for count in counts:
+			if area < count:
+				counts[count] += 1
+				break
+	
+	print("calc_flap_squares: ", counts)
+
+
+func init_lairs() -> void:
+	for patch in patchs.get_children():
+		patch.init_lair()
+
+
+func init_frontiers() -> void:
+	for patch in patchs.get_children():
+		var seams = []
+		
+		for flap in patch.flaps:
+			for seam in flap.seams:
+				if seam.knobs.front().type != seam.knobs.back().type:
+					if !seams.has(seam):
+						seams.append(seam)
+					else:
+						seams.erase(seam)
+		
+		for seam in patch.neighbors:
+			if !seams.has(seam):
+				seams.append(seam)
+		
+		for seam in seams:
+			var input = {}
+			input.seam = seam
+			input.lair = patch.lair
+			input.cloth = self
+			
+			var frontier = Global.scene.frontier.instantiate()
+			frontiers.add_child(frontier)
+			frontier.set_attributes(input)
+	
+	for frontier in frontiers.get_children():
+		frontier.paint_by_index()
+
+
+func update_seam_boundaries() -> void:
+	for seam in seams.get_children():
+		seam.set_boundary()

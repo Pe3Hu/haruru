@@ -26,6 +26,9 @@ func init_arr() -> void:
 	arr.edge = [1, 2, 3, 4, 5, 6]
 	#arr.token = ["food", "influence"]
 	arr.delta = [3,4,5,6,7,8,9]#[2,3,4,5,6,7,8,9,10]
+	arr.color = ["Red","Green","Blue","Yellow"]
+	arr.element = ["aqua","wind","fire","earth"]
+	
 	
 	arr.phase = [
 		"select dices",
@@ -38,6 +41,8 @@ func init_arr() -> void:
 func init_num() -> void:
 	num.index = {}
 	num.index.flap = 0
+	num.index.patch = 0
+	num.index.frontier = 0
 	
 	num.size = {}
 	
@@ -45,8 +50,8 @@ func init_num() -> void:
 	num.size.delta = 12
 	
 	num.size.flap = {}
-	num.size.flap.col = 12
-	num.size.flap.row = 12
+	num.size.flap.col = 3
+	num.size.flap.row = 3
 	num.size.flap.a = 64
 	num.size.flap.R = num.size.flap.a
 	num.size.flap.r = num.size.flap.R * sqrt(3) / 2
@@ -70,6 +75,21 @@ func init_dict() -> void:
 	for raw in dict.raw:
 		var value = 1000
 		dict.endowment[raw] = value
+	
+	dict.flap = {}
+	
+	dict.flap.component = {
+		1: [["corner"], ["center"]],
+		2: [["corner", "corner"], ["corner", "center"], ["center", "center"]],
+		3: [["corner", "corner", "center"], ["corner", "center", "center"]],
+		4: [["corner", "corner", "corner", "corner"]]
+	}
+	dict.flap.duplicate = {
+		1: 8,
+		2: 4,
+		3: 2,
+		4: 1
+	}
 
 
 func init_time() -> void:
@@ -296,6 +316,8 @@ func init_scene() -> void:
 	scene.flap = load("res://scene/5/flap.tscn")
 	scene.knob = load("res://scene/5/knob.tscn")
 	scene.seam = load("res://scene/5/seam.tscn")
+	scene.patch = load("res://scene/5/patch.tscn")
+	scene.frontier = load("res://scene/5/frontier.tscn")
 	
 	pass
 
@@ -321,6 +343,16 @@ func init_window_size():
 
 func init_color():
 	color.indicator = {}
+	
+	var max_h = 360.0
+	var s = 1
+	var v = 1
+	
+	color.element = {}
+	color.element["aqua"] = Color.from_hsv(240.0 / max_h, s, v)
+	color.element["wind"] = Color.from_hsv(160.0 / max_h, s, v)
+	color.element["fire"] = Color.from_hsv(0.0 / max_h, s, v)
+	color.element["earth"] = Color.from_hsv(80.0 / max_h, s, v)
 
 
 func save(path_: String, data_: String):
