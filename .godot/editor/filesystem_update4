@@ -13,3 +13,7 @@ res://scene/5/knob.gd
 res://scene/5/patch.gd
 res://scene/5/frontier.tscn
 res://scene/5/frontier.gd
+res://scene/0/game.gd
+res://scene/0/sketch.gd
+res://scene/5/state.tscn
+res://scene/5/state.gd

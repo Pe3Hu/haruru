@@ -6,10 +6,14 @@ extends MarginContainer
 @onready var seams = $Seams
 @onready var patchs = $Patchs
 @onready var frontiers = $Frontiers
+@onready var states = $States
 
-
+var square = 0
+var layer = null
 var grid = {}
 var couplers = {}
+var hierarchy = {}
+var selected = {}
 
 
 func _ready() -> void:
@@ -21,13 +25,15 @@ func _ready() -> void:
 	init_lairs()
 	init_frontiers()
 	update_seam_boundaries()
+	init_patch_terrains()
+	init_flap_abundances()
+	init_states()
+	shift_layer(0)
 	
-#	var flap = flaps.get_child(1)
-#	flap.paint_gray()
-#
-#	for seam in flap.neighbors:
-#		var neighbor = flap.neighbors[seam]
-#		neighbor.paint_gray()
+	
+	selected.patch = 0
+	#shift_patch_with_neighbors(0)
+
 
 
 func init_knobs() -> void:
@@ -64,7 +70,7 @@ func init_flaps() -> void:
 			flaps.add_child(flap)
 			flap.set_attributes(input)
 			flap.init_seams()
-			var a = null
+			#var a = null
 	
 	#set_flap_neighbors()
 
@@ -181,7 +187,7 @@ func glue_flaps() -> void:
 	unglueds.append_array(flaps.get_children())
 	
 	while unglueds.size() > 0:
-		var flaps = []
+		var available_flaps = []
 		var current_flap = unglueds.pick_random()
 		var options = []
 		
@@ -195,14 +201,14 @@ func glue_flaps() -> void:
 		var origin_types = []
 		types.append_array(options.pick_random())
 		origin_types.append_array(types)
-		flaps.append(current_flap)
+		available_flaps.append(current_flap)
 		unglueds.erase(current_flap)
 		types.erase(current_flap.type)
 		
 		while types.size() > 0:
 			var neighbors = []
 			
-			for flap in flaps:
+			for flap in available_flaps:
 				for seam in flap.neighbors.keys():
 					var neighbor = flap.neighbors[seam]
 					
@@ -213,14 +219,14 @@ func glue_flaps() -> void:
 				types = []
 			else:
 				current_flap = neighbors.pick_random()
-				flaps.append(current_flap)
+				available_flaps.append(current_flap)
 				unglueds.erase(current_flap)
 				types.erase(current_flap.type)
 		
-		if origin_types == ["corner", "corner", "corner", "corner"] && flaps.size() != origin_types.size():
-			unglueds.append_array(flaps)
+		if origin_types == ["corner", "corner", "corner", "corner"] && available_flaps.size() != origin_types.size():
+			unglueds.append_array(available_flaps)
 		else:
-			glueds.append(flaps)
+			glueds.append(available_flaps)
 	
 	for glued in glueds:
 		var input = {}
@@ -261,27 +267,27 @@ func set_patch_elements() -> void:
 
 
 func calc_flap_squares() -> void:
-	var square_area = Global.num.size.flap.a * Global.num.size.flap.a / 4
+	square = pow(Global.num.size.flap.a, 2) * Global.num.size.flap.col * Global.num.size.flap.row
+	#var square_area = pow(Global.num.size.flap.a, 2) / 4
 	
 	for flap in flaps.get_children():
 		flap.calc_square()
 		flap.patch.square += flap.square
-	
-	var n = 6
-	var counts = {}
-	
-	for _i in range(2, n * 3):
-		counts[_i] = 0
-	
-	for patch in patchs.get_children():
-		var area = patch.square / square_area * n
-		
-		for count in counts:
-			if area < count:
-				counts[count] += 1
-				break
-	
-	print("calc_flap_squares: ", counts)
+#
+#	var n = 6
+#	var counts = {}
+#
+#	for _i in range(2, n * 3):
+#		counts[_i] = 0
+#
+#	for patch in patchs.get_children():
+#		var area = patch.square / square_area * n
+#
+#		for count in counts:
+#			if area < count:
+#				counts[count] += 1
+#				break
+	pass
 
 
 func init_lairs() -> void:
@@ -291,21 +297,21 @@ func init_lairs() -> void:
 
 func init_frontiers() -> void:
 	for patch in patchs.get_children():
-		var seams = []
+		var available_seams = []
 		
 		for flap in patch.flaps:
 			for seam in flap.seams:
 				if seam.knobs.front().type != seam.knobs.back().type:
-					if !seams.has(seam):
-						seams.append(seam)
+					if !available_seams.has(seam):
+						available_seams.append(seam)
 					else:
-						seams.erase(seam)
+						available_seams.erase(seam)
 		
 		for seam in patch.neighbors:
-			if !seams.has(seam):
-				seams.append(seam)
+			if !available_seams.has(seam):
+				available_seams.append(seam)
 		
-		for seam in seams:
+		for seam in available_seams:
 			var input = {}
 			input.seam = seam
 			input.lair = patch.lair
@@ -322,3 +328,282 @@ func init_frontiers() -> void:
 func update_seam_boundaries() -> void:
 	for seam in seams.get_children():
 		seam.set_boundary()
+
+
+func init_patch_terrains() -> void:
+	for patch in patchs.get_children():
+		for flap in patch.flaps:
+			flap.paint_gray()
+	
+	var limit_square = square / 2 / Global.color.terrain.keys().size()
+	var wastelands = []
+	var datas = []
+	var grands = {}
+	var hegemony = {}
+	var insulation = {}
+	
+	for flap in flaps.get_children():
+		var data = {}
+		data.square = flap.square
+		data.flap = flap
+		datas.append(data)
+		wastelands.append(flap)
+	
+	datas.sort_custom(func(a, b): return a.square > b.square)
+	
+	for terrain in Global.color.terrain:
+		var flap = datas.pop_front().flap
+		wastelands.erase(flap)
+		grands[terrain] = [flap]
+		flap.terrain = terrain
+		flap.paint_based_on_terrain()
+	
+	for terrain in grands:
+		var grand_square = grands[terrain].front().square
+		
+		while grand_square < limit_square:
+			insulation[terrain] = []
+			
+			for flap in grands[terrain]:
+				for seam in flap.neighbors:
+					var neighbor = flap.neighbors[seam]
+					
+					if wastelands.has(neighbor) and !insulation[terrain].has(neighbor):
+						insulation[terrain].append(neighbor)
+			
+			if insulation[terrain].is_empty():
+				grand_square = limit_square
+			else:
+				var flap = insulation[terrain].pick_random()
+				wastelands.erase(flap)
+				grands[terrain].append(flap)
+				flap.terrain = terrain
+				flap.paint_based_on_terrain()
+				grand_square += flap.square
+		
+		
+		hegemony[terrain] = grand_square
+	
+	while !wastelands.is_empty():
+		incentivize_minority(hegemony, insulation, wastelands)
+
+
+func incentivize_minority(hegemony_: Dictionary, insulation_: Dictionary, wastelands_: Array) -> void:
+	var datas = []
+	
+	for terrain in hegemony_:
+		var data = {}
+		data.square = hegemony_[terrain]
+		data.terrain = terrain
+		datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.square < b.square)
+	var minority = datas.front().terrain
+	
+	var available_flaps = []
+	
+	for flap in wastelands_:
+		if !insulation_.has(flap):
+			available_flaps.append(flap)
+	
+	if !available_flaps.is_empty():
+		var flap = available_flaps.pick_random()
+		wastelands_.erase(flap)
+		
+		flap.terrain = minority
+		flap.paint_based_on_terrain()
+		hegemony_[minority] += flap.square
+	else:
+		hegemony_[minority] += square
+
+
+func init_flap_abundances() -> void:
+	for flap in flaps.get_children():
+		flap.set_abundance()
+
+
+func init_states() -> void:
+	lay_foundation_of_states()
+	spread_states()
+#
+#	var type = Global.arr.state.front()
+#
+#	for state in hierarchy[type]:
+#		if state.limit > 1:
+#			state.hide_patchs()
+
+
+func lay_foundation_of_states() -> void:
+	for key in Global.arr.state:
+		hierarchy[key] = []
+		Global.num.index.state[key] = 0
+	
+	for flap in flaps.get_children():
+		var counter = 0
+		
+		for seam in flap.seams:
+			counter += seam.flaps.size()
+		
+		if counter == 4:
+			var input = {}
+			input.type = Global.arr.state.front()
+			input.cloth = self
+			input.patch = flap.patch
+			
+			var state = Global.scene.state.instantiate()
+			states.add_child(state)
+			state.set_attributes(input)
+
+
+func add_states(type_: String) -> bool:
+	var type = type_
+	var undeveloped_patchs = []
+	
+	for state in hierarchy[type]:
+		var accessible_patchs = state.get_accessible_patchs()
+		undeveloped_patchs.append_array(accessible_patchs)
+	
+	if !undeveloped_patchs.is_empty():
+		var input = {}
+		input.type = type
+		input.cloth = self
+		input.patch = undeveloped_patchs.pick_random()
+		
+		var neighbors = {}
+		neighbors.occupied = []
+		neighbors.accessible = []
+		
+		for seam in input.patch.neighbors:
+			var neighbor = input.patch.neighbors[seam]
+			
+			if neighbor.state[type] == null:
+				neighbors.accessible.append(neighbor)
+			else:
+				neighbors.occupied.append(neighbor)
+		
+		if neighbors.accessible.is_empty():
+			var occupied_patch = neighbors.occupied.pick_random()
+			#occupied_patch.state[type].hide_patchs()
+			occupied_patch.state[type].take_patch(input.patch)
+			undeveloped_patchs.erase(input.patch)
+			#input.patch.hide_flaps()
+		else:
+			var state = Global.scene.state.instantiate()
+			states.add_child(state)
+			state.set_attributes(input)
+			
+			for patch in state.patchs:
+				undeveloped_patchs.erase(patch)
+			
+			var accessible_patchs = state.get_accessible_patchs()
+			undeveloped_patchs.append_array(accessible_patchs)
+		
+		shift_layer(0)
+		return false
+	
+	return true
+
+
+func spread_states() -> void:
+	var type = Global.arr.state.front()
+	var end = add_states(type)
+	
+	while !end:
+		end = add_states(type)
+
+
+func spread_states_old() -> void:
+	var type = Global.arr.state.front()
+	var undeveloped_patchs = []
+	
+	for state in hierarchy[type]:
+		var accessible_patchs = state.get_accessible_patchs()
+		undeveloped_patchs.append_array(accessible_patchs)
+		
+	while !undeveloped_patchs.is_empty():
+		var input = {}
+		input.type = type
+		input.cloth = self
+		input.patch = undeveloped_patchs.pick_random()
+		
+		var neighbors = {}
+		neighbors.occupied = []
+		neighbors.accessible = []
+		
+		for seam in input.patch.neighbors:
+			var neighbor = input.patch.neighbors[seam]
+			
+			if neighbor.state[type] == null:
+				neighbors.accessible.append(neighbor)
+			else:
+				neighbors.occupied.append(neighbor)
+		
+		if neighbors.accessible.is_empty():
+			var occupied_patch = neighbors.occupied.pick_random()
+			#input.patch.hide_flaps()
+			#occupied_patch.state[type].hide_patchs()
+			occupied_patch.state[type].take_patch(input.patch)
+			undeveloped_patchs.erase(input.patch)
+		else:
+			var state = Global.scene.state.instantiate()
+			states.add_child(state)
+			state.set_attributes(input)
+			
+			for patch in state.patchs:
+				undeveloped_patchs.erase(patch)
+			
+			var accessible_patchs = state.get_accessible_patchs()
+			undeveloped_patchs.append_array(accessible_patchs)
+
+
+func init_settlements() -> void:
+	pass
+
+
+func shift_layer(shift_: int) -> void:
+	var index = 5 
+	
+	if layer != null:
+		index = Global.arr.layer.cloth.find(layer)
+		index = (index + shift_ + Global.arr.layer.cloth.size()) % Global.arr.layer.cloth.size()
+	
+	layer = Global.arr.layer.cloth[index]
+	
+	for flap in flaps.get_children():
+		#flap.visible = false
+		
+		match layer:
+			"flap":
+				flap.paint_based_on_index()
+			"patch":
+				flap.paint_based_on_patch_index()
+			"terrain":
+				flap.paint_based_on_terrain()
+			"element":
+				flap.paint_based_on_element()
+			"abundance":
+				flap.paint_based_on_abundance()
+			"earldom":
+				flap.paint_based_on_earldom_index()
+			"earldom 2":
+				flap.paint_based_on_earldom_limit_2()
+			"earldom 3":
+				flap.paint_based_on_earldom_limit_3()
+
+
+func shift_patch_with_neighbors(shift_) -> void:
+	var patch = patchs.get_child(selected.patch)
+	patch.hide_flaps()
+	
+	for seam in patch.neighbors:
+		var neighbor = patch.neighbors[seam]
+		neighbor.hide_flaps()
+	
+	selected.patch = (selected.patch + shift_ + patchs.get_child_count()) % patchs.get_child_count()
+	patch = patchs.get_child(selected.patch)
+	patch.paint_flaps(Color.BLACK)
+
+	for seam in patch.neighbors:
+		var neighbor = patch.neighbors[seam]
+		neighbor.paint_flaps(Color.WHITE)
+

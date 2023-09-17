@@ -1,0 +1,30 @@
+[
+ {
+  "terrain": "pond",
+  "aqua": 12,
+  "wind": 8,
+  "fire": 3,
+  "earth": 5
+ },
+ {
+  "terrain": "plain",
+  "aqua": 5,
+  "wind": 12,
+  "fire": 8,
+  "earth": 3
+ },
+ {
+  "terrain": "mountain",
+  "aqua": 3,
+  "wind": 5,
+  "fire": 12,
+  "earth": 8
+ },
+ {
+  "terrain": "forest",
+  "aqua": 8,
+  "wind": 3,
+  "fire": 5,
+  "earth": 12
+ }
+]

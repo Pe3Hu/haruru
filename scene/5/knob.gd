@@ -6,8 +6,8 @@ var type = null
 
 
 func set_attributes(input_: Dictionary) -> void:
-	cloth  = input_.cloth
-	type  = input_.type
+	cloth = input_.cloth
+	type = input_.type
 	position = input_.position
 	cloth.grid.knob[position] = self
 	set_vertexs()

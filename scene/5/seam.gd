@@ -8,7 +8,7 @@ var boundary = true
 
 
 func set_attributes(input_: Dictionary) -> void:
-	cloth  = input_.cloth
+	cloth = input_.cloth
 	knobs.append_array(input_.knobs)
 	cloth.couplers[knobs.front()][knobs.back()] = self
 	cloth.couplers[knobs.back()][knobs.front()] = self

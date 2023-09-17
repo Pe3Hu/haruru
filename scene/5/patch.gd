@@ -9,15 +9,18 @@ var square = 0
 var knobs = []
 var flaps = []
 var neighbors = {}
-
+var state = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
-	cloth  = input_.cloth
+	cloth = input_.cloth
 	flaps.append_array(input_.flaps)
 	set_knobs()
 	index = Global.num.index.patch
 	Global.num.index.patch += 1
+	
+	for key in Global.arr.state:
+		state[key] = null
 
 
 func set_knobs() -> void:
@@ -51,8 +54,8 @@ func connect_flaps() -> void:
 func set_element_flaps() -> void:
 	for flap in flaps:
 		flap.element = element
-		flap.paint_element()
-		flap.paint_patch_index()
+		flap.paint_based_on_element()
+		flap.paint_based_on_patch_index()
 
 
 func init_polygon() -> void:
@@ -114,3 +117,14 @@ func init_lair() -> void:
 		#obj.cloth.knob[lair_position] = knob
 		lair = knob
 		knob.visible = true
+
+
+func hide_flaps() -> void:
+	for flap in flaps:
+		flap.visible = false
+
+
+func paint_flaps(color_: Color) -> void:
+	for flap in flaps:
+		flap.visible = true
+		flap.set_color(color_)

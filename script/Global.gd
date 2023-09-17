@@ -26,9 +26,14 @@ func init_arr() -> void:
 	arr.edge = [1, 2, 3, 4, 5, 6]
 	#arr.token = ["food", "influence"]
 	arr.delta = [3,4,5,6,7,8,9]#[2,3,4,5,6,7,8,9,10]
+	arr.limit = [2, 3]
 	arr.color = ["Red","Green","Blue","Yellow"]
 	arr.element = ["aqua","wind","fire","earth"]
 	
+	arr.state = ["earldom", "dukedom", "kingdom", "empire"]
+	
+	arr.layer = {}
+	arr.layer.cloth = ["flap", "patch", "terrain", "abundance", "element", "earldom", "earldom 2", "earldom 3"]
 	
 	arr.phase = [
 		"select dices",
@@ -43,6 +48,7 @@ func init_num() -> void:
 	num.index.flap = 0
 	num.index.patch = 0
 	num.index.frontier = 0
+	num.index.state = {}
 	
 	num.size = {}
 	
@@ -50,8 +56,8 @@ func init_num() -> void:
 	num.size.delta = 12
 	
 	num.size.flap = {}
-	num.size.flap.col = 3
-	num.size.flap.row = 3
+	num.size.flap.col = 6
+	num.size.flap.row = 6
 	num.size.flap.a = 64
 	num.size.flap.R = num.size.flap.a
 	num.size.flap.r = num.size.flap.R * sqrt(3) / 2
@@ -69,6 +75,7 @@ func init_dict() -> void:
 	#init_facet()
 	init_servant()
 	#init_mercenary()
+	init_abundance()
 	
 	dict.endowment = {}
 	
@@ -77,7 +84,6 @@ func init_dict() -> void:
 		dict.endowment[raw] = value
 	
 	dict.flap = {}
-	
 	dict.flap.component = {
 		1: [["corner"], ["center"]],
 		2: [["corner", "corner"], ["corner", "center"], ["center", "center"]],
@@ -90,6 +96,7 @@ func init_dict() -> void:
 		3: 2,
 		4: 1
 	}
+	
 
 
 func init_time() -> void:
@@ -290,6 +297,31 @@ func init_servant() -> void:
 	#print(dict.facet.type["servant"])
 
 
+func init_abundance() -> void:
+	dict.abundance = {}
+	dict.abundance.limit = {}
+	dict.abundance.limit.min = null
+	dict.abundance.limit.max = 0
+	dict.abundance.terrain = {}
+	var path = "res://asset/json/haruru_abundance.json"
+	var array = load_data(path)
+
+	for abundance in array:
+		dict.abundance.terrain[abundance.terrain] = {}
+		
+		if dict.abundance.limit.min == null:
+			dict.abundance.limit.min = abundance[arr.element.front()]
+		
+		for element in arr.element:
+			dict.abundance.terrain[abundance.terrain][element] = abundance[element]
+			
+			if abundance[element] < dict.abundance.limit.min:
+				dict.abundance.limit.min = abundance[element]
+			
+			if abundance[element] > dict.abundance.limit.max:
+				dict.abundance.limit.max = abundance[element]
+
+
 func init_node() -> void:
 	node.game = get_node("/root/Game")
 
@@ -318,6 +350,8 @@ func init_scene() -> void:
 	scene.seam = load("res://scene/5/seam.tscn")
 	scene.patch = load("res://scene/5/patch.tscn")
 	scene.frontier = load("res://scene/5/frontier.tscn")
+	scene.state = load("res://scene/5/state.tscn")
+	
 	
 	pass
 
@@ -345,7 +379,7 @@ func init_color():
 	color.indicator = {}
 	
 	var max_h = 360.0
-	var s = 1
+	var s = 0.75
 	var v = 1
 	
 	color.element = {}
@@ -353,6 +387,12 @@ func init_color():
 	color.element["wind"] = Color.from_hsv(160.0 / max_h, s, v)
 	color.element["fire"] = Color.from_hsv(0.0 / max_h, s, v)
 	color.element["earth"] = Color.from_hsv(80.0 / max_h, s, v)
+	
+	color.terrain = {}
+	color.terrain["pond"] = Color.from_hsv(200.0 / max_h, s, v)
+	color.terrain["plain"] = Color.from_hsv(60.0 / max_h, s, v)
+	color.terrain["forest"] = Color.from_hsv(120.0 / max_h, s, v)
+	color.terrain["mountain"] = Color.from_hsv(280.0 / max_h, s, v)
 
 
 func save(path_: String, data_: String):

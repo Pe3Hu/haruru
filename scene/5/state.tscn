@@ -1,11 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://ba8ehrd2knrux"]
+[gd_scene load_steps=4 format=3 uid="uid://f11mbipwijcm"]
 
-[ext_resource type="Script" path="res://scene/5/cloth.gd" id="1_3hwoe"]
-[ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_md6ss"]
+[ext_resource type="Script" path="res://scene/5/state.gd" id="1_1wgen"]
+[ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_aqajj"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
-[node name="Cloth" type="MarginContainer"]
+[node name="State" type="MarginContainer"]
 custom_minimum_size = Vector2(5, 5)
 anchors_preset = 8
 anchor_left = 0.5
@@ -20,9 +20,10 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-script = ExtResource("1_3hwoe")
+script = ExtResource("1_1wgen")
 
 [node name="BG" type="Panel" parent="."]
+visible = false
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_7paps")
 
@@ -31,19 +32,6 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("1_md6ss")
+theme_override_fonts/font = ExtResource("1_aqajj")
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="Flaps" type="Node2D" parent="."]
-
-[node name="Seams" type="Node2D" parent="."]
-
-[node name="Knobs" type="Node2D" parent="."]
-
-[node name="Patchs" type="Node2D" parent="."]
-
-[node name="States" type="Node2D" parent="."]
-
-[node name="Frontiers" type="Node2D" parent="."]
-visible = false

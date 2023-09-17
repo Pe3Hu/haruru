@@ -9,9 +9,9 @@ var knobs = []
 
 
 func set_attributes(input_: Dictionary) -> void:
-	cloth  = input_.cloth
-	seam  = input_.seam
-	lair  = input_.lair
+	cloth = input_.cloth
+	seam = input_.seam
+	lair = input_.lair
 	index = Global.num.index.frontier
 	Global.num.index.frontier += 1
 	set_vertexs()
@@ -20,7 +20,6 @@ func set_attributes(input_: Dictionary) -> void:
 func set_vertexs() -> void:
 	knobs.append(lair)
 	knobs.append_array(seam.knobs)
-	#knobs.append(lair)
 	var vertexs = []
 	
 	for knob in knobs:
@@ -28,14 +27,9 @@ func set_vertexs() -> void:
 		vertexs.append(vertex)
 	
 	set_polygon(vertexs)
-	
-	
-#	for knob in knobs:
-#		add_point(knob.position)
 
 
 func paint_by_index() -> void:
-	var max_h = 360.0
 	var s = 0.75
 	var v = 1
 	var h = float(index) / Global.num.index.frontier
