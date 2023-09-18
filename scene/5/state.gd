@@ -62,49 +62,6 @@ func split_earldom() -> void:
 		detach_patch(deadend)
 
 
-func split_earldom_old() -> void:
-	var unions = {}
-	
-	for patch in patchs:
-		unions[patch] = []
-		
-		for seam in patch.neighbors:
-			var neighbor = patch.neighbors[seam]
-			
-			if patchs.has(neighbor):
-				unions[patch].append(neighbor)
-	
-	var deadend = unions.keys().front()
-	
-	for patch in unions:
-		if unions[deadend].size() > unions[patch].size():
-			deadend = patch
-	
-	var deadend_neighbor = unions[deadend].pick_random()
-	
-	var leftovers = []
-	
-	detach_patch(deadend)
-	detach_patch(deadend_neighbor)
-	
-	for seam in deadend.neighbors:
-		var neighbor = deadend.neighbors[seam]
-		
-		if deadend_neighbor == neighbor:
-			var input = {}
-			input.type = type
-			input.cloth = cloth
-			input.patch = deadend
-			var state = Global.scene.state.instantiate()
-			cloth.states.add_child(state)
-			state.set_attributes(input)
-
-			state.take_patch(deadend_neighbor)
-			state.limit = state.patchs.size()
-			limit = patchs.size()
-			return
-
-
 func detach_patch(patch_: MarginContainer) -> void:
 	patchs.erase(patch_)
 	patch_.state[type] = null
@@ -112,22 +69,19 @@ func detach_patch(patch_: MarginContainer) -> void:
 
 
 func take_state(state_: MarginContainer) -> void:
-	if state_.senor == null:
-		if !vassals.has(state_):
-			vassals.append(state_)
-			state_.senor = self
-			
-			for patch in state_.patchs:
-				patchs.append(patch)
-				patch.state[type] = self
-			
-			if vassals.size() > limit:
-				limit = vassals.size()
-			
-			if limit == 4:
-				split_senor()
-	else:
-		pass
+	if !vassals.has(state_):
+		vassals.append(state_)
+		state_.senor = self
+		
+		for patch in state_.patchs:
+			patchs.append(patch)
+			patch.state[type] = self
+		
+		if vassals.size() > limit:
+			limit = vassals.size()
+		
+		if limit == 4:
+			split_senor()
 
 
 func split_senor() -> void:
@@ -147,7 +101,7 @@ func split_senor() -> void:
 		else:
 			union.cores.append(vassal)
 	
-	if union.cores.size() == 1:
+	if union.cores.size() == 1 and  union.deadends.size() == 3:
 		var deadend = union.deadends.pick_random()
 		detach_state(deadend)
 
@@ -159,43 +113,10 @@ func detach_state(state_: MarginContainer) -> void:
 	for patch in state_.patchs:
 		patch.state[type] = null
 	
+	if limit == 1:
+		var a = null
+	
 	limit = vassals.size()
-
-
-func split_senor_old() -> void:
-	var unions = {}
-	
-	for vassal in vassals:
-		unions[vassals] = []
-		
-		for neighbor in vassals.neighbors:
-			if vassals.has(neighbor):
-				unions[vassal].append(neighbor)
-	
-	var deadend = unions.keys().front()
-	
-	for vassal in unions:
-		if unions[deadend].size() > unions[vassal].size():
-			deadend = vassal
-	
-	var deadend_neighbor = unions[deadend].pick_random()
-	detach_patch(deadend)
-	detach_patch(deadend_neighbor)
-	
-	for neighbor in deadend.neighbors:
-		if deadend_neighbor == neighbor:
-			var input = {}
-			input.type = type
-			input.cloth = cloth
-			input.state = deadend
-			var state = Global.scene.state.instantiate()
-			cloth.states.add_child(state)
-			state.set_attributes(input)
-
-			state.take_state(deadend_neighbor)
-			state.limit = state.vassals.size()
-			limit = vassals.size()
-			return
 
 
 func fill_to_limit() -> void:
@@ -235,6 +156,9 @@ func encroach_state() -> void:
 	
 	if accessible_vassals.is_empty():
 		limit = vassals.size()
+		
+		if limit == 1:
+			var a = null
 	else:
 		var vassal = accessible_vassals.pick_random()
 		take_state(vassal)
@@ -265,25 +189,3 @@ func hide_patchs() -> void:
 func paint_patchs(color_: Color) -> void:
 	for patch in patchs:
 		patch.paint_flaps(color_)
-
-
-func take_state_old(patch_: MarginContainer) -> void:
-	var index_ = Global.arr.state.find(type) - 1
-	var vassal = Global.arr.state[index_]
-	
-	var state = patch_.state[vassal]
-	
-	if !vassals.has(state):
-		vassals.append(state)
-		state.senor = self
-		
-		print(state.patchs.size())
-		for patch in state.patchs:
-			patch.state[type] = self
-			patchs.append(patch)
-		
-		if vassals.size() > limit:
-			limit = vassals.size()
-		
-		#if limit == 4:
-		#	split_states()

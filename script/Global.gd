@@ -56,8 +56,8 @@ func init_num() -> void:
 	num.size.delta = 12
 	
 	num.size.flap = {}
-	num.size.flap.col = 6
-	num.size.flap.row = 6
+	num.size.flap.col = 8
+	num.size.flap.row = 8
 	num.size.flap.a = 64
 	num.size.flap.R = num.size.flap.a
 	num.size.flap.r = num.size.flap.R * sqrt(3) / 2

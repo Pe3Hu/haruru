@@ -33,10 +33,10 @@ func _input(event) -> void:
 			KEY_D:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.cloth.shift_layer(1)
-					#Global.node.sketch.diplomacy.do_it()
 			KEY_SPACE:
 				if event.is_pressed() && !event.is_echo():
-					Global.node.sketch.cloth.add_states("earldom")
+					#Global.node.sketch.cloth.add_states("earldom")
+					Global.node.sketch.cloth.do_dukedom()
 
 
 #func _process(delta_) -> void:
