@@ -7,13 +7,17 @@ extends MarginContainer
 @onready var patchs = $Patchs
 @onready var frontiers = $Frontiers
 @onready var states = $States
+@onready var earldoms = $States/Earldoms
+@onready var dukedoms = $States/Dukedoms
+@onready var kingdoms = $States/Kingdoms
+@onready var empires = $States/Empires
 
 var square = 0
 var layer = null
 var grid = {}
 var couplers = {}
-var hierarchy = {}
 var selected = {}
+var corners = {}
 
 
 func _ready() -> void:
@@ -32,7 +36,17 @@ func _ready() -> void:
 	
 	
 	selected.patch = 0
+	selected.earldom = 0
+	selected.dukedom = 0
+	
 	#shift_patch_with_neighbors(0)
+	
+	var state = earldoms.get_child(0)#dukedom earldoms
+	if state != null:
+		state.paint_patchs(Color.BLACK)
+
+		for neighbor in state.neighbors:
+			neighbor.paint_patchs(Color.WHITE)
 
 
 
@@ -259,8 +273,14 @@ func set_patch_elements() -> void:
 			if neighbor.element == null && !unpainted.has(neighbor):
 				unpainted.append(neighbor)
 		
-		patch.element = elements.pick_random()
-		patch.set_element_flaps()
+		if elements.is_empty():
+			unpainted = [origin]
+			
+			for patch_ in patchs.get_children():
+				patch_.element = null
+		else:
+			patch.element = elements.pick_random()
+			patch.set_element_flaps()
 	
 	for patch in patchs.get_children():
 		patch.init_polygon()
@@ -423,20 +443,7 @@ func init_flap_abundances() -> void:
 
 
 func init_states() -> void:
-	lay_foundation_of_states()
-	spread_states()
-#
-#	var type = Global.arr.state.front()
-#
-#	for state in hierarchy[type]:
-#		if state.limit > 1:
-#			state.hide_patchs()
-
-
-func lay_foundation_of_states() -> void:
-	for key in Global.arr.state:
-		hierarchy[key] = []
-		Global.num.index.state[key] = 0
+	corners.flap = []
 	
 	for flap in flaps.get_children():
 		var counter = 0
@@ -445,33 +452,83 @@ func lay_foundation_of_states() -> void:
 			counter += seam.flaps.size()
 		
 		if counter == 4:
-			var input = {}
-			input.type = Global.arr.state.front()
-			input.cloth = self
+			corners.flap.append(flap)
+	
+	for key in Global.arr.state:
+		Global.num.index.state[key] = 0
+		
+	var type = Global.arr.state.front()
+	lay_foundation_of_states(type)
+	spread_states(type)
+	set_earldom_neighbors(type)
+	
+	for _i in range(1, Global.arr.state.size() - 1):
+		type = Global.arr.state[_i]
+		lay_foundation_of_states(type)
+		spread_states(type)
+		set_state_neighbors(type)
+		
+	var node = get("earldoms")
+
+	for state in node.get_children():
+		if state.senor == null:
+			print([state.index, state.neighbors.size()])
+
+	for patch in patchs.get_children():
+		if patch.state["dukedom"] == null:
+			print([patch.state["earldom"].index, patch.state["earldom"].senor.index, patch.state["earldom"].neighbors.size()])
+
+
+func lay_foundation_of_states(type_: String) -> void:
+	for flap in corners.flap:
+		var input = {}
+		input.type = type_
+		input.cloth = self
+		
+		if type_ == "earldom":
 			input.patch = flap.patch
-			
-			var state = Global.scene.state.instantiate()
-			states.add_child(state)
-			state.set_attributes(input)
+		else:
+			var index_ = Global.arr.state.find(type_) - 1
+			var vassal = Global.arr.state[index_]
+			input.state = flap.patch.state[vassal]
+		
+		var node = get(type_+"s")
+		var state = Global.scene.state.instantiate()
+		node.add_child(state)
+		state.set_attributes(input)
 
 
-func add_states(type_: String) -> bool:
-	var type = type_
-	var undeveloped_patchs = []
+func spread_states(type_: String) -> void:
+	if type_ == "earldom":
+		var end = add_new_earldom()
+		
+		while !end:
+			end = add_new_earldom()
+	else:
+		var end = add_new_senor(type_)
+		
+		while !end:
+			end = add_new_senor(type_)
+
+
+func add_new_earldom() -> bool:
+	var type = "earldom"
+	var undeveloped = []
+	var node = get(type+"s")
 	
-	for state in hierarchy[type]:
-		var accessible_patchs = state.get_accessible_patchs()
-		undeveloped_patchs.append_array(accessible_patchs)
+	for state in node.get_children():
+		var accessible = state.get_accessible_patchs()
+		undeveloped.append_array(accessible)
 	
-	if !undeveloped_patchs.is_empty():
+	if !undeveloped.is_empty():
 		var input = {}
 		input.type = type
 		input.cloth = self
-		input.patch = undeveloped_patchs.pick_random()
-		
 		var neighbors = {}
-		neighbors.occupied = []
 		neighbors.accessible = []
+		neighbors.big = []
+		neighbors.small = []
+		input.patch = undeveloped.pick_random()
 		
 		for seam in input.patch.neighbors:
 			var neighbor = input.patch.neighbors[seam]
@@ -479,81 +536,252 @@ func add_states(type_: String) -> bool:
 			if neighbor.state[type] == null:
 				neighbors.accessible.append(neighbor)
 			else:
-				neighbors.occupied.append(neighbor)
+				match neighbor.state[type].limit:
+					2:
+						neighbors.small.append(neighbor)
+					3:
+						neighbors.big.append(neighbor)
 		
 		if neighbors.accessible.is_empty():
-			var occupied_patch = neighbors.occupied.pick_random()
-			#occupied_patch.state[type].hide_patchs()
-			occupied_patch.state[type].take_patch(input.patch)
-			undeveloped_patchs.erase(input.patch)
-			#input.patch.hide_flaps()
+			var occupied_patch = null
+			
+			if neighbors.small.is_empty():
+				if !neighbors.big.is_empty():
+					occupied_patch = neighbors.big.pick_random()
+				else:
+					pass
+			else:
+				occupied_patch = neighbors.small.pick_random()
+			
+			if occupied_patch != null:
+				occupied_patch.state[type].take_patch(input.patch)
 		else:
 			var state = Global.scene.state.instantiate()
-			states.add_child(state)
+			node.add_child(state)
 			state.set_attributes(input)
-			
-			for patch in state.patchs:
-				undeveloped_patchs.erase(patch)
-			
-			var accessible_patchs = state.get_accessible_patchs()
-			undeveloped_patchs.append_array(accessible_patchs)
-		
-		shift_layer(0)
 		return false
 	
 	return true
 
 
-func spread_states() -> void:
-	var type = Global.arr.state.front()
-	var end = add_states(type)
+func add_new_senor(type_: String) -> bool:
+	var node = get(type_+"s")
+	var undeveloped = []
 	
-	while !end:
-		end = add_states(type)
-
-
-func spread_states_old() -> void:
-	var type = Global.arr.state.front()
-	var undeveloped_patchs = []
+#	for state in node.get_children():
+#		var accessible_vassals = state.get_accessible_vassals()
+#		undeveloped.append_array(accessible_vassals)
 	
-	for state in hierarchy[type]:
-		var accessible_patchs = state.get_accessible_patchs()
-		undeveloped_patchs.append_array(accessible_patchs)
-		
-	while !undeveloped_patchs.is_empty():
+	var index_ = Global.arr.state.find(type_) - 1
+	var vassal = Global.arr.state[index_]
+	var vassal_node = get(vassal+"s")
+	
+	for state in vassal_node.get_children():
+		if state.senor == null:
+			undeveloped.append(state)
+	
+	print([type_, undeveloped.size()])
+	if !undeveloped.is_empty():
 		var input = {}
-		input.type = type
+		input.type = type_
 		input.cloth = self
-		input.patch = undeveloped_patchs.pick_random()
-		
 		var neighbors = {}
-		neighbors.occupied = []
+		neighbors.total = []
 		neighbors.accessible = []
+		neighbors.big = []
+		neighbors.small = []
 		
-		for seam in input.patch.neighbors:
-			var neighbor = input.patch.neighbors[seam]
-			
-			if neighbor.state[type] == null:
+		input.state = undeveloped.pick_random()
+		
+		for neighbor in input.state.neighbors:
+			if neighbor.senor == null:
 				neighbors.accessible.append(neighbor)
 			else:
-				neighbors.occupied.append(neighbor)
+				match neighbor.limit:
+					2:
+						neighbors.small.append(neighbor)
+					3:
+						neighbors.big.append(neighbor)
 		
 		if neighbors.accessible.is_empty():
-			var occupied_patch = neighbors.occupied.pick_random()
-			#input.patch.hide_flaps()
-			#occupied_patch.state[type].hide_patchs()
-			occupied_patch.state[type].take_patch(input.patch)
-			undeveloped_patchs.erase(input.patch)
+			var occupied_state = null
+			
+			if neighbors.small.is_empty():
+				occupied_state = neighbors.big.pick_random()
+			else:
+				occupied_state = neighbors.small.pick_random()
+			
+			if occupied_state != null:
+				occupied_state.take_state(input.state)
 		else:
 			var state = Global.scene.state.instantiate()
-			states.add_child(state)
+			node.add_child(state)
 			state.set_attributes(input)
-			
-			for patch in state.patchs:
-				undeveloped_patchs.erase(patch)
-			
-			var accessible_patchs = state.get_accessible_patchs()
-			undeveloped_patchs.append_array(accessible_patchs)
+		return false
+	
+	return true
+
+#
+#func add_new_state(type_: String) -> bool:
+#	var undeveloped = []
+#
+#	if type_ == "earldom":
+#		for state in hierarchy[type_]:
+#			var accessible_patchs = state.get_accessible_patchs()
+#			undeveloped.append_array(accessible_patchs)
+#	else:
+#		for state in hierarchy[type_]:
+#			var accessible_vassals = state.get_accessible_vassals()
+#			undeveloped.append_array(accessible_vassals)
+#
+#	if !undeveloped.is_empty():
+#		var input = {}
+#		input.type = type_
+#		input.cloth = self
+#		var neighbors = {}
+#		neighbors.total = []
+#		neighbors.accessible = []
+#		neighbors.big = []
+#		neighbors.small = []
+#
+#		if type_ == "earldom":
+#			input.patch = undeveloped.pick_random()
+#
+#			for seam in input.patch.neighbors:
+#				var neighbor = input.patch.neighbors[seam]
+#				neighbors.total.append(neighbor)
+#		else:
+#			input.state = undeveloped.pick_random()
+#
+#			for seam in input.state.neighbors:
+#				var neighbor = input.state.neighbors
+#				neighbors.total.append(neighbor)
+#
+#		for neighbor in neighbors.total:
+#			if neighbor.state[type_] == null:
+#				neighbors.accessible.append(neighbor)
+#			else:
+#				match neighbor.state[type_].limit:
+#					2:
+#						neighbors.small.append(neighbor)
+#					3:
+#						neighbors.big.append(neighbor)
+#
+#		if neighbors.accessible.is_empty():
+#			var occupied_patch = null
+#
+#			if neighbors.small.is_empty():
+#				occupied_patch = neighbors.big.pick_random()
+#			else:
+#				occupied_patch = neighbors.small.pick_random()
+#
+#			if type_ == "earldom":
+#				occupied_patch.state[type_].take_patch(input.patch)
+#			else:
+#				occupied_patch.state[type_].take_state(input.state)
+#		else:
+#			var state = Global.scene.state.instantiate()
+#			states.add_child(state)
+#			state.set_attributes(input)
+#		return false
+#
+#	return true
+
+#
+#func add_states(type_: String) -> bool:
+#	var type = type_
+#	var undeveloped_patchs = []
+#
+#	for state in hierarchy[type]:
+#		var accessible_patchs = state.get_accessible_patchs()
+#		undeveloped_patchs.append_array(accessible_patchs)
+#
+#	if !undeveloped_patchs.is_empty():
+#		var input = {}
+#		input.type = type
+#		input.cloth = self
+#		input.patch = undeveloped_patchs.pick_random()
+#
+#		var neighbors = {}
+#		neighbors.accessible = []
+#		neighbors.big = []
+#		neighbors.small = []
+#
+#		for seam in input.patch.neighbors:
+#			var neighbor = input.patch.neighbors[seam]
+#
+#			if neighbor.state[type] == null:
+#				neighbors.accessible.append(neighbor)
+#			else:
+#				match neighbor.state[type].limit:
+#					2:
+#						neighbors.small.append(neighbor)
+#					3:
+#						neighbors.big.append(neighbor)
+#
+#		if neighbors.accessible.is_empty():
+#			var occupied_patch = null
+#
+#			if neighbors.small.is_empty():
+#				occupied_patch = neighbors.big.pick_random()
+#			else:
+#				occupied_patch = neighbors.small.pick_random()
+#
+#			if type == "earldom":
+#				occupied_patch.state[type].take_patch(input.patch)
+#			else:
+#				occupied_patch.state[type].take_state(input.patch)
+#
+#			undeveloped_patchs.erase(input.patch)
+#		else:
+#			var state = Global.scene.state.instantiate()
+#			states.add_child(state)
+#			state.set_attributes(input)
+#
+#			for patch in state.patchs:
+#				undeveloped_patchs.erase(patch)
+#
+#			var accessible_patchs = state.get_accessible_patchs()
+#			undeveloped_patchs.append_array(accessible_patchs)
+#
+#		shift_layer(0)
+#		return false
+#
+#	return true
+
+
+func set_earldom_neighbors(type_: String) -> void:
+	var node = get(type_+"s")
+	
+	for state in node.get_children():
+		for patch in state.patchs:
+			for seam in patch.neighbors:
+				var neighbor = patch.neighbors[seam]
+				var neighbor_state = neighbor.state[type_]
+				
+				if !state.neighbors.has(neighbor_state) and neighbor_state != state:
+					state.neighbors.append(neighbor_state)
+					neighbor_state.neighbors.append(state)
+
+
+func set_state_neighbors(type_: String) -> void:
+	var node = get(type_+"s")
+	
+#	for patch in patchs.get_children():
+#		if patch.state[type_] == null:
+#			var index_ = Global.arr.state.find(type_) - 1
+#			var vassal = Global.arr.state[index_]
+#			var state = patch.state[vassal]
+#			patch.state[type_] = patch.state[vassal].senor
+#			state.senor.take_state(state)
+	
+	for state in node.get_children():
+		for vassal in state.vassals:
+			for neighbor in vassal.neighbors:
+				if !state.neighbors.has(neighbor.senor) and neighbor.senor != state and neighbor.senor.type == state.type:
+					state.neighbors.append(neighbor.senor)
+					neighbor.senor.neighbors.append(state)
+		
 
 
 func init_settlements() -> void:
@@ -561,7 +789,7 @@ func init_settlements() -> void:
 
 
 func shift_layer(shift_: int) -> void:
-	var index = 5 
+	var index = 6 
 	
 	if layer != null:
 		index = Global.arr.layer.cloth.find(layer)
@@ -584,20 +812,22 @@ func shift_layer(shift_: int) -> void:
 			"abundance":
 				flap.paint_based_on_abundance()
 			"earldom":
-				flap.paint_based_on_earldom_index()
-			"earldom 2":
-				flap.paint_based_on_earldom_limit_2()
-			"earldom 3":
-				flap.paint_based_on_earldom_limit_3()
+				flap.paint_based_on_state_type_index(layer)
+			"dukedom":
+				flap.paint_based_on_state_type_index(layer)
+			"kingdom":
+				flap.paint_based_on_state_type_index(layer)
+			"empire":
+				flap.paint_based_on_state_type_index(layer)
 
 
 func shift_patch_with_neighbors(shift_) -> void:
 	var patch = patchs.get_child(selected.patch)
-	patch.hide_flaps()
+	patch.paint_flaps(Color.GRAY)
 	
 	for seam in patch.neighbors:
 		var neighbor = patch.neighbors[seam]
-		neighbor.hide_flaps()
+		neighbor.paint_flaps(Color.GRAY)
 	
 	selected.patch = (selected.patch + shift_ + patchs.get_child_count()) % patchs.get_child_count()
 	patch = patchs.get_child(selected.patch)
@@ -606,4 +836,34 @@ func shift_patch_with_neighbors(shift_) -> void:
 	for seam in patch.neighbors:
 		var neighbor = patch.neighbors[seam]
 		neighbor.paint_flaps(Color.WHITE)
+
+
+func shift_earldom_with_neighbors(shift_) -> void:
+	var earldom = earldoms.get_child(selected.earldom)
+	earldom.paint_patchs(Color.GRAY)
+	
+	for neighbor in earldom.neighbors:
+		neighbor.paint_patchs(Color.GRAY)
+	
+	selected.earldom = (selected.earldom + shift_ + earldoms.get_child_count()) % earldoms.get_child_count()
+	earldom = earldoms.get_child(selected.earldom)
+	earldom.paint_patchs(Color.BLACK)
+
+	for neighbor in earldom.neighbors:
+		neighbor.paint_patchs(Color.WHITE)
+
+
+func shift_dukedom_with_neighbors(shift_) -> void:
+	var dukedom = dukedoms.get_child(selected.dukedom)
+	dukedom.paint_patchs(Color.GRAY)
+	
+	for neighbor in dukedom.neighbors:
+		neighbor.paint_patchs(Color.GRAY)
+	
+	selected.dukedom = (selected.dukedom + shift_ + dukedoms.get_child_count()) % dukedoms.get_child_count()
+	dukedom = dukedoms.get_child(selected.dukedom)
+	dukedom.paint_patchs(Color.BLACK)
+
+	for neighbor in dukedom.neighbors:
+		neighbor.paint_patchs(Color.WHITE)
 

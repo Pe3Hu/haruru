@@ -85,9 +85,31 @@ func paint_based_on_earldom_index() -> void:
 		paint_gray()
 
 
+func paint_based_on_dukedom_index() -> void:
+	if patch.state["dukedom"] != null:
+		var h = float(patch.state["dukedom"].index) / Global.num.index.state["dukedom"]
+		var s = 0.75
+		var v = 1
+		var color_ = Color.from_hsv(h,s,v)
+		set_color(color_)
+	else:
+		paint_gray()
+
+
+func paint_based_on_state_type_index(type_: String) -> void:
+	if patch.state[type_] != null:
+		var h = float(patch.state[type_].index) / Global.num.index.state[type_]
+		var s = 0.75
+		var v = 1
+		var color_ = Color.from_hsv(h,s,v)
+		set_color(color_)
+	else:
+		paint_gray()
+
+
 func paint_based_on_earldom_limit_2() -> void:
 	if patch.state["earldom"] != null:
-		if patch.state["earldom"].limit == 2:
+		if patch.state["earldom"].patchs.size() == 2:
 			var h = float(patch.state["earldom"].index) / Global.num.index.state["earldom"]
 			var s = 0.75
 			var v = 1
@@ -99,12 +121,21 @@ func paint_based_on_earldom_limit_2() -> void:
 
 func paint_based_on_earldom_limit_3() -> void:
 	if patch.state["earldom"] != null:
-		if patch.state["earldom"].limit == 3:
+		if patch.state["earldom"].patchs.size() == 3:
 			var h = float(patch.state["earldom"].index) / Global.num.index.state["earldom"]
 			var s = 0.75
 			var v = 1
 			var color_ = Color.from_hsv(h,s,v)
 			set_color(color_)
+			
+			var array = []
+			
+			for patch_ in patch.state["earldom"].patchs:
+				if !array.has(patch_):
+					array.append(patch_)
+			
+			if array.size() < 3:
+				print(array)
 		else:
 			paint_gray()
 

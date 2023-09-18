@@ -13,13 +13,25 @@ func _ready() -> void:
 func _input(event) -> void:
 	if event is InputEventKey:
 		match event.keycode:
+			KEY_Q:
+				if event.is_pressed() && !event.is_echo():
+					#shift_earldom_with_neighbors
+					#shift_dukedom_with_neighbors
+					Global.node.sketch.cloth.shift_dukedom_with_neighbors(-1)
+			KEY_E:
+				if event.is_pressed() && !event.is_echo():
+					Global.node.sketch.cloth.shift_dukedom_with_neighbors(1)
+			KEY_Z:
+				if event.is_pressed() && !event.is_echo():
+					Global.node.sketch.cloth.shift_patch_with_neighbors(-1)
+			KEY_C:
+				if event.is_pressed() && !event.is_echo():
+					Global.node.sketch.cloth.shift_patch_with_neighbors(1)
 			KEY_A:
 				if event.is_pressed() && !event.is_echo():
-					#Global.node.sketch.cloth.shift_patch_with_neighbors(-1)
 					Global.node.sketch.cloth.shift_layer(-1)
 			KEY_D:
 				if event.is_pressed() && !event.is_echo():
-					#Global.node.sketch.cloth.shift_patch_with_neighbors(1)
 					Global.node.sketch.cloth.shift_layer(1)
 					#Global.node.sketch.diplomacy.do_it()
 			KEY_SPACE:

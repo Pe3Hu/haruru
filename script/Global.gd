@@ -33,7 +33,7 @@ func init_arr() -> void:
 	arr.state = ["earldom", "dukedom", "kingdom", "empire"]
 	
 	arr.layer = {}
-	arr.layer.cloth = ["flap", "patch", "terrain", "abundance", "element", "earldom", "earldom 2", "earldom 3"]
+	arr.layer.cloth = ["flap", "patch", "terrain", "abundance", "element", "earldom", "dukedom", "kingdom", "empire"]
 	
 	arr.phase = [
 		"select dices",
