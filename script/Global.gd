@@ -29,6 +29,7 @@ func init_arr() -> void:
 	arr.limit = [2, 3]
 	arr.color = ["Red","Green","Blue","Yellow"]
 	arr.element = ["aqua","wind","fire","earth"]
+	arr.terrain = ["pond", "plain", "forest", "mountain"]
 	
 	arr.state = ["earldom", "dukedom", "kingdom", "empire"]
 	
@@ -135,6 +136,7 @@ func init_polygon() -> void:
 				
 				var vertex = Vector2(1,0).rotated(angle)
 				dict.polygon[polygons_][order_][_i] = vertex
+
 
 func init_business() -> void:
 	dict.business = {}
@@ -332,6 +334,7 @@ func init_node() -> void:
 
 func init_scene() -> void:
 	scene.sketch = load("res://scene/0/sketch.tscn")
+	scene.icon = load("res://scene/0/icon.tscn")
 	
 	scene.diplomacy = load("res://scene/1/diplomacy.tscn")
 	scene.tribe = load("res://scene/1/tribe.tscn")
@@ -343,7 +346,6 @@ func init_scene() -> void:
 	
 	scene.dice = load("res://scene/3/dice.tscn")
 	scene.facet = load("res://scene/3/facet.tscn")
-	scene.icon = load("res://scene/3/icon.tscn")
 	
 	scene.encounter = load("res://scene/4/encounter.tscn")
 	scene.squad = load("res://scene/4/squad.tscn")
@@ -356,6 +358,7 @@ func init_scene() -> void:
 	scene.frontier = load("res://scene/5/frontier.tscn")
 	scene.state = load("res://scene/5/state.tscn")
 	
+	scene.accountant = load("res://scene/6/accountant.tscn")
 	
 	pass
 
@@ -367,6 +370,12 @@ func init_vec():
 	vec.size.resource = Vector2(32, 32)#Vector2(32, 32) Vector2(64, 64)
 	vec.size.servant = Vector2(32, 32)
 	vec.size.outcome = Vector2(32, 32)
+	vec.size.terrain = Vector2(32, 32)
+	vec.size.economy = Vector2(32, 32)
+	
+	vec.size.number = Vector2(32, 32)
+	
+	
 	vec.size.facet = vec.size.outcome#vec.size.letter + Vector2(vec.size.letter.x, 0)
 	
 	init_window_size()

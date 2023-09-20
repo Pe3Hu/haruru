@@ -1,5 +1,6 @@
 extends MarginContainer
 
+
 @onready var label = $Label
 @onready var businesses = $Businesses
 

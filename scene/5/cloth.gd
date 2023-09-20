@@ -35,7 +35,7 @@ func _ready() -> void:
 	init_states()
 	init_state_hubs()
 	shift_layer(0)
-	find_furthest_earldom_in_biggest_empire()
+	#find_furthest_earldom_in_biggest_empire()
 	
 	
 	selected.patch = 0
@@ -51,6 +51,7 @@ func _ready() -> void:
 #
 #		for neighbor in state.neighbors:
 #			neighbor.paint_patchs(Color.WHITE)
+
 
 func reset() -> void:
 	square = 0
@@ -712,7 +713,6 @@ func init_state_hubs() -> void:
 
 
 func find_furthest_earldom_in_biggest_empire() -> void:
-	print(1)
 	var datas = []
 	
 	for empire in empires.get_children():
@@ -771,13 +771,12 @@ func find_furthest_patch() -> void:
 	furthest.paint_flaps(Color.DIM_GRAY)
 
 
-
 func init_settlements() -> void:
 	pass
 
 
 func shift_layer(shift_: int) -> void:
-	var index = 8 
+	var index = 2 
 	
 	if layer != null:
 		index = Global.arr.layer.cloth.find(layer)
@@ -816,7 +815,10 @@ func shift_layer(shift_: int) -> void:
 		if Global.arr.state.has(layer):
 			seam.visible = seam.boundary[layer]
 		else:
-			seam.visible = seam.boundary.patch
+			if layer == "terrain":
+				seam.visible = seam.boundary["empire"]
+			else:
+				seam.visible = seam.boundary.patch
 
 
 func shift_patch_with_neighbors(shift_) -> void:
@@ -834,36 +836,6 @@ func shift_patch_with_neighbors(shift_) -> void:
 	for seam in patch.neighbors:
 		var neighbor = patch.neighbors[seam]
 		neighbor.paint_flaps(Color.WHITE)
-
-
-func shift_earldom_with_neighbors(shift_) -> void:
-	var earldom = earldoms.get_child(selected.earldom)
-	earldom.paint_patchs(Color.GRAY)
-	
-	for neighbor in earldom.neighbors:
-		neighbor.paint_patchs(Color.GRAY)
-	
-	selected.earldom = (selected.earldom + shift_ + earldoms.get_child_count()) % earldoms.get_child_count()
-	earldom = earldoms.get_child(selected.earldom)
-	earldom.paint_patchs(Color.BLACK)
-
-	for neighbor in earldom.neighbors:
-		neighbor.paint_patchs(Color.WHITE)
-
-
-func shift_dukedom_with_neighbors(shift_) -> void:
-	var dukedom = dukedoms.get_child(selected.dukedom)
-	dukedom.paint_patchs(Color.GRAY)
-	
-	for neighbor in dukedom.neighbors:
-		neighbor.paint_patchs(Color.GRAY)
-	
-	selected.dukedom = (selected.dukedom + shift_ + dukedoms.get_child_count()) % dukedoms.get_child_count()
-	dukedom = dukedoms.get_child(selected.dukedom)
-	dukedom.paint_patchs(Color.BLACK)
-
-	for neighbor in dukedom.neighbors:
-		neighbor.paint_patchs(Color.WHITE)
 
 
 func shift_state_with_neighbors(type_: String, shift_: int) -> void:

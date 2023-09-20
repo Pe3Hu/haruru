@@ -3,11 +3,14 @@ extends MarginContainer
 
 @onready var tribes = $Tribes
 
+var sketch = null
 var time = null
+var empires = []
 
 
 func _ready() -> void:
 	init_tribes()
+	#fill_empires()
 
 
 func init_tribes() -> void:
@@ -94,4 +97,10 @@ func get_resource_analytics() -> Dictionary:
 	
 	return analytics
 
+
+func fill_empires() -> void:
+	var sketch = get_parent().get_parent()
+	
+	for empire in sketch.cloth.empires:
+		empires.append(empire)
 

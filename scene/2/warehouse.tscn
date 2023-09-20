@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scene/2/warehouse.gd" id="1_5ivje"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_d4r2k"]
-[ext_resource type="PackedScene" uid="uid://rgtjtuf31pht" path="res://scene/3/icon.tscn" id="3_3hg3y"]
+[ext_resource type="PackedScene" uid="uid://rgtjtuf31pht" path="res://scene/0/icon.tscn" id="3_3hg3y"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 

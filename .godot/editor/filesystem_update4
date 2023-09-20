@@ -15,3 +15,14 @@ res://scene/0/game.gd
 res://scene/5/seam.gd
 res://scene/5/knob.gd
 res://scene/5/flap.gd
+res://scene/6/economy.tscn
+res://scene/6/accountant.tscn
+res://scene/6/economy.gd
+res://scene/1/diplomacy.tscn
+res://scene/1/diplomacy.gd
+res://scene/6/accountant.gd
+res://scene/2/warehouse.gd
+res://scene/2/warehouse.tscn
+res://scene/0/sketch.gd
+res://scene/0/icon.tscn
+res://scene/0/icon.gd
