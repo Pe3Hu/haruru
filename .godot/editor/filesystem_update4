@@ -1,5 +1,4 @@
 res://scene/0/sketch.tscn
-res://scene/5/cloth.gd
 res://scene/1/tribe.tscn
 res://scene/5/patch.tscn
 res://scene/5/cloth.tscn
@@ -8,7 +7,11 @@ res://scene/5/flap.tscn
 res://scene/5/seam.tscn
 res://scene/5/frontier.tscn
 res://scene/5/state.tscn
-res://scene/5/flap.gd
-res://scene/5/state.gd
+res://scene/5/patch.gd
+res://scene/5/cloth.gd
 res://script/Global.gd
+res://scene/5/state.gd
 res://scene/0/game.gd
+res://scene/5/seam.gd
+res://scene/5/knob.gd
+res://scene/5/flap.gd

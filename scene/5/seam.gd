@@ -4,7 +4,7 @@ extends Line2D
 var cloth = null
 var knobs = []
 var flaps = []
-var boundary = true
+var boundary = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -15,6 +15,11 @@ func set_attributes(input_: Dictionary) -> void:
 	
 	for knob in knobs:
 		add_point(knob.position)
+	
+	boundary.patch = false
+	
+	for state in Global.arr.state:
+		boundary[state] = true
 
 
 func add_flap(flap_: Polygon2D) -> void:
@@ -63,7 +68,11 @@ func cut():
 
 func set_boundary() -> void:
 	if flaps.size() > 1:
-		boundary = flaps.front().patch != flaps.back().patch
+		boundary.patch = flaps.front().patch != flaps.back().patch
 	
-	if !boundary:
-		visible = false
+		for state in Global.arr.state:
+			boundary[state] = flaps.front().patch.state[state] != flaps.back().patch.state[state]
+			
+		
+		if !boundary.patch:
+			visible = false

@@ -18,9 +18,11 @@ var grid = {}
 var couplers = {}
 var selected = {}
 var corners = {}
+var liberty = null
 
 
 func _ready() -> void:
+	liberty = Node2D.new()
 	init_knobs()
 	init_flaps()
 	add_new_seams()
@@ -28,16 +30,18 @@ func _ready() -> void:
 	calc_flap_squares()
 	init_lairs()
 	init_frontiers()
-	update_seam_boundaries()
 	init_patch_terrains()
 	init_flap_abundances()
 	init_states()
+	init_state_hubs()
 	shift_layer(0)
+	find_furthest_earldom_in_biggest_empire()
 	
 	
 	selected.patch = 0
-	selected.earldom = 0
-	selected.dukedom = 0
+	
+	for state in Global.arr.state:
+		selected[state] = 0
 	
 	#shift_patch_with_neighbors(0)
 	
@@ -48,11 +52,32 @@ func _ready() -> void:
 #		for neighbor in state.neighbors:
 #			neighbor.paint_patchs(Color.WHITE)
 
+func reset() -> void:
+	square = 0
+	layer = null
+	grid = {}
+	couplers = {}
+	selected = {}
+	corners = {}
+	
+	for node in get_children():
+		if node.get_class() == "Node2D":
+			if node.name != "States":
+				for child in node.get_children():
+					node.remove_child(child)
+					child.queue_free()
+			else:
+				for parent in node.get_children():
+					for child in parent.get_children():
+						node.remove_child(child)
+						child.queue_free()
 
 
 func init_knobs() -> void:
 	custom_minimum_size = Vector2(Global.num.size.flap.row, Global.num.size.flap.col) * Global.num.size.flap.a
 	grid.knob = {}
+	grid.lair = {}
+	grid.hub = {}
 	
 	for _i in Global.num.size.flap.row + 1:
 		for _j in Global.num.size.flap.col + 1:
@@ -253,7 +278,14 @@ func glue_flaps() -> void:
 	
 	for patch in patchs.get_children():
 		patch.connect_flaps()
-
+	
+	for seam in seams.get_children():
+		for flap in seam.flaps:
+			if flap.patch == null:
+				seams.remove_child(seam)
+				seam.queue_free()
+				break
+	
 	set_patch_elements()
 
 
@@ -274,8 +306,11 @@ func set_patch_elements() -> void:
 				unpainted.append(neighbor)
 		
 		if elements.is_empty():
+			#reset()
+			#_ready()
+			#return
 			unpainted = [origin]
-			
+
 			for patch_ in patchs.get_children():
 				patch_.element = null
 		else:
@@ -343,11 +378,6 @@ func init_frontiers() -> void:
 	
 	for frontier in frontiers.get_children():
 		frontier.paint_by_index()
-
-
-func update_seam_boundaries() -> void:
-	for seam in seams.get_children():
-		seam.set_boundary()
 
 
 func init_patch_terrains() -> void:
@@ -467,20 +497,10 @@ func init_states() -> void:
 		lay_foundation_of_states(type)
 		spread_states(type)
 		set_state_neighbors(type)
-		
-#	var node = get("earldoms")
-#
-#	var indexs = []
-#	for state in node.get_children():
-#		if state.senor == null:
-#			print([state.index, state.neighbors.size()])
-#
-#	for patch in patchs.get_children():
-#		if patch.state["dukedom"] == null and !indexs.has(patch.state["earldom"].senor.index):
-#			var senor = patch.state["earldom"].senor
-#			indexs.append(senor.index)
-#			#print([patch.state["earldom"].index, patch.state["earldom"].senor.index, patch.state["earldom"].neighbors.size()])
-#	print(indexs.size())
+	
+	absorb_smaller_empires()
+	update_seam_boundaries()
+
 
 func do_dukedom():
 	var type = Global.arr.state[1]
@@ -528,10 +548,6 @@ func add_new_earldom() -> bool:
 	for state in node.get_children():
 		var accessible = state.get_accessible_patchs()
 		undeveloped.append_array(accessible)
-
-#	for patch in patchs.get_children():
-#		if patch.state[type] == null:
-#			undeveloped.append(patch)
 	
 	if !undeveloped.is_empty():
 		var input = {}
@@ -562,7 +578,7 @@ func add_new_earldom() -> bool:
 				if !neighbors.big.is_empty():
 					occupied_patch = neighbors.big.pick_random()
 				else:
-					pass
+					input.patch.state[type] = liberty
 			else:
 				occupied_patch = neighbors.small.pick_random()
 			
@@ -585,14 +601,6 @@ func add_new_senor(type_: String) -> bool:
 		var accessible_vassals = state.get_accessible_vassals()
 		undeveloped.append_array(accessible_vassals)
 	
-#	var index_ = Global.arr.state.find(type_) - 1
-#	var vassal = Global.arr.state[index_]
-#	var vassal_node = get(vassal+"s")
-#
-#	for state in vassal_node.get_children():
-#		if state.senor == null and state.type == vassal:
-#			undeveloped.append(state)
-	
 	if !undeveloped.is_empty():
 		var input = {}
 		input.type = type_
@@ -614,7 +622,7 @@ func add_new_senor(type_: String) -> bool:
 					3:
 						neighbors.big.append(neighbor.senor)
 		
-		if neighbors.accessible.is_empty():
+		if neighbors.accessible.is_empty():# and (type_ != "empire" or empires.get_child_count() < Global.num.size.empire.limit):
 			var occupied_state = null
 			
 			if neighbors.small.is_empty():
@@ -626,9 +634,11 @@ func add_new_senor(type_: String) -> bool:
 			if occupied_state != null:
 				occupied_state.take_state(input.state)
 			else:
-				var a = null
-				pass
+				input.state.senor = liberty
 		else:
+#			if type_ == "empire" and empires.get_child_count() == Global.num.size.empire.limit:
+#				expand_empires()
+#			else:
 			var state = Global.scene.state.instantiate()
 			node.add_child(state)
 			state.set_attributes(input)
@@ -647,7 +657,7 @@ func set_earldom_neighbors(type_: String) -> void:
 				var neighbor = patch.neighbors[seam]
 				var neighbor_state = neighbor.state[type_]
 				
-				if !state.neighbors.has(neighbor_state) and neighbor_state != state:
+				if !state.neighbors.has(neighbor_state) and neighbor_state != state and neighbor_state != liberty:
 					state.neighbors.append(neighbor_state)
 					neighbor_state.neighbors.append(state)
 
@@ -655,20 +665,111 @@ func set_earldom_neighbors(type_: String) -> void:
 func set_state_neighbors(type_: String) -> void:
 	var node = get(type_+"s")
 	
-#	for patch in patchs.get_children():
-#		if patch.state[type_] == null:
-#			var index_ = Global.arr.state.find(type_) - 1
-#			var vassal = Global.arr.state[index_]
-#			var state = patch.state[vassal]
-#			patch.state[type_] = patch.state[vassal].senor
-#			state.senor.take_state(state)
-	
 	for state in node.get_children():
 		for vassal in state.vassals:
 			for neighbor in vassal.neighbors:
-				if !state.neighbors.has(neighbor.senor) and neighbor.senor != state and neighbor.senor.type == state.type:
-					state.neighbors.append(neighbor.senor)
+				if neighbor.senor != null and neighbor.senor != liberty:
+					if !state.neighbors.has(neighbor.senor) and neighbor.senor != state and neighbor.senor.type == state.type:
+						state.neighbors.append(neighbor.senor)
+
+
+func expand_empires() -> void:
+	for empire in empires.get_children():
+		empire.limit += 1
+		empire.fill_to_limit()
+		empire.limit = empire.vassals.size()
+
+
+func absorb_smaller_empires() -> void:
+	while empires.get_child_count() > Global.num.size.empire.limit:
+		var datas = []
 		
+		for empire in empires.get_children():
+			var data = {}
+			data.empire = empire
+			data.patchs = empire.patchs.size()
+			datas.append(data)
+		
+		datas.sort_custom(func(a, b): return a.patchs < b.patchs)
+		
+		var smaller_empire = datas.front().empire
+		
+		for data in datas:
+			if smaller_empire.neighbors.has(data.empire):
+				data.empire.absorb_neighbor_state(smaller_empire)
+				break
+
+
+func update_seam_boundaries() -> void:
+	for seam in seams.get_children():
+		seam.set_boundary()
+
+
+func init_state_hubs() -> void:
+	for node in states.get_children():
+		for state in node.get_children():
+			state.init_hub()
+
+
+func find_furthest_earldom_in_biggest_empire() -> void:
+	print(1)
+	var datas = []
+	
+	for empire in empires.get_children():
+		var data = {}
+		data.empire = empire
+		data.datas = []
+		data.earldoms = []
+		
+		for patch in empire.patchs:
+			if !data.earldoms.has(patch.state["earldom"]):
+				data.earldoms.append(patch.state["earldom"])
+		
+		for earldom in data.earldoms:
+			var data_ = {}
+			data_.earldom = earldom
+			data_.d = earldom.hub.position.distance_to(empire.hub.position)
+			data.datas.append(data_)
+		
+		data.datas.sort_custom(func(a, b): return a.d > b.d)
+		data.furthest = data.datas.front().d
+		data.size = data.earldoms.size()
+		datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.size > b.size)
+	
+	var furthest = {}
+	furthest.earldom = datas.front().datas.front().earldom
+	furthest.donor = datas.front().empire
+	furthest.recipient = furthest.earldom.find_nearest_empire()
+	#datas.front().empire.repossess_earldom(furthest)
+	furthest.donor.repossess_earldom(furthest.recipient, furthest.earldom)
+	furthest.earldom.paint_patchs(Color.DIM_GRAY)
+	shift_layer(0)
+
+
+func find_furthest_patch() -> void:
+	var datas = []
+	
+	for empire in empires.get_children():
+		var data = {}
+		data.datas = []
+		
+		for patch in empire.patchs:
+			var data_ = {}
+			data_.patch = patch
+			data_.d = patch.lair.position.distance_to(empire.hub.position)
+			data.datas.append(data_)
+		
+		data.datas.sort_custom(func(a, b): return a.d > b.d)
+		data.furthest = data.datas.front().d
+		datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.furthest > b.furthest)
+	
+	var furthest = datas.front().datas.front().patch
+	furthest.paint_flaps(Color.DIM_GRAY)
+
 
 
 func init_settlements() -> void:
@@ -684,9 +785,13 @@ func shift_layer(shift_: int) -> void:
 	
 	layer = Global.arr.layer.cloth[index]
 	
+	for knob in knobs.get_children():
+		if knob.type == "hub":
+			knob.visible = false
+		else:
+			knob.visible = false
+	
 	for flap in flaps.get_children():
-		#flap.visible = false
-		
 		match layer:
 			"flap":
 				flap.paint_based_on_index()
@@ -706,6 +811,12 @@ func shift_layer(shift_: int) -> void:
 				flap.paint_based_on_state_type_index(layer)
 			"empire":
 				flap.paint_based_on_state_type_index(layer)
+	
+	for seam in seams.get_children():
+		if Global.arr.state.has(layer):
+			seam.visible = seam.boundary[layer]
+		else:
+			seam.visible = seam.boundary.patch
 
 
 func shift_patch_with_neighbors(shift_) -> void:
@@ -752,5 +863,21 @@ func shift_dukedom_with_neighbors(shift_) -> void:
 	dukedom.paint_patchs(Color.BLACK)
 
 	for neighbor in dukedom.neighbors:
+		neighbor.paint_patchs(Color.WHITE)
+
+
+func shift_state_with_neighbors(type_: String, shift_: int) -> void:
+	var node = get(type_+"s")
+	var state = node.get_child(selected[type_])
+	state.paint_patchs(Color.GRAY)
+	
+	for neighbor in state.neighbors:
+		neighbor.paint_patchs(Color.GRAY)
+	
+	selected[type_] = (selected[type_] + shift_ + node.get_child_count()) % node.get_child_count()
+	state = node.get_child(selected[type_])
+	state.paint_patchs(Color.BLACK)
+
+	for neighbor in state.neighbors:
 		neighbor.paint_patchs(Color.WHITE)
 

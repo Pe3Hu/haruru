@@ -105,16 +105,21 @@ func init_lair() -> void:
 			n -= 1
 		
 		lair_position /= n
+		var knob = null
 		
+		#if !cloth.grid.knob.has(lair_position):
 		var input = {}
 		input.type = "lair"
 		input.cloth = cloth
 		input.position = lair_position
 		
-		var knob = Global.scene.knob.instantiate()
+		knob = Global.scene.knob.instantiate()
 		cloth.knobs.add_child(knob)
 		knob.set_attributes(input)
-		#obj.cloth.knob[lair_position] = knob
+#		else:
+#			knob = cloth.grid.lair[lair_position]
+#			knob.type = "lair"
+		
 		lair = knob
 		knob.visible = true
 

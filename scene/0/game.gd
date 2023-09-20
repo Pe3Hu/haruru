@@ -17,10 +17,10 @@ func _input(event) -> void:
 				if event.is_pressed() && !event.is_echo():
 					#shift_earldom_with_neighbors
 					#shift_dukedom_with_neighbors
-					Global.node.sketch.cloth.shift_dukedom_with_neighbors(-1)
+					Global.node.sketch.cloth.shift_state_with_neighbors("empire", -1)
 			KEY_E:
 				if event.is_pressed() && !event.is_echo():
-					Global.node.sketch.cloth.shift_dukedom_with_neighbors(1)
+					Global.node.sketch.cloth.shift_state_with_neighbors("empire", 1)
 			KEY_Z:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.cloth.shift_patch_with_neighbors(-1)
@@ -36,7 +36,7 @@ func _input(event) -> void:
 			KEY_SPACE:
 				if event.is_pressed() && !event.is_echo():
 					#Global.node.sketch.cloth.add_states("earldom")
-					Global.node.sketch.cloth.do_dukedom()
+					Global.node.sketch.cloth.find_furthest_earldom_in_biggest_empire()
 
 
 #func _process(delta_) -> void:

@@ -65,6 +65,10 @@ func init_num() -> void:
 	num.size.knob = {}
 	num.size.knob.a = 4
 	num.size.knob.R = num.size.knob.a
+	num.size.knob.hub = 8
+	
+	num.size.empire = {}
+	num.size.empire.limit = 4
 
 
 func init_dict() -> void:

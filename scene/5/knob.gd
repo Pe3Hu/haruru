@@ -9,7 +9,16 @@ func set_attributes(input_: Dictionary) -> void:
 	cloth = input_.cloth
 	type = input_.type
 	position = input_.position
-	cloth.grid.knob[position] = self
+	
+	if type != "lair" and type != "hub":
+		cloth.grid.knob[position] = self
+	else:
+		match type:
+			"lair":
+				cloth.grid.lair[position] = self
+			"hub":
+				cloth.grid.hub[position] = self
+	
 	set_vertexs()
 	update_color()
 
@@ -18,6 +27,11 @@ func set_vertexs() -> void:
 	var order = "even"
 	var corners = 4
 	var r = Global.num.size.knob.R
+	
+	match type:
+		"hub":
+			r = Global.num.size.knob.hub
+	
 	var vertexs = []
 	
 	for corner in corners:
@@ -32,5 +46,9 @@ func update_color() -> void:
 	var s = 0.0
 	var v = 1
 	var h = 0.0 / max_h
+	
+	if type == "hub":
+		v = 0.25
+	
 	var color_ = Color.from_hsv(h,s,v)
 	set_color(color_)

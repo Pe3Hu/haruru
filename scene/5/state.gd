@@ -7,6 +7,7 @@ var patchs = []
 var vassals = []
 var neighbors = []
 var senor = null
+var hub = null
 var limit = null
 var index = null
 
@@ -80,7 +81,15 @@ func take_state(state_: MarginContainer) -> void:
 		if vassals.size() > limit:
 			limit = vassals.size()
 		
-		if limit == 4:
+		var notify_senor = senor
+		
+		while notify_senor != null:
+			for patch in state_.patchs:
+				senor.patchs.append(patch)
+			
+			notify_senor = notify_senor.senor
+			
+		if limit == 4 and type != "empire":
 			split_senor()
 
 
@@ -113,11 +122,16 @@ func detach_state(state_: MarginContainer) -> void:
 	for patch in state_.patchs:
 		patch.state[type] = null
 	
-	if limit == 1:
-		var a = null
-	
 	limit = vassals.size()
-
+	
+	var notify_senor = senor
+	
+	while notify_senor != null:
+		for patch in state_.patchs:
+			senor.patchs.erase(patch)
+		
+		notify_senor = notify_senor.senor
+ 
 
 func fill_to_limit() -> void:
 	if type == "earldom":
@@ -173,6 +187,77 @@ func get_accessible_vassals() -> Array:
 				accessible_vassals.append(neighbor)
 	
 	return accessible_vassals
+
+
+func absorb_neighbor_state(neighbor_state_: MarginContainer) -> void:
+	if neighbors.has(neighbor_state_):
+		neighbors.erase(neighbor_state_)
+		
+		for neighbor in neighbor_state_.neighbors:
+			if neighbor != self:
+				neighbor.neighbors.append(self)
+				neighbors.append(neighbor)
+		
+		while !neighbor_state_.vassals.is_empty():
+			var vassal = neighbor_state_.vassals.pop_front()
+			take_state(vassal)
+		
+		var node = cloth.get(neighbor_state_.type + "s")
+		
+		#print([neighbor_state_.index])
+		for state in node.get_children():
+			if state.index > neighbor_state_.index:
+				#print(state.index, " > ", state.index - 1)
+				state.index -= 1
+			
+			if state.neighbors.has(neighbor_state_):
+				state.neighbors.erase(neighbor_state_)
+		
+		node.remove_child(neighbor_state_)
+		Global.num.index.state[neighbor_state_.type] = node.get_child_count() + 1
+		neighbor_state_.queue_free()
+
+
+func init_hub() -> void:
+	var input = {}
+	input.type = "hub"
+	input.cloth = cloth
+	input.position = Vector2()
+	
+	for patch in patchs:
+		input.position += patch.lair.position
+	
+	input.position /= patchs.size()
+	hub = Global.scene.knob.instantiate()
+	cloth.knobs.add_child(hub)
+	hub.set_attributes(input)
+
+
+func find_nearest_empire() -> MarginContainer:
+	var datas = []
+	
+	for empire in cloth.empires.get_children():
+		if empire != patchs.front().state["empire"]:
+			var data = {}
+			data.empire = empire
+			data.d = hub.position.distance_to(empire.hub.position)
+			datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.d < b.d)
+	return datas.front().empire
+
+
+func repossess_earldom(recipient_: MarginContainer, earldom_: MarginContainer) -> void:
+	earldom_.senor.detach_state(earldom_)
+	
+	for neighbor in earldom_.neighbors:
+		var empire = neighbor.patchs.front().state["empire"]
+		
+		if empire == recipient_:
+			neighbor.senor.take_state(earldom_)
+	
+	
+	#earldom_.senor = cloth.liberty
 
 
 func recolor_based_on_index() -> void:
