@@ -36,6 +36,7 @@ vertical_alignment = 1
 
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
+alignment = 1
 
 [node name="EmpireTitle" type="Label" parent="VBox"]
 visible = false
@@ -46,12 +47,8 @@ theme_override_fonts/font = ExtResource("1_p2mye")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Terrain" type="HBoxContainer" parent="VBox"]
+[node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
 layout_mode = 2
 
-[node name="Resources" type="VBoxContainer" parent="VBox"]
-layout_mode = 2
-alignment = 1
-
-[node name="Spreadsheet" type="GridContainer" parent="VBox"]
+[node name="ResourceSpreadsheet" type="GridContainer" parent="VBox"]
 layout_mode = 2

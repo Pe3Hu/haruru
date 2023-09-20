@@ -30,7 +30,7 @@ func _ready() -> void:
 	calc_flap_squares()
 	init_lairs()
 	init_frontiers()
-	init_patch_terrains()
+	init_flap_terrains()
 	init_flap_abundances()
 	init_states()
 	init_state_hubs()
@@ -329,21 +329,7 @@ func calc_flap_squares() -> void:
 	for flap in flaps.get_children():
 		flap.calc_square()
 		flap.patch.square += flap.square
-#
-#	var n = 6
-#	var counts = {}
-#
-#	for _i in range(2, n * 3):
-#		counts[_i] = 0
-#
-#	for patch in patchs.get_children():
-#		var area = patch.square / square_area * n
-#
-#		for count in counts:
-#			if area < count:
-#				counts[count] += 1
-#				break
-	pass
+
 
 
 func init_lairs() -> void:
@@ -381,11 +367,7 @@ func init_frontiers() -> void:
 		frontier.paint_by_index()
 
 
-func init_patch_terrains() -> void:
-	for patch in patchs.get_children():
-		for flap in patch.flaps:
-			flap.paint_gray()
-	
+func init_flap_terrains() -> void:
 	var limit_square = square / 2 / Global.color.terrain.keys().size()
 	var wastelands = []
 	var datas = []
@@ -407,7 +389,6 @@ func init_patch_terrains() -> void:
 		wastelands.erase(flap)
 		grands[terrain] = [flap]
 		flap.terrain = terrain
-		flap.paint_based_on_terrain()
 	
 	for terrain in grands:
 		var grand_square = grands[terrain].front().square
@@ -429,14 +410,79 @@ func init_patch_terrains() -> void:
 				wastelands.erase(flap)
 				grands[terrain].append(flap)
 				flap.terrain = terrain
-				flap.paint_based_on_terrain()
 				grand_square += flap.square
-		
 		
 		hegemony[terrain] = grand_square
 	
+	var lobes = 0
+	var remnants = {}
+	
+	for terrain in Global.dict.terrain.prevalence:
+		lobes += Global.dict.terrain.prevalence[terrain]
+	
+	var weight = wastelands.size() / lobes
+	
+	for terrain in Global.dict.terrain.prevalence:
+		remnants[terrain] = weight * Global.dict.terrain.prevalence[terrain]
+		lobes -= Global.dict.terrain.prevalence[terrain]
+	
+	remnants["plain"] += lobes
+	
+#	while !insulation.is_empty():
+#		refine_insulation(insulation, wastelands, remnants)
+#
+#	while !wastelands.is_empty():
+#		refine_wasteland(wastelands, remnants)
+	
 	while !wastelands.is_empty():
 		incentivize_minority(hegemony, insulation, wastelands)
+
+
+func refine_insulation(insulation_: Dictionary, wastelands_: Array, remnants_: Dictionary) -> void:
+	var terrain = {}
+	terrain.grand = insulation_.keys().pick_random()
+	
+	var flap = insulation_[terrain.grand].pick_random()
+	var weights = {}
+	
+	for terrain_ in Global.dict.terrain.prevalence:
+		weights[terrain_] = Global.dict.terrain.prevalence[terrain_]
+	
+	for seam in flap.neighbors:
+		var neighbor = flap.neighbors[seam]
+		
+		if neighbor.terrain != null:
+			weights[neighbor.terrain] += Global.dict.terrain.prevalence[neighbor.terrain]
+	
+	weights.erase(terrain.grand)
+	flap.terrain = Global.get_random_key(weights)
+	remnants_[flap.terrain] -= 1
+	wastelands_.erase(flap)
+	
+	for terrain_ in insulation_:
+		if insulation_[terrain_].has(flap):
+			insulation_[terrain_].erase(flap)
+		
+		if insulation_[terrain_].is_empty():
+			insulation_.erase(terrain_)
+
+
+func refine_wasteland(wastelands_: Array, remnants_: Dictionary) -> void:
+	var flap = wastelands_.pick_random()
+	var weights = {}
+	
+	for terrain_ in Global.dict.terrain.prevalence:
+		weights[terrain_] = Global.dict.terrain.prevalence[terrain_]
+	
+	for seam in flap.neighbors:
+		var neighbor = flap.neighbors[seam]
+		
+		if neighbor.terrain != null:
+			weights[neighbor.terrain] += Global.dict.terrain.prevalence[neighbor.terrain]
+	
+	flap.terrain = Global.get_random_key(weights)
+	remnants_[flap.terrain] -= 1
+	wastelands_.erase(flap)
 
 
 func incentivize_minority(hegemony_: Dictionary, insulation_: Dictionary, wastelands_: Array) -> void:
@@ -462,7 +508,6 @@ func incentivize_minority(hegemony_: Dictionary, insulation_: Dictionary, wastel
 		wastelands_.erase(flap)
 		
 		flap.terrain = minority
-		flap.paint_based_on_terrain()
 		hegemony_[minority] += flap.square
 	else:
 		hegemony_[minority] += square

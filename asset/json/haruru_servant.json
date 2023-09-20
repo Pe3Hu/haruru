@@ -4,134 +4,208 @@
   "subtype": "farmer",
   "outcome": "success",
   "resource": "food",
-  "value": 1,
-  "dice": 6,
-  "facets": 3
+  "value": 6,
+  "dice": 8,
+  "facets": 5,
+  "workplace": "plain",
+  "raw": "food"
  },
  {
   "type": "servant",
   "subtype": "hunter",
   "outcome": "success",
-  "resource": "food",
-  "value": 1,
-  "dice": 6,
-  "facets": 2
- },
- {
-  "type": "servant",
-  "subtype": "hunter",
-  "outcome": "critical success",
   "resource": "food",
   "value": 2,
-  "dice": 6,
-  "facets": 2
+  "dice": 8,
+  "facets": 2,
+  "workplace": "forest",
+  "raw": "food"
  },
  {
   "type": "servant",
-  "subtype": "fisher",
-  "outcome": "success",
-  "resource": "food",
-  "value": 1,
-  "dice": 6,
-  "facets": 3
- },
- {
-  "type": "servant",
-  "subtype": "fisher",
+  "subtype": "hunter",
   "outcome": "critical success",
   "resource": "food",
-  "value": 3,
-  "dice": 6,
-  "facets": 1
- },
- {
-  "type": "servant",
-  "subtype": "cook",
-  "outcome": "success",
-  "resource": "canned",
-  "value": 1,
-  "dice": 6,
-  "facets": 4
- },
- {
-  "type": "servant",
-  "subtype": "cook",
-  "outcome": "critical failure",
-  "resource": "food",
-  "value": -1,
-  "dice": 6,
-  "facets": 1
+  "value": 10,
+  "dice": 8,
+  "facets": 3,
+  "workplace": "forest",
+  "raw": "food"
  },
  {
   "type": "servant",
   "subtype": "logger",
   "outcome": "success",
   "resource": "wood",
+  "value": 4,
+  "dice": 8,
+  "facets": 5,
+  "workplace": "forest",
+  "raw": "wood"
+ },
+ {
+  "type": "servant",
+  "subtype": "fisher",
+  "outcome": "success",
+  "resource": "food",
+  "value": 5,
+  "dice": 8,
+  "facets": 3,
+  "workplace": "pond",
+  "raw": "food"
+ },
+ {
+  "type": "servant",
+  "subtype": "fisher",
+  "outcome": "critical success",
+  "resource": "food",
+  "value": 9,
+  "dice": 8,
+  "facets": 2,
+  "workplace": "pond",
+  "raw": "food"
+ },
+ {
+  "type": "servant",
+  "subtype": "diver",
+  "outcome": "success",
+  "resource": "gem",
   "value": 1,
-  "dice": 6,
-  "facets": 5
+  "dice": 8,
+  "facets": 3,
+  "workplace": "pond",
+  "raw": "gem"
+ },
+ {
+  "type": "servant",
+  "subtype": "diver",
+  "outcome": "critical success",
+  "resource": "gem",
+  "value": 4,
+  "dice": 8,
+  "facets": 2,
+  "workplace": "pond",
+  "raw": "gem"
  },
  {
   "type": "servant",
   "subtype": "miner",
   "outcome": "success",
   "resource": "ore",
-  "value": 1,
-  "dice": 6,
-  "facets": 3
+  "value": 3,
+  "dice": 8,
+  "facets": 4,
+  "workplace": "mountain",
+  "raw": "ore"
  },
  {
   "type": "servant",
   "subtype": "miner",
   "outcome": "critical success",
   "resource": "gem",
-  "value": 1,
-  "dice": 6,
-  "facets": 1
+  "value": 2,
+  "dice": 8,
+  "facets": 1,
+  "workplace": "mountain",
+  "raw": "gem"
+ },
+ {
+  "type": "servant",
+  "subtype": "cook",
+  "outcome": "success",
+  "resource": "canned",
+  "value": 11,
+  "dice": 8,
+  "facets": 3,
+  "workplace": "comfortable",
+  "raw": "food"
+ },
+ {
+  "type": "servant",
+  "subtype": "cook",
+  "outcome": "critical failure",
+  "resource": "canned",
+  "value": 0,
+  "dice": 8,
+  "facets": 3,
+  "workplace": "comfortable",
+  "raw": "food"
  },
  {
   "type": "servant",
   "subtype": "carpenter",
   "outcome": "success",
   "resource": "plank",
-  "value": 1,
-  "dice": 6,
-  "facets": 4
+  "value": 5,
+  "dice": 8,
+  "facets": 4,
+  "workplace": "comfortable",
+  "raw": "wood"
+ },
+ {
+  "type": "servant",
+  "subtype": "carpenter",
+  "outcome": "critical failure",
+  "resource": "plank",
+  "value": 0,
+  "dice": 8,
+  "facets": 2,
+  "workplace": "comfortable",
+  "raw": "wood"
  },
  {
   "type": "servant",
   "subtype": "blacksmith",
   "outcome": "success",
   "resource": "ingot",
-  "value": 1,
-  "dice": 6,
-  "facets": 3
+  "value": 3,
+  "dice": 8,
+  "facets": 5,
+  "workplace": "comfortable",
+  "raw": "ore"
+ },
+ {
+  "type": "servant",
+  "subtype": "blacksmith",
+  "outcome": "critical failure",
+  "resource": "ingot",
+  "value": 0,
+  "dice": 8,
+  "facets": 1,
+  "workplace": "comfortable",
+  "raw": "ore"
  },
  {
   "type": "servant",
   "subtype": "jeweler",
   "outcome": "success",
   "resource": "jewel",
-  "value": 1,
-  "dice": 6,
-  "facets": 1
+  "value": 3,
+  "dice": 8,
+  "facets": 1,
+  "workplace": "comfortable",
+  "raw": "gem"
  },
  {
   "type": "servant",
   "subtype": "jeweler",
   "outcome": "critical success",
   "resource": "jewel",
-  "value": 1,
-  "dice": 6,
-  "facets": 1
+  "value": 8,
+  "dice": 8,
+  "facets": 1,
+  "workplace": "comfortable",
+  "raw": "gem"
  },
  {
   "type": "servant",
   "subtype": "jeweler",
   "outcome": "critical failure",
-  "resource": "gem",
-  "value": -1,
-  "dice": 6,
-  "facets": 1
+  "resource": "jewel",
+  "value": 0,
+  "dice": 8,
+  "facets": 4,
+  "workplace": "comfortable",
+  "raw": "gem"
  }
 ]

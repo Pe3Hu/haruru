@@ -12,6 +12,7 @@ var square = 0
 var knobs = []
 var seams = []
 var neighbors = {}
+var grand = false
 
 
 func set_attributes(input_: Dictionary) -> void:

@@ -62,6 +62,7 @@ func init_num() -> void:
 	num.size.flap.a = 64
 	num.size.flap.R = num.size.flap.a
 	num.size.flap.r = num.size.flap.R * sqrt(3) / 2
+	num.size.flap.terrain = 2
 	
 	num.size.knob = {}
 	num.size.knob.a = 4
@@ -102,6 +103,23 @@ func init_dict() -> void:
 		4: 1
 	}
 	
+	dict.terrain = {}
+	dict.terrain.prevalence = {}
+	dict.terrain.prevalence["mountain"] = 3
+	dict.terrain.prevalence["pond"] = 5
+	dict.terrain.prevalence["forest"] = 7
+	dict.terrain.prevalence["plain"] = 9
+	
+	dict.merchandise = {}
+	dict.merchandise.price = {}
+	dict.merchandise.price["food"] = 3
+	dict.merchandise.price["wood"] = 5
+	dict.merchandise.price["ore"] = 7
+	dict.merchandise.price["gem"] = 9
+	dict.merchandise.price["canned"] = 5
+	dict.merchandise.price["plank"] = 9
+	dict.merchandise.price["ingot"] = 14
+	dict.merchandise.price["jewel"] = 20
 
 
 func init_time() -> void:
@@ -275,6 +293,8 @@ func init_servant() -> void:
 	dict.facet.type = {}
 	var path = "res://asset/json/haruru_servant.json"
 	var array = load_data(path)
+	var exceptions = ["workplace", "dice"]
+	var outcomes = ["raw", "outcome", "resource", "value", "facets"]
 
 	for facet in array:
 		var data = {}
@@ -284,23 +304,49 @@ func init_servant() -> void:
 		
 		if !dict.facet.type[facet.type].has(facet.subtype):
 			dict.facet.type[facet.type][facet.subtype] = {}
-			dict.facet.type[facet.type][facet.subtype]["failure"] = {}
-			dict.facet.type[facet.type][facet.subtype]["failure"]["facets"] = facet.dice
+			dict.facet.type[facet.type][facet.subtype].outcome = {}
+			dict.facet.type[facet.type][facet.subtype].outcome["failure"] = {}
+			dict.facet.type[facet.type][facet.subtype].outcome["failure"]["facets"] = facet.dice
 		
 		for key in facet:
 			match typeof(facet[key]):
 				TYPE_FLOAT:
 					data[key] = int(facet[key])
+					
+					if !dict.facet.type[facet.type][facet.subtype].has(key) and exceptions.has(key):
+						dict.facet.type[facet.type][facet.subtype][key] = data[key]
 				TYPE_STRING:
-					if !key.contains("type"):
+					if outcomes.has(key):
 						data[key] = facet[key]
+					elif !dict.facet.type[facet.type][facet.subtype].has(key) and exceptions.has(key):
+						dict.facet.type[facet.type][facet.subtype][key] = facet[key]
 		
-		dict.facet.type[facet.type][facet.subtype][data.outcome] = data
-		dict.facet.type[facet.type][facet.subtype][data.outcome].erase("dice")
-		dict.facet.type[facet.type][facet.subtype][data.outcome].erase("outcome")
-		dict.facet.type[facet.type][facet.subtype]["failure"]["facets"] -= data.facets
+		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome] = data
+		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome].erase("dice")
+		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome].erase("outcome")
+		dict.facet.type[facet.type][facet.subtype].outcome["failure"]["facets"] -= data.facets
 	
-	#print(dict.facet.type["servant"])
+	
+	for type in dict.facet.type:
+		for subtype in dict.facet.type[type]:
+			var servant = dict.facet.type[type][subtype]
+			servant.workout = {}
+			
+			for outcome in servant.outcome:
+				var data = servant.outcome[outcome]
+				
+				if data.has("resource"):
+					if !servant.workout.has(data.resource):
+						servant.workout[data.resource] = 0
+					
+					servant.workout[data.resource] += data.value * data.facets
+					
+					
+					if data.resource != data.raw:
+						if !servant.workout.has(data.raw):
+							servant.workout[data.raw] = 0
+						
+						servant.workout[data.raw] -= data.facets
 
 
 func init_abundance() -> void:
@@ -428,13 +474,6 @@ func get_resource_path(resource_: String) -> Variant:
 		for key in dict.business[business]:
 			if resource_ == dict.business[business][key]:
 				var path = {}
-				
-#				var key = ""
-#
-#				if Global.dict.raw.has(resource_):
-#					key = "Raw"
-#				if Global.dict.product.has(resource_):
-#					key = "Product"
 				path.business = business
 				path.key = key
 				return path
@@ -458,3 +497,29 @@ func split_two_point(points_: Array, delta_: float):
 	var y = (a.y+b.y*delta_)/(1+delta_)
 	var point = Vector2(x, y)
 	return point
+
+
+
+func get_random_key(dict_: Dictionary):
+	if dict_.keys().size() == 0:
+		print("!bug! empty array in get_random_key func")
+		return null
+	
+	var total = 0
+	
+	for key in dict_.keys():
+		total += dict_[key]
+	
+	rng.randomize()
+	var index_r = rng.randf_range(0, 1)
+	var index = 0
+	
+	for key in dict_.keys():
+		var weight = float(dict_[key])
+		index += weight/total
+		
+		if index > index_r:
+			return key
+	
+	print("!bug! index_r error in get_random_key func")
+	return null
