@@ -37,6 +37,10 @@ func set_attributes(input_: Dictionary) -> void:
 		"blank":
 			custom_minimum_size = Vector2(Global.vec.size.number)
 
+
 func get_number() -> int:
 	return int(number.text)
 
+
+func change_number(value_: int) -> void:
+	number.text = str(int(number.text) + value_)

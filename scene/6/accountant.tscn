@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dwvpwkmi5mpiq"]
+[gd_scene load_steps=5 format=3 uid="uid://dwvpwkmi5mpiq"]
 
 [ext_resource type="Script" path="res://scene/6/accountant.gd" id="1_6usk8"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_p2mye"]
+[ext_resource type="PackedScene" uid="uid://blow2nby1pif0" path="res://scene/6/barn.tscn" id="3_me4yp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
@@ -38,7 +39,7 @@ vertical_alignment = 1
 layout_mode = 2
 alignment = 1
 
-[node name="EmpireTitle" type="Label" parent="VBox"]
+[node name="RealmTitle" type="Label" parent="VBox"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 4
@@ -48,6 +49,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -60,3 +62,6 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
+
+[node name="Barn" parent="VBox" instance=ExtResource("3_me4yp")]
+layout_mode = 2

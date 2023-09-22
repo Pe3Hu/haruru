@@ -1,6 +1,6 @@
 HBoxContainer
-GridContainer
 VBoxContainer
+GridContainer
 Node2D
 Polygon2D
 Line2D

@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bfdiyjupecl58"]
+[gd_scene load_steps=6 format=3 uid="uid://bfdiyjupecl58"]
 
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_ah1ij"]
 [ext_resource type="Script" path="res://scene/6/realm.gd" id="1_t2tad"]
+[ext_resource type="PackedScene" uid="uid://j7vegg7d6w6k" path="res://scene/6/manager.tscn" id="3_nwj80"]
+[ext_resource type="PackedScene" uid="uid://x7srwbaim07d" path="res://scene/2/warehouse.tscn" id="4_wkf7c"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
@@ -34,3 +36,9 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("1_ah1ij")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Manager" parent="." instance=ExtResource("3_nwj80")]
+layout_mode = 2
+
+[node name="Warehouse" parent="." instance=ExtResource("4_wkf7c")]
+layout_mode = 2

@@ -37,7 +37,8 @@ func _input(event) -> void:
 			KEY_SPACE:
 				if event.is_pressed() && !event.is_echo():
 					#Global.node.sketch.cloth.add_states("earldom")
-					Global.node.sketch.cloth.find_furthest_earldom_in_biggest_empire()
+					#Global.node.sketch.cloth.find_furthest_earldom_in_biggest_empire()
+					Global.node.sketch.next_day()
 
 
 #func _process(delta_) -> void:

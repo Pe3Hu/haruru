@@ -21,3 +21,10 @@ func add_encounter(squads_: Array) -> void:
 	var encounter = Global.scene.encounter.instantiate()
 	encounters.add_child(encounter)
 	#encounter.set_attributes(input)
+
+
+func next_day() -> void:
+	diplomacy.realms_are_harvesting()
+	
+	var next_day = int(day.text) + 1
+	day.text = str(next_day)

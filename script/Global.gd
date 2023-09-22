@@ -75,6 +75,9 @@ func init_num() -> void:
 	
 	num.size.empire = {}
 	num.size.empire.limit = 4
+	
+	num.realm = {}
+	num.realm.handler = 0.25
 
 
 func init_dict() -> void:
@@ -90,9 +93,11 @@ func init_dict() -> void:
 	
 	dict.endowment = {}
 	
-	for raw in dict.raw:
-		var value = 1000
-		dict.endowment[raw] = value
+#	for raw in dict.raw:
+#		var value = 1000
+#		dict.endowment[raw] = value
+
+	dict.endowment["canned"] = 10000
 	
 	dict.flap = {}
 	dict.flap.component = {
@@ -125,6 +130,11 @@ func init_dict() -> void:
 	dict.merchandise.price["plank"] = 9
 	dict.merchandise.price["ingot"] = 14
 	dict.merchandise.price["jewel"] = 20
+	
+	dict.thousand = {}
+	dict.thousand[""] = "k"
+	dict.thousand["k"] = "m"
+	dict.thousand["m"] = "b"
 
 
 func init_time() -> void:
@@ -419,7 +429,7 @@ func init_appellation() -> void:
 		dict.appellation.temp[terrain] = []
 		num.index.appellation[terrain] = 0
 		fill_appellation_temp(terrain)
-	
+
 
 func fill_appellation_temp(terrian_: String) -> void:
 	num.index.appellation[terrian_] += 1
@@ -460,9 +470,10 @@ func init_scene() -> void:
 	scene.frontier = load("res://scene/5/frontier.tscn")
 	scene.state = load("res://scene/5/state.tscn")
 	
-	scene.accountant = load("res://scene/6/accountant.tscn")
 	scene.settlement = load("res://scene/6/settlement.tscn")
 	scene.realm = load("res://scene/6/realm.tscn")
+	scene.accountant = load("res://scene/6/accountant.tscn")
+	scene.manager = load("res://scene/6/manager.tscn")
 	
 	pass
 
@@ -543,6 +554,19 @@ func get_resource_path(resource_: String) -> Variant:
 	return null
 
 
+func get_handler_based_on_raw(raw_: String) -> Variant:
+	for subtype in dict.facet.type["servant"]:
+		for outcome in Global.dict.facet.type["servant"][subtype].outcome:
+			var data = Global.dict.facet.type["servant"][subtype].outcome[outcome]
+			
+			if data.has("raw"):
+				if data.raw != data.resource and raw_ == data.raw and dict.product.has(data.resource):
+					return subtype
+	
+	return null
+
+
+
 func save_statistics(statistics_: Dictionary) -> void:
 	var time = Time.get_datetime_string_from_datetime_dict(Time.get_datetime_dict_from_system(), true)
 	var path = "res://asset/stat/stat.json"# + "stat" + ".json"
@@ -559,7 +583,6 @@ func split_two_point(points_: Array, delta_: float):
 	var y = (a.y+b.y*delta_)/(1+delta_)
 	var point = Vector2(x, y)
 	return point
-
 
 
 func get_random_key(dict_: Dictionary):

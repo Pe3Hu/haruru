@@ -207,5 +207,16 @@
   "facets": 4,
   "workplace": "comfortable",
   "raw": "gem"
+ },
+ {
+  "type": "servant",
+  "subtype": "unemployed",
+  "outcome": "success",
+  "resource": "downtime",
+  "value": 0,
+  "dice": 8,
+  "facets": 0,
+  "workplace": "comfortable",
+  "raw": "food"
  }
 ]

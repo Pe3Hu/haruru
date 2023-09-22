@@ -25,3 +25,11 @@ res://scene/5/seam.tscn
 res://scene/6/accountant.gd
 res://scene/6/economy.gd
 res://scene/0/sketch.gd
+res://scene/6/manager.tscn
+res://scene/6/manager.gd
+res://asset/json/haruru_servant.json
+res://scene/2/warehouse.gd
+res://scene/2/barn.tscn
+res://scene/6/barn.tscn
+res://scene/6/barn.gd
+res://scene/0/icon.gd

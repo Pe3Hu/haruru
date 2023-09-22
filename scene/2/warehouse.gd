@@ -4,11 +4,14 @@ extends MarginContainer
 @onready var label = $Label
 @onready var businesses = $Businesses
 
+var realm = null
 
-func  _ready() -> void:
+
+func set_attributes(input_: Dictionary) -> void:
+	realm = input_.realm
 	init_resources()
+	fill_resource_based_on_endowment()
 	label.visible = false
-	pass
 
 
 func  init_resources() -> void:
@@ -37,6 +40,12 @@ func  init_resources() -> void:
 	label.visible = false
 
 
+func fill_resource_based_on_endowment() -> void:
+	for resource in Global.dict.endowment:
+		var value = Global.dict.endowment[resource]
+		change_resource_value(resource, value)
+
+
 func get_resource_icon(resource_: String) -> MarginContainer:
 	var path = Global.get_resource_path(resource_)
 	var business = businesses.get_node(path.business.capitalize())
@@ -60,6 +69,14 @@ func change_resource_value(resource_: String, value_: int) -> void:
 	var label_ = get_resource_value_label(resource_)
 	var value = int(label_.text) + value_
 	label_.text = str(value)
+	var icon = realm.accountant.get_rss_icon_based_on_type_and_subtype("stockpile", resource_)
+	var suffix = ""
+	
+	while value >= 1000:
+		value /= 1000
+		suffix = Global.dict.thousand[suffix]
+	
+	icon.number.text = str(value) + suffix
 
 
 func get_value_of_resource_available_for_withdraw(resource_: String, value_: int) -> int:

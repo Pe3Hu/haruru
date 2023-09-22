@@ -10,7 +10,8 @@ var empires = []
 
 
 func _ready() -> void:
-	init_tribes()
+	#init_tribes()
+	pass
 
 
 func init_tribes() -> void:
@@ -72,7 +73,6 @@ func servants_simulation() -> void:
 	#print(data)
 
 
-
 func simulation(deadline) -> void:
 	time = Time.get_unix_time_from_system()
 	
@@ -101,13 +101,19 @@ func get_resource_analytics() -> Dictionary:
 func init_reams() -> void:
 	for empire in sketch.cloth.empires.get_children():
 		var input = {}
-		input.diplomacy = self
+		input.sketch = sketch
 		input.state = empire.capital.state["dukedom"]
 		
 		var realm = Global.scene.realm.instantiate()
 		realms.add_child(realm)
 		realm.set_attributes(input)
 	
-	sketch.economy.init_accountants()
 	sketch.cloth.shift_layer(0)
+	realms_are_harvesting()
 
+
+func realms_are_harvesting() -> void:
+	for realm in realms.get_children():
+		realm.harvest()
+		realm.meal()
+		realm.craft()
