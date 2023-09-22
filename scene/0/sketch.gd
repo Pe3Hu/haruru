@@ -12,7 +12,6 @@ extends MarginContainer
 func _ready() -> void:
 	diplomacy.sketch = self
 	economy.sketch = self
-	economy.init_accountants()
 
 
 func add_encounter(squads_: Array) -> void:

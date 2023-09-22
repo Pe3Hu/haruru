@@ -3,5 +3,4 @@
 [ext_resource type="Script" path="res://scene/5/knob.gd" id="1_ek0mn"]
 
 [node name="Knop" type="Polygon2D"]
-visible = false
 script = ExtResource("1_ek0mn")

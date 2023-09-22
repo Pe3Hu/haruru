@@ -7,9 +7,9 @@ var sketch = null
 
 
 func init_accountants() -> void:
-	for empire in sketch.cloth.empires.get_children():
+	for realm in sketch.diplomacy.realms.get_children():
 		var input = {}
-		input.empire = empire
+		input.realm = realm
 		input.economy = self
 		var accountant = Global.scene.accountant.instantiate()
 		accountants.add_child(accountant)

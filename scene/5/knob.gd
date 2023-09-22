@@ -2,7 +2,10 @@ extends Polygon2D
 
 
 var cloth = null
+var patch = null
+var settlement = null
 var type = null
+var state = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -50,5 +53,24 @@ func update_color() -> void:
 	if type == "hub":
 		v = 0.25
 	
+	if settlement != null:
+		v = 0
+	
 	var color_ = Color.from_hsv(h,s,v)
 	set_color(color_)
+
+
+func set_as_state_capital(state_: MarginContainer) -> void:
+	state[state_.type] = state_
+	state_.capital = self
+	update_color()
+
+
+func init_settlement() -> void:
+	var input = {}
+	input.knob = self
+	input.cloth = cloth
+	settlement = Global.scene.settlement.instantiate()
+	cloth.settlements.add_child(settlement)
+	settlement.set_attributes(input)
+	update_color()

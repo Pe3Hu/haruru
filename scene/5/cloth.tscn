@@ -57,3 +57,6 @@ vertical_alignment = 1
 
 [node name="Frontiers" type="Node2D" parent="."]
 visible = false
+
+[node name="Settlements" type="Node2D" parent="."]
+visible = false

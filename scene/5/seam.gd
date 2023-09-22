@@ -17,9 +17,11 @@ func set_attributes(input_: Dictionary) -> void:
 		add_point(knob.position)
 	
 	boundary.patch = false
+	boundary.realms = []
+	boundary.state = {}
 	
 	for state in Global.arr.state:
-		boundary[state] = true
+		boundary.state[state] = true
 
 
 func add_flap(flap_: Polygon2D) -> void:
@@ -71,7 +73,7 @@ func set_boundary() -> void:
 		boundary.patch = flaps.front().patch != flaps.back().patch
 	
 		for state in Global.arr.state:
-			boundary[state] = flaps.front().patch.state[state] != flaps.back().patch.state[state]
+			boundary.state[state] = flaps.front().patch.state[state] != flaps.back().patch.state[state]
 			
 		
 		if !boundary.patch:

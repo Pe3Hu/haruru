@@ -1,7 +1,8 @@
 extends MarginContainer
 
 
-@onready var tribes = $Tribes
+@onready var tribes = $HBox/Tribes
+@onready var realms = $HBox/Realms
 
 var sketch = null
 var time = null
@@ -10,7 +11,6 @@ var empires = []
 
 func _ready() -> void:
 	init_tribes()
-	#fill_empires()
 
 
 func init_tribes() -> void:
@@ -98,9 +98,16 @@ func get_resource_analytics() -> Dictionary:
 	return analytics
 
 
-func fill_empires() -> void:
-	var sketch = get_parent().get_parent()
+func init_reams() -> void:
+	for empire in sketch.cloth.empires.get_children():
+		var input = {}
+		input.diplomacy = self
+		input.state = empire.capital.state["dukedom"]
+		
+		var realm = Global.scene.realm.instantiate()
+		realms.add_child(realm)
+		realm.set_attributes(input)
 	
-	for empire in sketch.cloth.empires:
-		empires.append(empire)
+	sketch.economy.init_accountants()
+	sketch.cloth.shift_layer(0)
 

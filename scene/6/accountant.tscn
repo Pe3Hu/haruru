@@ -49,6 +49,14 @@ vertical_alignment = 1
 
 [node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0
 
 [node name="ResourceSpreadsheet" type="GridContainer" parent="VBox"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 0

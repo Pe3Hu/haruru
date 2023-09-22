@@ -3,6 +3,7 @@ extends MarginContainer
 
 var cloth = null
 var lair = null
+var realm = null
 var element = null
 var index = null
 var square = 0
@@ -120,6 +121,7 @@ func init_lair() -> void:
 #			knob = cloth.grid.lair[lair_position]
 #			knob.type = "lair"
 		
+		knob.patch = self
 		lair = knob
 		knob.visible = true
 

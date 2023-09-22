@@ -30,11 +30,12 @@ func init_arr() -> void:
 	arr.color = ["Red","Green","Blue","Yellow"]
 	arr.element = ["aqua","wind","fire","earth"]
 	arr.terrain = ["pond", "plain", "forest", "mountain"]
+	arr.resource = ["food", "wood", "ore", "gem", "canned", "plank", "ingot", "jewel"]
 	
 	arr.state = ["earldom", "dukedom", "kingdom", "empire"]
 	
 	arr.layer = {}
-	arr.layer.cloth = ["flap", "patch", "terrain", "abundance", "element", "earldom", "dukedom", "kingdom", "empire"]
+	arr.layer.cloth = ["flap", "patch", "terrain", "abundance", "element", "earldom", "dukedom", "kingdom", "empire", "realm"]
 	
 	arr.phase = [
 		"select dices",
@@ -49,7 +50,9 @@ func init_num() -> void:
 	num.index.flap = 0
 	num.index.patch = 0
 	num.index.frontier = 0
+	num.index.realm = 0
 	num.index.state = {}
+	num.index.appellation = {}
 	
 	num.size = {}
 	
@@ -63,6 +66,7 @@ func init_num() -> void:
 	num.size.flap.R = num.size.flap.a
 	num.size.flap.r = num.size.flap.R * sqrt(3) / 2
 	num.size.flap.terrain = 2
+	num.size.flap.workplace = 36
 	
 	num.size.knob = {}
 	num.size.knob.a = 4
@@ -82,6 +86,7 @@ func init_dict() -> void:
 	init_servant()
 	#init_mercenary()
 	init_abundance()
+	init_appellation()
 	
 	dict.endowment = {}
 	
@@ -318,6 +323,8 @@ func init_servant() -> void:
 				TYPE_STRING:
 					if outcomes.has(key):
 						data[key] = facet[key]
+						
+						
 					elif !dict.facet.type[facet.type][facet.subtype].has(key) and exceptions.has(key):
 						dict.facet.type[facet.type][facet.subtype][key] = facet[key]
 		
@@ -374,6 +381,55 @@ func init_abundance() -> void:
 				dict.abundance.limit.max = abundance[element]
 
 
+func init_appellation() -> void:
+	dict.appellation = {}
+	#dict.appellation.team = {}
+	#dict.appellation.name = {}
+	var path = "res://asset/json/haruru_appellation.json"
+	var array = load_data(path)
+
+	for appellation in array:
+		for key in appellation:
+			var words = key.split(" ")
+			
+			
+			if !dict.appellation.has(words[1]):
+				dict.appellation[words[1]] = {}
+			
+			if !dict.appellation[words[1]].has(words[0]):
+				dict.appellation[words[1]][words[0]] = []
+			
+			var data = appellation[key]
+			
+			if words[0] == "forest":
+				var words_ = data.split(" ")
+				data = words_[0]
+			
+			dict.appellation[words[1]][words[0]].append(data)
+	
+	var titles = ["hill", "farm", "desert"]
+	dict.appellation.terrain.plain = []
+	
+	for title in titles:
+		dict.appellation.terrain.plain.append_array(dict.appellation.terrain[title])
+	
+	dict.appellation.temp = {}
+	
+	for terrain in arr.terrain:
+		dict.appellation.temp[terrain] = []
+		num.index.appellation[terrain] = 0
+		fill_appellation_temp(terrain)
+	
+
+func fill_appellation_temp(terrian_: String) -> void:
+	num.index.appellation[terrian_] += 1
+	dict.appellation.temp[terrian_].append_array(dict.appellation.terrain[terrian_])
+	
+	if num.index.appellation[terrian_] > 1:
+		for _i in dict.appellation.temp[terrian_].size():
+			dict.appellation.temp[terrian_][_i] = dict.appellation.temp[terrian_][_i] + " " + str(num.index.appellation[terrian_])
+
+
 func init_node() -> void:
 	node.game = get_node("/root/Game")
 
@@ -405,6 +461,8 @@ func init_scene() -> void:
 	scene.state = load("res://scene/5/state.tscn")
 	
 	scene.accountant = load("res://scene/6/accountant.tscn")
+	scene.settlement = load("res://scene/6/settlement.tscn")
+	scene.realm = load("res://scene/6/realm.tscn")
 	
 	pass
 
@@ -421,6 +479,10 @@ func init_vec():
 	
 	vec.size.number = Vector2(32, 32)
 	
+	
+	for key in vec.size:
+		if key != "letter":
+			vec.size[key] = Vector2(32, 32)
 	
 	vec.size.facet = vec.size.outcome#vec.size.letter + Vector2(vec.size.letter.x, 0)
 	

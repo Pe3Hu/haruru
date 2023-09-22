@@ -8,7 +8,9 @@ var element = null
 var terrain = null
 var index = null
 var abundance = null
-var square = 0
+var appellation = null
+var square = null
+var workplaces = null
 var knobs = []
 var seams = []
 var neighbors = {}
@@ -75,28 +77,6 @@ func paint_based_on_abundance() -> void:
 	set_color(color_)
 
 
-func paint_based_on_earldom_index() -> void:
-	if patch.state["earldom"] != null:
-		var h = float(patch.state["earldom"].index) / Global.num.index.state["earldom"]
-		var s = 0.75
-		var v = 1
-		var color_ = Color.from_hsv(h,s,v)
-		set_color(color_)
-	else:
-		paint_gray()
-
-
-func paint_based_on_dukedom_index() -> void:
-	if patch.state["dukedom"] != null:
-		var h = float(patch.state["dukedom"].index) / Global.num.index.state["dukedom"]
-		var s = 0.75
-		var v = 1
-		var color_ = Color.from_hsv(h,s,v)
-		set_color(color_)
-	else:
-		paint_gray()
-
-
 func paint_based_on_state_type_index(type_: String) -> void:
 	if patch.state[type_] != null and patch.state[type_] != cloth.liberty:
 		var h = float(patch.state[type_].index) / Global.num.index.state[type_]
@@ -107,6 +87,24 @@ func paint_based_on_state_type_index(type_: String) -> void:
 		
 		patch.state[type_].hub.visible = true
 		
+	else:
+		paint_gray()
+
+
+func paint_based_on_realm_index() -> void:
+	if patch.realm != null:
+		var h = float(patch.realm.index) / Global.num.index.realm
+		var s = 0.75
+		var v = 1
+		var color_ = Color.from_hsv(h,s,v)
+		set_color(color_)
+	else:
+		paint_gray()
+
+
+func paint_based_on_realm_terrain() -> void:
+	if patch.realm != null:
+		set_color(Global.color.terrain[terrain])
 	else:
 		paint_gray()
 
@@ -143,8 +141,22 @@ func calc_square() -> void:
 	var a = knobs[0].position
 	var b = knobs[1].position
 	var c = knobs[2].position
-	square += abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) / 2
+	square = abs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) / 2
+	workplaces = round(square / Global.num.size.flap.workplace)
 
 
 func set_abundance() -> void:
 	abundance = Global.dict.abundance.terrain[terrain][element]
+
+
+func set_terrain(terrain_: String) -> void:
+	terrain = terrain_
+	
+	var appellations = Global.dict.appellation.temp[terrain]
+	
+	if !appellations.is_empty():
+		appellation = appellations.pick_random()
+		appellations.erase(appellation)
+	else:
+		Global.fill_appellation_temp(terrain)
+		set_terrain(terrain_)

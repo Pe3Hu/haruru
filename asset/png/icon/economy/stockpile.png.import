@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hbpgs51bhww"
-path="res://.godot/imported/wood.png-62080dc49b201c00af36ab14689d4846.ctex"
+uid="uid://berlqnh3wf1r3"
+path="res://.godot/imported/stockpile.png-b8487fe8f905518f800ac194fc4cac71.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://asset/png/icon/resource/wood.png"
-dest_files=["res://.godot/imported/wood.png-62080dc49b201c00af36ab14689d4846.ctex"]
+source_file="res://asset/png/icon/economy/stockpile.png"
+dest_files=["res://.godot/imported/stockpile.png-b8487fe8f905518f800ac194fc4cac71.ctex"]
 
 [params]
 

@@ -11,6 +11,8 @@ extends MarginContainer
 @onready var dukedoms = $States/Dukedoms
 @onready var kingdoms = $States/Kingdoms
 @onready var empires = $States/Empires
+@onready var settlements = $Settlements
+
 
 var square = 0
 var layer = null
@@ -34,6 +36,8 @@ func _ready() -> void:
 	init_flap_abundances()
 	init_states()
 	init_state_hubs()
+	init_state_capitals()
+	init_settlement()
 	shift_layer(0)
 	#find_furthest_earldom_in_biggest_empire()
 	
@@ -331,7 +335,6 @@ func calc_flap_squares() -> void:
 		flap.patch.square += flap.square
 
 
-
 func init_lairs() -> void:
 	for patch in patchs.get_children():
 		patch.init_lair()
@@ -388,7 +391,7 @@ func init_flap_terrains() -> void:
 		var flap = datas.pop_front().flap
 		wastelands.erase(flap)
 		grands[terrain] = [flap]
-		flap.terrain = terrain
+		flap.set_terrain(terrain)
 	
 	for terrain in grands:
 		var grand_square = grands[terrain].front().square
@@ -409,7 +412,7 @@ func init_flap_terrains() -> void:
 				var flap = insulation[terrain].pick_random()
 				wastelands.erase(flap)
 				grands[terrain].append(flap)
-				flap.terrain = terrain
+				flap.set_terrain(terrain)
 				grand_square += flap.square
 		
 		hegemony[terrain] = grand_square
@@ -455,7 +458,7 @@ func refine_insulation(insulation_: Dictionary, wastelands_: Array, remnants_: D
 			weights[neighbor.terrain] += Global.dict.terrain.prevalence[neighbor.terrain]
 	
 	weights.erase(terrain.grand)
-	flap.terrain = Global.get_random_key(weights)
+	flap.set_terrain(Global.get_random_key(weights))
 	remnants_[flap.terrain] -= 1
 	wastelands_.erase(flap)
 	
@@ -480,7 +483,7 @@ func refine_wasteland(wastelands_: Array, remnants_: Dictionary) -> void:
 		if neighbor.terrain != null:
 			weights[neighbor.terrain] += Global.dict.terrain.prevalence[neighbor.terrain]
 	
-	flap.terrain = Global.get_random_key(weights)
+	flap.set_terrain(Global.get_random_key(weights))
 	remnants_[flap.terrain] -= 1
 	wastelands_.erase(flap)
 
@@ -507,7 +510,7 @@ func incentivize_minority(hegemony_: Dictionary, insulation_: Dictionary, wastel
 		var flap = available_flaps.pick_random()
 		wastelands_.erase(flap)
 		
-		flap.terrain = minority
+		flap.set_terrain(minority)
 		hegemony_[minority] += flap.square
 	else:
 		hegemony_[minority] += square
@@ -682,9 +685,6 @@ func add_new_senor(type_: String) -> bool:
 			else:
 				input.state.senor = liberty
 		else:
-#			if type_ == "empire" and empires.get_child_count() == Global.num.size.empire.limit:
-#				expand_empires()
-#			else:
 			var state = Global.scene.state.instantiate()
 			node.add_child(state)
 			state.set_attributes(input)
@@ -761,23 +761,7 @@ func find_furthest_earldom_in_biggest_empire() -> void:
 	var datas = []
 	
 	for empire in empires.get_children():
-		var data = {}
-		data.empire = empire
-		data.datas = []
-		data.earldoms = []
-		
-		for patch in empire.patchs:
-			if !data.earldoms.has(patch.state["earldom"]):
-				data.earldoms.append(patch.state["earldom"])
-		
-		for earldom in data.earldoms:
-			var data_ = {}
-			data_.earldom = earldom
-			data_.d = earldom.hub.position.distance_to(empire.hub.position)
-			data.datas.append(data_)
-		
-		data.datas.sort_custom(func(a, b): return a.d > b.d)
-		data.furthest = data.datas.front().d
+		var data = find_earldom_in_empire_based_on_remoteness(empire, "furthest")
 		data.size = data.earldoms.size()
 		datas.append(data)
 	
@@ -791,6 +775,32 @@ func find_furthest_earldom_in_biggest_empire() -> void:
 	furthest.donor.repossess_earldom(furthest.recipient, furthest.earldom)
 	furthest.earldom.paint_patchs(Color.DIM_GRAY)
 	shift_layer(0)
+
+
+func find_earldom_in_empire_based_on_remoteness(empire_: MarginContainer, remoteness_: String) -> Dictionary:
+	var sign = 1
+	
+	match remoteness_:
+		"nearest":
+			sign = -1
+		"furthest":
+			sign = 1
+	
+	var datas = []
+	var earldoms = []
+	
+	for patch in empire_.patchs:
+		if !earldoms.has(patch.state["earldom"]):
+			earldoms.append(patch.state["earldom"])
+	
+	for earldom in earldoms:
+		var data = {}
+		data.earldom = earldom
+		data.d = earldom.hub.position.distance_to(empire_.hub.position) * sign
+		datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.d > b.d)
+	return datas.front()
 
 
 func find_furthest_patch() -> void:
@@ -816,12 +826,68 @@ func find_furthest_patch() -> void:
 	furthest.paint_flaps(Color.DIM_GRAY)
 
 
-func init_settlements() -> void:
-	pass
+func init_state_capitals() -> void:
+	for node in states.get_children():
+		for state in node.get_children():
+			if state.type == "earldom":
+				var data = find_patch_in_state_based_on_remoteness(state, "nearest")
+				data.patch.lair.set_as_state_capital(state)
+			else:
+				var data = find_vassal_in_state_based_on_remoteness(state, "nearest")
+				data.vassal.capital.set_as_state_capital(state)
+
+
+func find_patch_in_state_based_on_remoteness(state_: MarginContainer, remoteness_: String) -> Dictionary:
+	var sign = 1
+	
+	match remoteness_:
+		"nearest":
+			sign = -1
+		"furthest":
+			sign = 1
+	
+	var datas = []
+	var earldoms = []
+	
+	for patch in state_.patchs:
+		var data = {}
+		data.patch = patch
+		data.d = patch.lair.position.distance_to(state_.hub.position) * sign
+		datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.d > b.d)
+	return datas.front()
+
+
+func find_vassal_in_state_based_on_remoteness(state_: MarginContainer, remoteness_: String) -> Dictionary:
+	var sign = 1
+	
+	match remoteness_:
+		"nearest":
+			sign = -1
+		"furthest":
+			sign = 1
+	
+	var datas = []
+	var vassals = []
+	
+	for vassal in state_.vassals:
+		var data = {}
+		data.vassal = vassal
+		data.d = vassal.capital.position.distance_to(state_.hub.position) * sign
+		datas.append(data)
+	
+	datas.sort_custom(func(a, b): return a.d > b.d)
+	return datas.front()
+
+
+func init_settlement() -> void:
+	for empire in empires.get_children():
+		empire.capital.init_settlement()
 
 
 func shift_layer(shift_: int) -> void:
-	var index = 2 
+	var index = 9 
 	
 	if layer != null:
 		index = Global.arr.layer.cloth.find(layer)
@@ -830,10 +896,11 @@ func shift_layer(shift_: int) -> void:
 	layer = Global.arr.layer.cloth[index]
 	
 	for knob in knobs.get_children():
-		if knob.type == "hub":
+		if knob.type == "hub" :
 			knob.visible = false
 		else:
-			knob.visible = false
+			if knob.type != "lair" and knob.type != "capital":
+				knob.visible = false
 	
 	for flap in flaps.get_children():
 		match layer:
@@ -855,13 +922,19 @@ func shift_layer(shift_: int) -> void:
 				flap.paint_based_on_state_type_index(layer)
 			"empire":
 				flap.paint_based_on_state_type_index(layer)
+			"realm":
+				flap.paint_based_on_terrain()
+				#flap.paint_based_on_realm_terrain()
 	
 	for seam in seams.get_children():
 		if Global.arr.state.has(layer):
-			seam.visible = seam.boundary[layer]
+			seam.visible = seam.boundary.state[layer]
 		else:
-			if layer == "terrain":
-				seam.visible = seam.boundary["empire"]
+#			if layer == "terrain":
+#				seam.visible = !seam.boundary.realms.is_empty()
+#			else:
+			if layer == "realm":
+				seam.visible = !seam.boundary.realms.is_empty()
 			else:
 				seam.visible = seam.boundary.patch
 

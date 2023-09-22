@@ -8,6 +8,7 @@ var vassals = []
 var neighbors = []
 var senor = null
 var hub = null
+var capital = null
 var limit = null
 var index = null
 
