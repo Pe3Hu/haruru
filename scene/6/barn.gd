@@ -1,7 +1,7 @@
 extends MarginContainer
 
 
-@onready var icon =$HBox/Icon
+@onready var icon = $HBox/Icon
 @onready var sl = $HBox/ShelfLife
 
 var accountant = null
@@ -22,10 +22,10 @@ func fill_sl() -> void:
 		var input = {}
 		input.type = "number"
 		input.subtype = 0
-		var icon = Global.scene.icon.instantiate()
-		sl.add_child(icon)
-		icon.set_attributes(input)
-		icon.name = str(_i)
+		var icon_ = Global.scene.icon.instantiate()
+		sl.add_child(icon_)
+		icon_.set_attributes(input)
+		icon_.name = str(_i)
 	
 	var last = sl.get_child(0)
 	last.number.set("theme_override_colors/font_color", Color.DARK_RED)
@@ -38,12 +38,12 @@ func restock(value_: int) -> void:
 
 func absorption(value_: int) -> void:
 	for _i in sl.get_child_count():
-		var icon = sl.get_child(_i)
-		var value = min(int(icon.number.text), value_)
+		var icon_ = sl.get_child(_i)
+		var value = min(int(icon_.number.text), value_)
 		
 		if value > 0:
 			value_ -= value
-			icon.number.text = str(int(icon.number.text - value))
+			icon_.number.text = str(int(icon_.number.text - value))
 		
 		if value_ == 0:
 			return

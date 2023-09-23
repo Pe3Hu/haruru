@@ -62,7 +62,7 @@ func init_num() -> void:
 	num.size.flap = {}
 	num.size.flap.col = 8
 	num.size.flap.row = 8
-	num.size.flap.a = 64
+	num.size.flap.a = 50#64
 	num.size.flap.R = num.size.flap.a
 	num.size.flap.r = num.size.flap.R * sqrt(3) / 2
 	num.size.flap.terrain = 2
@@ -78,6 +78,21 @@ func init_num() -> void:
 	
 	num.realm = {}
 	num.realm.handler = 0.25
+	
+	num.settlement = {}
+	num.settlement.workplace = {}
+	num.settlement.workplace["0"] = 100
+	num.settlement.workplace["1"] = 1000
+	
+	num.settlement.migration = {}
+	num.settlement.migration.min = 0.01
+	num.settlement.migration.max = 0.04
+	
+	num.structure = {}
+	num.structure.school = {}
+	num.structure.school.workplace = {}
+	num.structure.school.workplace["0"] = 9
+	num.structure.school.workplace["1"] = 16
 
 
 func init_dict() -> void:
@@ -334,7 +349,6 @@ func init_servant() -> void:
 					if outcomes.has(key):
 						data[key] = facet[key]
 						
-						
 					elif !dict.facet.type[facet.type][facet.subtype].has(key) and exceptions.has(key):
 						dict.facet.type[facet.type][facet.subtype][key] = facet[key]
 		
@@ -342,7 +356,6 @@ func init_servant() -> void:
 		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome].erase("dice")
 		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome].erase("outcome")
 		dict.facet.type[facet.type][facet.subtype].outcome["failure"]["facets"] -= data.facets
-	
 	
 	for type in dict.facet.type:
 		for subtype in dict.facet.type[type]:
@@ -357,7 +370,6 @@ func init_servant() -> void:
 						servant.workout[data.resource] = 0
 					
 					servant.workout[data.resource] += data.value * data.facets
-					
 					
 					if data.resource != data.raw:
 						if !servant.workout.has(data.raw):
@@ -429,15 +441,25 @@ func init_appellation() -> void:
 		dict.appellation.temp[terrain] = []
 		num.index.appellation[terrain] = 0
 		fill_appellation_temp(terrain)
-
-
-func fill_appellation_temp(terrian_: String) -> void:
-	num.index.appellation[terrian_] += 1
-	dict.appellation.temp[terrian_].append_array(dict.appellation.terrain[terrian_])
 	
-	if num.index.appellation[terrian_] > 1:
-		for _i in dict.appellation.temp[terrian_].size():
-			dict.appellation.temp[terrian_][_i] = dict.appellation.temp[terrian_][_i] + " " + str(num.index.appellation[terrian_])
+	dict.appellation.temp.city = []
+	num.index.appellation.city = 0
+	fill_appellation_temp("city")
+
+
+func fill_appellation_temp(type_: String) -> void:
+	num.index.appellation[type_] += 1
+	
+	if arr.terrain.has(type_):
+		dict.appellation.temp[type_].append_array(dict.appellation.terrain[type_])
+		
+	if type_ == "city":
+		dict.appellation.temp[type_].append_array(dict.appellation.state[type_])
+	
+	
+	if num.index.appellation[type_] > 1:
+		for _i in dict.appellation.temp[type_].size():
+			dict.appellation.temp[type_][_i] = dict.appellation.temp[type_][_i] + " " + str(num.index.appellation[type_])
 
 
 func init_node() -> void:
@@ -452,6 +474,8 @@ func init_scene() -> void:
 	scene.tribe = load("res://scene/1/tribe.tscn")
 	scene.member = load("res://scene/1/member.tscn")
 	
+	scene.settlement = load("res://scene/2/settlement.tscn")
+	scene.school = load("res://scene/2/school.tscn")
 	scene.structure = load("res://scene/2/structure.tscn")
 	scene.storey = load("res://scene/2/storey.tscn")
 	scene.chamber = load("res://scene/2/chamber.tscn")
@@ -470,10 +494,11 @@ func init_scene() -> void:
 	scene.frontier = load("res://scene/5/frontier.tscn")
 	scene.state = load("res://scene/5/state.tscn")
 	
-	scene.settlement = load("res://scene/6/settlement.tscn")
 	scene.realm = load("res://scene/6/realm.tscn")
 	scene.accountant = load("res://scene/6/accountant.tscn")
-	scene.manager = load("res://scene/6/manager.tscn")
+	#scene.manager = load("res://scene/6/manager.tscn")
+	scene.fieldwork = load("res://scene/6/fieldwork.tscn")
+	
 	
 	pass
 

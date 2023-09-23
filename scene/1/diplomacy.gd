@@ -117,3 +117,6 @@ func realms_are_harvesting() -> void:
 		realm.harvest()
 		realm.meal()
 		realm.craft()
+		realm.migration()
+		realm.education()
+		realm.accountant.update_population()

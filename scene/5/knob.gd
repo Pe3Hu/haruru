@@ -65,12 +65,3 @@ func set_as_state_capital(state_: MarginContainer) -> void:
 	state_.capital = self
 	update_color()
 
-
-func init_settlement() -> void:
-	var input = {}
-	input.knob = self
-	input.cloth = cloth
-	settlement = Global.scene.settlement.instantiate()
-	cloth.settlements.add_child(settlement)
-	settlement.set_attributes(input)
-	update_color()

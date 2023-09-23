@@ -1,8 +1,9 @@
 extends MarginContainer
 
 
-@onready var manager = $Manager
-@onready var warehouse = $Warehouse
+@onready var manager = $VBox/Manager
+@onready var warehouse = $VBox/Warehouse
+@onready var settlements = $VBox/Settlements
 
 var sketch = null
 var capital = null
@@ -22,6 +23,7 @@ func set_attributes(input_: Dictionary) -> void:
 	set_states(input_.state)
 	push_boundaries(input_.state)
 	init_leadership()
+	init_settlement(capital)
 
 
 func set_states(state_: MarginContainer) -> void:
@@ -35,6 +37,7 @@ func set_states(state_: MarginContainer) -> void:
 					states[vassal.type] = []
 				
 				states[vassal.type].append(vassal)
+				vassal.realm = self
 		
 		if states[type].front().vassals.is_empty():
 			type = null
@@ -65,12 +68,21 @@ func push_boundaries(state_: MarginContainer) -> void:
 func init_leadership() -> void:
 	var input = {}
 	input.realm = self
-	manager.set_attributes(input)
-	
 	accountant = Global.scene.accountant.instantiate()
 	sketch.economy.accountants.add_child(accountant)
 	accountant.set_attributes(input)
+	manager.set_attributes(input)
 	warehouse.set_attributes(input)
+
+
+func init_settlement(knob_: Polygon2D) -> void:
+	var input = {}
+	input.knob = knob_
+	input.workplace = Global.num.settlement.workplace["1"]
+	knob_.settlement = Global.scene.settlement.instantiate()
+	settlements.add_child(knob_.settlement)
+	knob_.settlement.set_attributes(input)
+	knob_.update_color()
 
 
 func harvest() -> void:
@@ -118,3 +130,23 @@ func craft() -> void:
 				if data.workout.has(resource):
 					var avg = floor(float(data.workout[resource]) / data.dice * population)
 					warehouse.change_resource_value(resource, avg)
+
+
+func migration() -> void:
+	var population = accountant.get_rss_icon_based_on_type_and_subtype("profit", "population").get_number()
+	var settlers = {}
+	
+	for key in Global.num.settlement.migration:
+		settlers[key] = population * Global.num.settlement.migration[key]
+	
+	Global.rng.randomize()
+	settlers.current = Global.rng.randi_range(settlers.min, settlers.max)
+	var settlement = settlements.get_child(0)
+	settlement.bring_settlers(settlers.current)
+
+
+func education() -> void:
+	for settlement in settlements.get_children():
+		for structure in settlement.structures.get_children():
+			if structure.type == "School":
+				structure.enrollment()

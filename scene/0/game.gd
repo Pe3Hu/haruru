@@ -8,6 +8,9 @@ func _ready() -> void:
 	#012 description
 	Global.node.sketch.diplomacy.init_reams()
 	#Global.node.sketch.diplomacy.servants_simulation()
+	
+	#Global.rng.randomize()
+	#var value = Global.rng.randi_range(min, max)
 	pass
 
 

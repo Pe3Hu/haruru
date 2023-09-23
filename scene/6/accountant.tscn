@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dwvpwkmi5mpiq"]
+[gd_scene load_steps=6 format=3 uid="uid://dwvpwkmi5mpiq"]
 
 [ext_resource type="Script" path="res://scene/6/accountant.gd" id="1_6usk8"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_p2mye"]
+[ext_resource type="PackedScene" uid="uid://dy5w5fiojwtmv" path="res://scene/6/foreman.tscn" id="3_hvy4d"]
 [ext_resource type="PackedScene" uid="uid://blow2nby1pif0" path="res://scene/6/barn.tscn" id="3_me4yp"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
@@ -47,6 +48,9 @@ theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = ExtResource("1_p2mye")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Foreman" parent="VBox" instance=ExtResource("3_hvy4d")]
+layout_mode = 2
 
 [node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
 visible = false

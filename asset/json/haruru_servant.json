@@ -218,5 +218,27 @@
   "facets": 0,
   "workplace": "comfortable",
   "raw": "food"
+ },
+ {
+  "type": "servant",
+  "subtype": "mentor",
+  "outcome": "success",
+  "resource": "knowledge",
+  "value": 0,
+  "dice": 8,
+  "facets": 0,
+  "workplace": "comfortable",
+  "raw": "food"
+ },
+ {
+  "type": "servant",
+  "subtype": "pupil",
+  "outcome": "success",
+  "resource": "knowledge",
+  "value": 0,
+  "dice": 8,
+  "facets": 0,
+  "workplace": "comfortable",
+  "raw": "food"
  }
 ]

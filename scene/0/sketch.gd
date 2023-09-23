@@ -26,5 +26,5 @@ func add_encounter(squads_: Array) -> void:
 func next_day() -> void:
 	diplomacy.realms_are_harvesting()
 	
-	var next_day = int(day.text) + 1
-	day.text = str(next_day)
+	var value = int(day.text) + 1
+	day.text = str(value)

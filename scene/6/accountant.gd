@@ -2,6 +2,7 @@ extends MarginContainer
 
 
 @onready var rt = $VBox/RealmTitle
+@onready var foreman = $VBox/Foreman
 @onready var tss = $VBox/TerrainSpreadsheet
 @onready var rss = $VBox/ResourceSpreadsheet
 @onready var barn = $VBox/Barn
@@ -28,6 +29,7 @@ func set_attributes(input_: Dictionary):
 	var input = {}
 	input.accountant = self
 	barn.set_attributes(input)
+	foreman.set_attributes(input)
 
 
 func init_flaps() -> void:
@@ -133,6 +135,8 @@ func init_rss() -> void:
 		rss.add_child(icon)
 		icon.set_attributes(input)
 	
+	#print(Global.dict.facet.type["servant"].keys())
+	
 	for subtype in Global.dict.facet.type["servant"]:
 		input.type = "servant"
 		input.subtype = subtype
@@ -236,11 +240,6 @@ func init_harvesters() -> void:
 			var population = round(workplaces[terrain].total * distribution.servants[servant])
 			set_population(servant, population)
 			workplaces[terrain].servants[servant] = servants[servant]
-	
-#	for terrain in workplaces:
-#		for servant in workplaces[terrain].servants:
-#			var icon = get_rss_icon_based_on_type_and_subtype(servant, "population")
-#			icon.number.text = str(workplaces[terrain].servants[servant])
 
 
 func set_population(subtype_: String, population_: int) -> void:

@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bfdiyjupecl58"]
+[gd_scene load_steps=7 format=3 uid="uid://bfdiyjupecl58"]
 
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_ah1ij"]
 [ext_resource type="Script" path="res://scene/6/realm.gd" id="1_t2tad"]
+[ext_resource type="PackedScene" uid="uid://dy5w5fiojwtmv" path="res://scene/6/foreman.tscn" id="3_3o6qy"]
 [ext_resource type="PackedScene" uid="uid://j7vegg7d6w6k" path="res://scene/6/manager.tscn" id="3_nwj80"]
 [ext_resource type="PackedScene" uid="uid://x7srwbaim07d" path="res://scene/2/warehouse.tscn" id="4_wkf7c"]
 
@@ -37,8 +38,20 @@ theme_override_fonts/font = ExtResource("1_ah1ij")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Manager" parent="." instance=ExtResource("3_nwj80")]
+[node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Warehouse" parent="." instance=ExtResource("4_wkf7c")]
+[node name="Foreman" parent="VBox" instance=ExtResource("3_3o6qy")]
+layout_mode = 2
+
+[node name="Settlements" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="Warehouse" parent="VBox" instance=ExtResource("4_wkf7c")]
+visible = false
+layout_mode = 2
+
+[node name="Manager" parent="VBox" instance=ExtResource("3_nwj80")]
+visible = false
 layout_mode = 2

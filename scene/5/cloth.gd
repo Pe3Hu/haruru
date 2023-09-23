@@ -37,24 +37,12 @@ func _ready() -> void:
 	init_states()
 	init_state_hubs()
 	init_state_capitals()
-	init_settlement()
 	shift_layer(0)
-	#find_furthest_earldom_in_biggest_empire()
-	
 	
 	selected.patch = 0
 	
 	for state in Global.arr.state:
 		selected[state] = 0
-	
-	#shift_patch_with_neighbors(0)
-	
-#	var state = earldoms.get_child(0)#dukedom earldoms
-#	if state != null:
-#		state.paint_patchs(Color.BLACK)
-#
-#		for neighbor in state.neighbors:
-#			neighbor.paint_patchs(Color.WHITE)
 
 
 func reset() -> void:
@@ -778,25 +766,25 @@ func find_furthest_earldom_in_biggest_empire() -> void:
 
 
 func find_earldom_in_empire_based_on_remoteness(empire_: MarginContainer, remoteness_: String) -> Dictionary:
-	var sign = 1
+	var sign_ = 1
 	
 	match remoteness_:
 		"nearest":
-			sign = -1
+			sign_ = -1
 		"furthest":
-			sign = 1
+			sign_ = 1
 	
 	var datas = []
-	var earldoms = []
+	var earldoms_ = []
 	
 	for patch in empire_.patchs:
-		if !earldoms.has(patch.state["earldom"]):
-			earldoms.append(patch.state["earldom"])
+		if !earldoms_.has(patch.state["earldom"]):
+			earldoms_.append(patch.state["earldom"])
 	
-	for earldom in earldoms:
+	for earldom in earldoms_:
 		var data = {}
 		data.earldom = earldom
-		data.d = earldom.hub.position.distance_to(empire_.hub.position) * sign
+		data.d = earldom.hub.position.distance_to(empire_.hub.position) * sign_
 		datas.append(data)
 	
 	datas.sort_custom(func(a, b): return a.d > b.d)
@@ -838,21 +826,20 @@ func init_state_capitals() -> void:
 
 
 func find_patch_in_state_based_on_remoteness(state_: MarginContainer, remoteness_: String) -> Dictionary:
-	var sign = 1
+	var sign_ = 1
 	
 	match remoteness_:
 		"nearest":
-			sign = -1
+			sign_ = -1
 		"furthest":
-			sign = 1
+			sign_ = 1
 	
 	var datas = []
-	var earldoms = []
 	
 	for patch in state_.patchs:
 		var data = {}
 		data.patch = patch
-		data.d = patch.lair.position.distance_to(state_.hub.position) * sign
+		data.d = patch.lair.position.distance_to(state_.hub.position) * sign_
 		datas.append(data)
 	
 	datas.sort_custom(func(a, b): return a.d > b.d)
@@ -860,13 +847,13 @@ func find_patch_in_state_based_on_remoteness(state_: MarginContainer, remoteness
 
 
 func find_vassal_in_state_based_on_remoteness(state_: MarginContainer, remoteness_: String) -> Dictionary:
-	var sign = 1
+	var sign_ = 1
 	
 	match remoteness_:
 		"nearest":
-			sign = -1
+			sign_ = -1
 		"furthest":
-			sign = 1
+			sign_ = 1
 	
 	var datas = []
 	var vassals = []
@@ -874,16 +861,11 @@ func find_vassal_in_state_based_on_remoteness(state_: MarginContainer, remotenes
 	for vassal in state_.vassals:
 		var data = {}
 		data.vassal = vassal
-		data.d = vassal.capital.position.distance_to(state_.hub.position) * sign
+		data.d = vassal.capital.position.distance_to(state_.hub.position) * sign_
 		datas.append(data)
 	
 	datas.sort_custom(func(a, b): return a.d > b.d)
 	return datas.front()
-
-
-func init_settlement() -> void:
-	for empire in empires.get_children():
-		empire.capital.init_settlement()
 
 
 func shift_layer(shift_: int) -> void:

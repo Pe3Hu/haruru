@@ -9,6 +9,7 @@ var neighbors = []
 var senor = null
 var hub = null
 var capital = null
+var realm = null
 var limit = null
 var index = null
 
