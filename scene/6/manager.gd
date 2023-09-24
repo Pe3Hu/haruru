@@ -17,11 +17,38 @@ func fill_accountant_rss() -> void:
 	share_responsibility()
 	fill_fieldworks()
 	accountant.update_resource_income()
+	accountant.update_population()
 
 
 func share_responsibility() -> void:
 	init_harvesters()
 	init_handlers()
+
+
+func fill_fieldworks() -> void:
+	for specialization in accountant.servants:
+		var population = accountant.get_rss_icon_based_on_type_and_subtype(specialization, "population").get_number()
+		
+		if population > 0:
+			foreman.fill_best_workplaces(specialization, population)
+			#var abundance = 0
+			
+#			for resource in Global.arr.resource:
+#				var data = Global.dict.facet.type["servant"][specialization]
+#
+#				if data.workouts.has(resource):
+#					accountant.change_specialization_resource_icon_by_abundance(specialization, resource, abundance)
+#					var conversion = Global.get_conversion(resource)
+#					var icon = accountant.get_rss_icon_based_on_type_and_subtype(servant, resource)
+#					var value = float(data.workout[resource]) / data.dice * abundance
+#
+#					if data.workout[resource] > 0:
+#						value *= conversion
+#
+#					value = floor(value)
+#
+#					#print([servant, resource, value, abundance, float(data.workout[resource]) / data.dice, conversion])
+#					icon.change_number(value)
 
 
 func init_harvesters() -> void:
@@ -69,8 +96,8 @@ func init_handlers() -> void:
 		if accountant.servants[servant] > 0:
 			var raws = []
 			
-			for outcome in Global.dict.facet.type["servant"][servant].outcome:
-				var data = Global.dict.facet.type["servant"][servant].outcome[outcome]
+			for outcome in Global.dict.facet.type["servant"][servant].outcomes:
+				var data = Global.dict.facet.type["servant"][servant].outcomes[outcome]
 				
 				if data.has("raw"):
 					if data.raw == data.resource and !raws.has(data.raw):
@@ -85,27 +112,3 @@ func init_handlers() -> void:
 				var recipient = accountant.get_rss_icon_based_on_type_and_subtype(handler, "population")
 				recipient.change_number(population)
 				set_population(handler, recipient.get_number())
-
-
-func fill_fieldworks() -> void:
-	for servant in accountant.servants:
-		var population = accountant.get_rss_icon_based_on_type_and_subtype(servant, "population").get_number()
-		
-		if population > 0:
-			var abundance = foreman.fill_best_workplaces(servant, population)
-			
-			for resource in Global.arr.resource:
-				var data = Global.dict.facet.type["servant"][servant]
-				
-				if data.workout.has(resource):
-					var conversion = Global.get_conversion(resource)
-					var icon = accountant.get_rss_icon_based_on_type_and_subtype(servant, resource)
-					var value = float(data.workout[resource]) / data.dice * abundance
-					
-					if data.workout[resource] > 0:
-						value *= conversion
-					
-					value = floor(value)
-					
-					#print([servant, resource, value, abundance, float(data.workout[resource]) / data.dice, conversion])
-					icon.change_number(value)

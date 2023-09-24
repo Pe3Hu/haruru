@@ -43,7 +43,7 @@ func absorption(value_: int) -> void:
 		
 		if value > 0:
 			value_ -= value
-			icon_.number.text = str(int(icon_.number.text - value))
+			icon_.number.text = str(int(icon_.number.text) - value)
 		
 		if value_ == 0:
 			return

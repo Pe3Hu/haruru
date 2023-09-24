@@ -109,7 +109,7 @@ func init_reams() -> void:
 		realm.set_attributes(input)
 	
 	sketch.cloth.shift_layer(0)
-	realms_are_harvesting()
+	#sketch.next_day()
 
 
 func realms_are_harvesting() -> void:
@@ -119,4 +119,4 @@ func realms_are_harvesting() -> void:
 		realm.craft()
 		realm.migration()
 		realm.education()
-		realm.accountant.update_population()
+		realm.accountant.update_resource_income()

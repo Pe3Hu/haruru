@@ -81,8 +81,8 @@ func init_num() -> void:
 	
 	num.settlement = {}
 	num.settlement.workplace = {}
-	num.settlement.workplace["0"] = 100
-	num.settlement.workplace["1"] = 1000
+	num.settlement.workplace[0] = 100
+	num.settlement.workplace[1] = 1000
 	
 	num.settlement.migration = {}
 	num.settlement.migration.min = 0.01
@@ -91,8 +91,8 @@ func init_num() -> void:
 	num.structure = {}
 	num.structure.school = {}
 	num.structure.school.workplace = {}
-	num.structure.school.workplace["0"] = 9
-	num.structure.school.workplace["1"] = 16
+	num.structure.school.workplace[0] = 39
+	num.structure.school.workplace[1] = 16
 	
 	num.conversion = {}
 	num.conversion.raw = 0.01
@@ -112,7 +112,6 @@ func init_dict() -> void:
 	init_polygon()
 	init_business()
 	init_neighbor()
-	#init_facet()
 	init_servant()
 	#init_mercenary()
 	init_abundance()
@@ -171,6 +170,9 @@ func init_time() -> void:
 	dict.time.month = dict.time.week * 4
 	dict.time.season = dict.time.month * 3
 	dict.time.year = dict.time.season * 4
+	
+	dict.period = {}
+	dict.period.study = 14#dict.time.week
 
 
 func init_polygon() -> void:
@@ -346,9 +348,9 @@ func init_servant() -> void:
 		
 		if !dict.facet.type[facet.type].has(facet.subtype):
 			dict.facet.type[facet.type][facet.subtype] = {}
-			dict.facet.type[facet.type][facet.subtype].outcome = {}
-			dict.facet.type[facet.type][facet.subtype].outcome["failure"] = {}
-			dict.facet.type[facet.type][facet.subtype].outcome["failure"]["facets"] = facet.dice
+			dict.facet.type[facet.type][facet.subtype].outcomes = {}
+			dict.facet.type[facet.type][facet.subtype].outcomes["failure"] = {}
+			dict.facet.type[facet.type][facet.subtype].outcomes["failure"]["facets"] = facet.dice
 		
 		for key in facet:
 			match typeof(facet[key]):
@@ -364,30 +366,30 @@ func init_servant() -> void:
 					elif !dict.facet.type[facet.type][facet.subtype].has(key) and exceptions.has(key):
 						dict.facet.type[facet.type][facet.subtype][key] = facet[key]
 		
-		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome] = data
-		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome].erase("dice")
-		dict.facet.type[facet.type][facet.subtype].outcome[data.outcome].erase("outcome")
-		dict.facet.type[facet.type][facet.subtype].outcome["failure"]["facets"] -= data.facets
+		dict.facet.type[facet.type][facet.subtype].outcomes[data.outcome] = data
+		dict.facet.type[facet.type][facet.subtype].outcomes[data.outcome].erase("dice")
+		dict.facet.type[facet.type][facet.subtype].outcomes[data.outcome].erase("outcome")
+		dict.facet.type[facet.type][facet.subtype].outcomes["failure"]["facets"] -= data.facets
 	
 	for type in dict.facet.type:
 		for subtype in dict.facet.type[type]:
 			var servant = dict.facet.type[type][subtype]
-			servant.workout = {}
+			servant.workouts = {}
 			
-			for outcome in servant.outcome:
-				var data = servant.outcome[outcome]
+			for outcome in servant.outcomes:
+				var data = servant.outcomes[outcome]
 				
 				if data.has("resource"):
-					if !servant.workout.has(data.resource):
-						servant.workout[data.resource] = 0
+					if !servant.workouts.has(data.resource):
+						servant.workouts[data.resource] = 0
 					
-					servant.workout[data.resource] += data.value * data.facets
+					servant.workouts[data.resource] += data.value * data.facets
 					
 					if data.resource != data.raw:
-						if !servant.workout.has(data.raw):
-							servant.workout[data.raw] = 0
+						if !servant.workouts.has(data.raw):
+							servant.workouts[data.raw] = 0
 						
-						servant.workout[data.raw] -= data.facets
+						servant.workouts[data.raw] -= data.facets
 
 
 func init_abundance() -> void:
@@ -593,8 +595,8 @@ func get_resource_path(resource_: String) -> Variant:
 
 func get_handler_based_on_raw(raw_: String) -> Variant:
 	for subtype in dict.facet.type["servant"]:
-		for outcome in Global.dict.facet.type["servant"][subtype].outcome:
-			var data = Global.dict.facet.type["servant"][subtype].outcome[outcome]
+		for outcome in Global.dict.facet.type["servant"][subtype].outcomes:
+			var data = Global.dict.facet.type["servant"][subtype].outcomes[outcome]
 			
 			if data.has("raw"):
 				if data.raw != data.resource and raw_ == data.raw and dict.conversion.product.has(data.resource):
@@ -650,10 +652,27 @@ func get_conversion(resource_: String) -> Variant:
 	if num.conversion.has(resource_):
 		return num.conversion[resource_]
 	else:
-		return num.conversion.product
+		return null
+
+
+func get_specializations_based_on_resource(resource_: String) -> Array:
+	var specializations = []
+	var type = "servant"
 	
-	for key in num.conversion:
-		if dict.conversion[key].has(resource_):
-			return num.conversion[key]
+	for subtype in dict.facet.type[type]:
+		for outcome in dict.facet.type[type][subtype].outcomes:
+			var data = dict.facet.type[type][subtype].outcomes[outcome]
+			
+			if !specializations.has(subtype) and data.has("resource"):
+				if resource_ == data.resource:
+					specializations.append(subtype)
+				else:
+					break
 	
-	return null
+	return specializations
+
+
+func get_workplace_based_on_specialization(specialization_: String) -> Variant:
+	var type = "servant"
+	var data =  dict.facet.type[type][specialization_]
+	return data.workplace

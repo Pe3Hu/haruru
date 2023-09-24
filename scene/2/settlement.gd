@@ -7,14 +7,16 @@ extends MarginContainer
 var realm = null
 var knob = null
 var workplace = {}
+var grade = null
 
 
 func set_attributes(input_: Dictionary) -> void:
 	knob = input_.knob
 	realm = knob.state["earldom"].realm
-	workplace.total = input_.workplace
+	grade = input_.grade
+	workplace.total = Global.num.settlement.workplace[grade]
 	workplace.busily = 0
-	workplace.freely = input_.workplace
+	workplace.freely = Global.num.settlement.workplace[grade]
 	
 	#realm.accountant.foreman.update_comfortable(self)
 	set_appellation()

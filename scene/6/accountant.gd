@@ -23,7 +23,6 @@ func set_attributes(input_: Dictionary):
 	init_tss()
 	fill_tss()
 	init_rss()
-	update_population()
 	
 	var input = {}
 	input.accountant = self
@@ -190,6 +189,36 @@ func get_rss_icon_based_on_type_and_subtype(type_: String, subtype_: String) -> 
 	return icon
 
 
+func change_specialization_population(specialization_: String, fieldwork_: MarginContainer ,population_: int) -> void:
+	change_icon_number_by_value(specialization_, "population", population_)
+	var abundance = fieldwork_.abundance * population_
+	
+
+	for resource in Global.dict.facet.type["servant"][specialization_].workouts:
+		var workout = Global.dict.facet.type["servant"][specialization_].workouts[resource]
+		var a = Global.dict.facet.type["servant"][specialization_].workouts
+		if int(realm.sketch.day.text) > 0: #Global.dict.facet.type["servant"][specialization_].workouts.size() > 1 and
+			pass
+		change_specialization_resource_icon_by_abundance(specialization_, resource, abundance)
+
+
+func change_icon_number_by_value(subtype_: String, type_: String, value_: int) -> void:
+	var icon = get_rss_icon_based_on_type_and_subtype(subtype_, type_)
+	icon.change_number(value_)
+
+
+func change_specialization_resource_icon_by_abundance(specialization_: String, resource_: String, abundance_: int) -> void:
+	var data = Global.dict.facet.type["servant"][specialization_]
+	var conversion = Global.get_conversion(resource_)
+	var value = float(data.workouts[resource_]) / data.dice * abundance_
+	
+	if data.workouts[resource_] > 0:
+		value *= conversion
+	
+	value = floor(value)
+	change_icon_number_by_value(specialization_, resource_, value)
+
+
 func update_resource_income() -> void:
 	for resource in Global.arr.resource:
 		var value = 0
@@ -206,6 +235,6 @@ func update_population() -> void:
 
 	for servant in servants:
 		value += get_rss_icon_based_on_type_and_subtype(servant, "population").get_number()
-		
+	
 	var icon = get_rss_icon_based_on_type_and_subtype("profit", "population")
 	icon.number.text = str(value)

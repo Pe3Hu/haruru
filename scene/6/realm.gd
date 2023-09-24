@@ -77,8 +77,8 @@ func init_leadership() -> void:
 
 func init_settlement(knob_: Polygon2D) -> void:
 	var input = {}
+	input.grade = 1
 	input.knob = knob_
-	input.workplace = Global.num.settlement.workplace["1"]
 	knob_.settlement = Global.scene.settlement.instantiate()
 	settlements.add_child(knob_.settlement)
 	knob_.settlement.set_attributes(input)
@@ -129,10 +129,12 @@ func migration() -> void:
 	settlers.current = Global.rng.randi_range(settlers.min, settlers.max)
 	var settlement = settlements.get_child(0)
 	settlement.bring_settlers(settlers.current)
+	accountant.update_population()
 
 
 func education() -> void:
 	for settlement in settlements.get_children():
 		for structure in settlement.structures.get_children():
-			if structure.type == "School":
+			if structure.type == "school":
 				structure.enrollment()
+				structure.graduation_check()

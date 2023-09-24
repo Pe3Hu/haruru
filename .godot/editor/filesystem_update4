@@ -17,3 +17,6 @@ res://script/Global.gd
 res://asset/json/haruru_abundance.json
 res://scene/6/realm.gd
 res://scene/2/settlement.gd
+res://scene/2/school.gd
+res://scene/1/diplomacy.gd
+res://scene/6/barn.gd

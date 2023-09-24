@@ -5,7 +5,7 @@ extends MarginContainer
 
 var accountant = null
 var realm = null
-var workplace = {}
+var workplaces = {}
 
 
 func set_attributes(input_: Dictionary):
@@ -28,13 +28,13 @@ func set_attributes(input_: Dictionary):
 func init_fieldwork():
 	for patch in realm.patchs:
 		for flap in patch.flaps:
-			if !workplace.has(flap.terrain):
-				workplace[flap.terrain] = {}
+			if !workplaces.has(flap.terrain):
+				workplaces[flap.terrain] = {}
 			
-			if !workplace[flap.terrain].has(flap.abundance):
-				workplace[flap.terrain][flap.abundance] = {}
-				workplace[flap.terrain][flap.abundance].current = 0
-				workplace[flap.terrain][flap.abundance].max = 0
+			if !workplaces[flap.terrain].has(flap.abundance):
+				workplaces[flap.terrain][flap.abundance] = {}
+				workplaces[flap.terrain][flap.abundance].current = 0
+				workplaces[flap.terrain][flap.abundance].max = 0
 			
 			if get_fieldwork(flap.terrain, flap.abundance) == null:
 				var hbox = get_hbox(flap.terrain)
@@ -49,7 +49,7 @@ func init_fieldwork():
 			var fieldwork = get_fieldwork(flap.terrain, flap.abundance)
 			var icon = fieldwork.get_icon("max")
 			icon.change_number(flap.workplaces)
-			workplace[flap.terrain][flap.abundance].max += flap.workplaces
+			workplaces[flap.terrain][flap.abundance].max += flap.workplaces
 	
 	init_comfortable()
 
@@ -59,7 +59,6 @@ func get_hbox(terrain_: String) -> Variant:
 		if hbox.name == terrain_.capitalize():
 			return hbox
 	
-	var a = terrains.get_children()
 	return null
 
 
@@ -76,15 +75,15 @@ func get_fieldwork(terrain_: String, abundance_: int) -> Variant:
 
 func init_comfortable() -> void:
 	var terrain = "comfortable"
-	if !workplace.has(terrain):
-		workplace[terrain] = {}
+	if !workplaces.has(terrain):
+		workplaces[terrain] = {}
 	
 	var abundance = 1
 	
-	if !workplace[terrain].has(abundance):
-		workplace[terrain][abundance] = {}
-		workplace[terrain][abundance].current = 0
-		workplace[terrain][abundance].max = 0
+	if !workplaces[terrain].has(abundance):
+		workplaces[terrain][abundance] = {}
+		workplaces[terrain][abundance].current = 0
+		workplaces[terrain][abundance].max = 0
 	
 		var hbox = get_hbox(terrain)
 		var input = {}
@@ -106,7 +105,7 @@ func add_settlement_fieldworks(settlement_: MarginContainer) -> void:
 	var icon = fieldwork.get_icon("max")
 	icon.change_number(settlement_.workplace.total)
 	fieldwork.update_visible()
-	workplace[terrain][abundance].max += settlement_.workplace.total
+	workplaces[terrain][abundance].max += settlement_.workplace.total
 
 
 func sort_by_abundance() -> void:
@@ -127,27 +126,18 @@ func sort_by_abundance() -> void:
 			hbox.add_child(data.fieldwork)
 
 
-func fill_best_workplaces(servant_: String, population_: int) -> int:
-	var abundance = 0
-	var workplace = Global.dict.servant.workplace[servant_]
-	
+func fill_best_workplaces(specialization_: String, population_: int) -> void:
+	var workplace = Global.dict.servant.workplace[specialization_]
 	var hbox = get_hbox(workplace)
-
-	if workplace == "comfortable":
-		var b = hbox.get_children()
-		var a = null
 	
 	for fieldwork in hbox.get_children():
 		if fieldwork.get("abundance") != null:
 			if population_ > 0:
 				var freely = min(fieldwork.get_freely(), population_)
-				fieldwork.set_servant_resupply(servant_, freely)
+				fieldwork.set_servant_resupply(specialization_, freely)
 				population_ -= freely
-				abundance += freely * fieldwork.get_icon("abundance").get_number()
-			else:
-				return abundance
-	
-	return abundance
+				var abundance = freely * fieldwork.get_icon("abundance").get_number()
+				accountant.change_specialization_population(specialization_, fieldwork, freely)
 
 
 func update_visible() -> void:
@@ -159,3 +149,16 @@ func update_visible() -> void:
 				freely += fieldwork.get_freely()
 
 		hbox.visible = freely > 0
+
+
+func find_worst_fieldwork(terrain_: String) -> Variant:
+	var hbox = get_hbox(terrain_)
+	
+	for _i in range(hbox.get_child_count()-1,-1, -1):
+		var fieldwork = hbox.get_child(_i)
+		
+		if fieldwork.get("abundance") != null:
+			if fieldwork.get_icon("current").get_number() > 0:
+				return fieldwork
+	
+	return null
