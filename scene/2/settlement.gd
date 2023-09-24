@@ -16,6 +16,7 @@ func set_attributes(input_: Dictionary) -> void:
 	workplace.busily = 0
 	workplace.freely = input_.workplace
 	
+	#realm.accountant.foreman.update_comfortable(self)
 	set_appellation()
 	erect_structure("school")
 

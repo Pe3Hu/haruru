@@ -93,6 +93,18 @@ func init_num() -> void:
 	num.structure.school.workplace = {}
 	num.structure.school.workplace["0"] = 9
 	num.structure.school.workplace["1"] = 16
+	
+	num.conversion = {}
+	num.conversion.raw = 0.01
+	num.conversion.product = 1
+	num.conversion.food = 0.1
+	num.conversion.wood = 0.2
+	num.conversion.ore = 0.4
+	num.conversion.gem = 0.8
+	num.conversion.canned = 0.15
+	num.conversion.plank = 0.3
+	num.conversion.ingot = 0.45
+	num.conversion.jewel = 0.9
 
 
 func init_dict() -> void:
@@ -108,7 +120,7 @@ func init_dict() -> void:
 	
 	dict.endowment = {}
 	
-#	for raw in dict.raw:
+#	for raw in dict.conversion.raw:
 #		var value = 1000
 #		dict.endowment[raw] = value
 
@@ -202,22 +214,17 @@ func init_business() -> void:
 	dict.business["jewelry"].product = "jewel"
 	
 	dict.conversion = {}
-	dict.conversion["food"] = "canned"
-	dict.conversion["wood"] = "plank"
-	dict.conversion["ore"] = "ingot"
-	dict.conversion["gem"] = "jewel"
+	dict.conversion.raw = {}
+	dict.conversion.raw["food"] = "canned"
+	dict.conversion.raw["wood"] = "plank"
+	dict.conversion.raw["ore"] = "ingot"
+	dict.conversion.raw["gem"] = "jewel"
 	
-	dict.raw = {}
-	dict.raw["food"] = "canned"
-	dict.raw["wood"] = "plank"
-	dict.raw["ore"] = "ingot"
-	dict.raw["gem"] = "jewel"
-	
-	dict.product = {}
-	dict.product["canned"] = "food"
-	dict.product["plank"] = "wood"
-	dict.product["ingot"] = "ore"
-	dict.product["jewel"] = "gem"
+	dict.conversion.product = {}
+	dict.conversion.product["canned"] = "food"
+	dict.conversion.product["plank"] = "wood"
+	dict.conversion.product["ingot"] = "ore"
+	dict.conversion.product["jewel"] = "gem"
 
 
 func init_neighbor() -> void:
@@ -319,6 +326,8 @@ func init_mercenary() -> void:
 
 
 func init_servant() -> void:
+	dict.servant = {}
+	dict.servant.workplace = {}
 	dict.facet = {}
 	dict.facet.type = {}
 	var path = "res://asset/json/haruru_servant.json"
@@ -327,6 +336,9 @@ func init_servant() -> void:
 	var outcomes = ["raw", "outcome", "resource", "value", "facets"]
 
 	for facet in array:
+		if !dict.servant.workplace.has(facet.subtype):
+			dict.servant.workplace[facet.subtype] = facet.workplace
+		
 		var data = {}
 		
 		if !dict.facet.type.has(facet.type):
@@ -585,11 +597,10 @@ func get_handler_based_on_raw(raw_: String) -> Variant:
 			var data = Global.dict.facet.type["servant"][subtype].outcome[outcome]
 			
 			if data.has("raw"):
-				if data.raw != data.resource and raw_ == data.raw and dict.product.has(data.resource):
+				if data.raw != data.resource and raw_ == data.raw and dict.conversion.product.has(data.resource):
 					return subtype
 	
 	return null
-
 
 
 func save_statistics(statistics_: Dictionary) -> void:
@@ -632,4 +643,17 @@ func get_random_key(dict_: Dictionary):
 			return key
 	
 	print("!bug! index_r error in get_random_key func")
+	return null
+
+
+func get_conversion(resource_: String) -> Variant:
+	if num.conversion.has(resource_):
+		return num.conversion[resource_]
+	else:
+		return num.conversion.product
+	
+	for key in num.conversion:
+		if dict.conversion[key].has(resource_):
+			return num.conversion[key]
+	
 	return null

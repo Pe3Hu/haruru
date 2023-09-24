@@ -45,6 +45,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Settlements" type="VBoxContainer" parent="VBox"]
+visible = false
 layout_mode = 2
 alignment = 1
 

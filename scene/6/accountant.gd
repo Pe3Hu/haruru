@@ -23,7 +23,6 @@ func set_attributes(input_: Dictionary):
 	init_tss()
 	fill_tss()
 	init_rss()
-	fill_rss()
 	update_population()
 	
 	var input = {}
@@ -135,8 +134,6 @@ func init_rss() -> void:
 		rss.add_child(icon)
 		icon.set_attributes(input)
 	
-	#print(Global.dict.facet.type["servant"].keys())
-	
 	for subtype in Global.dict.facet.type["servant"]:
 		input.type = "servant"
 		input.subtype = subtype
@@ -185,91 +182,6 @@ func init_rss() -> void:
 			rss.add_child(icon)
 			icon.set_attributes(input)
 			icon.name = "value of " + subtype + " " + resource
-
-
-func fill_rss() -> void:
-	share_responsibility()
-	
-	for servant in servants:
-		for resource in Global.arr.resource:
-			var data = Global.dict.facet.type["servant"][servant]
-			
-			if data.workout.has(resource):
-				var population = get_rss_icon_based_on_type_and_subtype(servant, "population").get_number()
-				var icon = get_rss_icon_based_on_type_and_subtype(servant, resource)
-				var avg = floor(float(data.workout[resource]) / data.dice * population)
-				icon.number.text = str(avg)
-	
-	update_resource_income()
-
-
-func share_responsibility() -> void:
-	init_harvesters()
-	init_handlers()
-
-
-func init_harvesters() -> void:
-	var workplaces = {}
-	
-	for terrain in Global.arr.terrain:
-		workplaces[terrain] = {}
-		workplaces[terrain].total = get_tss_icon_based_on_terrain_and_subtype(terrain, "workplace").get_number()#workplace
-		workplaces[terrain].servants = {}
-		var distribution = {}
-		distribution.limit = 1
-		distribution.min = 0.1
-		distribution.servants = {}
-		
-		for subtype in Global.dict.facet.type["servant"]:
-			var servant = Global.dict.facet.type["servant"][subtype]
-			
-			if servant.workplace == terrain:
-				workplaces[terrain].servants[subtype] = 0
-				distribution.servants[subtype] = distribution.min
-				distribution.limit -= distribution.min
-		
-		Global.rng.randomize()
-		var value = Global.rng.randf_range(0, distribution.limit)
-		distribution.limit -= value
-		var first = distribution.servants.keys().front()
-		distribution.servants[first] += value
-		var last = distribution.servants.keys().back()
-		distribution.servants[last] += distribution.limit
-		
-		for servant in distribution.servants:
-			var population = round(workplaces[terrain].total * distribution.servants[servant])
-			set_population(servant, population)
-			workplaces[terrain].servants[servant] = servants[servant]
-
-
-func set_population(subtype_: String, population_: int) -> void:
-	servants[subtype_] = population_
-	
-	var icon = get_rss_icon_based_on_type_and_subtype(subtype_, "population")
-	icon.number.text = str(population_)
-
-
-func init_handlers() -> void:
-	for servant in servants:
-		if servants[servant] > 0:
-			var raws = []
-			
-			for outcome in Global.dict.facet.type["servant"][servant].outcome:
-				var data = Global.dict.facet.type["servant"][servant].outcome[outcome]
-				
-				if data.has("raw"):
-					if data.raw == data.resource and !raws.has(data.raw):
-						raws.append(data.raw)
-			
-			for raw in raws:
-				var handler = Global.get_handler_based_on_raw(raw)
-				var donor = get_rss_icon_based_on_type_and_subtype(servant, "population")
-				var population = servants[servant] * Global.num.realm.handler / raws.size()
-				donor.change_number(-population)
-				set_population(servant, donor.get_number())
-				var recipient = get_rss_icon_based_on_type_and_subtype(handler, "population")
-				recipient.change_number(population)
-				set_population(handler, recipient.get_number())
 
 
 func get_rss_icon_based_on_type_and_subtype(type_: String, subtype_: String) -> MarginContainer:

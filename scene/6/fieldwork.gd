@@ -6,11 +6,14 @@ extends MarginContainer
 @onready var ic = $VBox/Current
 @onready var im = $VBox/Max
 
+var hbox = null
 var terrain = null
 var abundance = null
+var servants = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
+	hbox = input_.hbox
 	terrain  = input_.terrain
 	abundance  = input_.abundance
 	
@@ -33,3 +36,31 @@ func get_icon(name_: String) -> Variant:
 			return icon
 	
 	return null
+
+
+func get_freely() -> Variant:
+	return im.get_number() - ic.get_number()
+
+
+func set_servant_resupply(servant_: String, resupply_: int) -> void:
+	var freely = get_freely()
+	var population = min(resupply_, freely)
+	ic.change_number(population)
+	
+	if !servants.has(servant_):
+		servants[servant_] = 0
+	
+	servants[servant_] += population
+	update_visible()
+	
+	if resupply_ > freely:
+		print("too many in set_servant_populations")
+
+
+func update_visible() -> void:
+	var freely = get_freely()
+	#print(freely)
+	visible = freely > 0
+	
+	if freely > 0:
+		hbox.visible = true

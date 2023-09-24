@@ -39,10 +39,6 @@ vertical_alignment = 1
 layout_mode = 2
 alignment = 1
 
-[node name="Pond" type="HBoxContainer" parent="Terrains"]
-layout_mode = 2
-alignment = 1
-
 [node name="Plain" type="HBoxContainer" parent="Terrains"]
 layout_mode = 2
 alignment = 1
@@ -51,6 +47,14 @@ alignment = 1
 layout_mode = 2
 alignment = 1
 
+[node name="Pond" type="HBoxContainer" parent="Terrains"]
+layout_mode = 2
+alignment = 1
+
 [node name="Mountain" type="HBoxContainer" parent="Terrains"]
+layout_mode = 2
+alignment = 1
+
+[node name="Comfortable" type="HBoxContainer" parent="Terrains"]
 layout_mode = 2
 alignment = 1

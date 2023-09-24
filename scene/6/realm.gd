@@ -22,8 +22,8 @@ func set_attributes(input_: Dictionary) -> void:
 	
 	set_states(input_.state)
 	push_boundaries(input_.state)
-	init_leadership()
 	init_settlement(capital)
+	init_leadership()
 
 
 func set_states(state_: MarginContainer) -> void:
@@ -86,16 +86,9 @@ func init_settlement(knob_: Polygon2D) -> void:
 
 
 func harvest() -> void:
-	for servant in accountant.servants:
-		var population = accountant.servants[servant]
-		
-		if population > 0:
-			for resource in Global.dict.raw:
-				var data = Global.dict.facet.type["servant"][servant]
-				
-				if data.workout.has(resource):
-					var avg = floor(float(data.workout[resource]) / data.dice * population)
-					warehouse.change_resource_value(resource, avg)
+	for raw in Global.dict.conversion.raw:
+		var income = accountant.get_rss_icon_based_on_type_and_subtype("income", raw)
+		warehouse.change_resource_value(raw, income.get_number())
 
 
 func meal() -> void:
@@ -120,16 +113,9 @@ func meal() -> void:
 
 
 func craft() -> void:
-	for servant in accountant.servants:
-		var population = accountant.servants[servant]
-		
-		if population > 0:
-			for resource in Global.dict.product:
-				var data = Global.dict.facet.type["servant"][servant]
-				
-				if data.workout.has(resource):
-					var avg = floor(float(data.workout[resource]) / data.dice * population)
-					warehouse.change_resource_value(resource, avg)
+	for product in Global.dict.conversion.product:
+		var income = accountant.get_rss_icon_based_on_type_and_subtype("income", product)
+		warehouse.change_resource_value(product, income.get_number())
 
 
 func migration() -> void:
