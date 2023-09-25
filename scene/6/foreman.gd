@@ -39,6 +39,7 @@ func init_fieldwork():
 			if get_fieldwork(flap.terrain, flap.abundance) == null:
 				var hbox = get_hbox(flap.terrain)
 				var input = {}
+				input.foreman = self
 				input.hbox = hbox
 				input.terrain = flap.terrain
 				input.abundance = flap.abundance
@@ -87,6 +88,7 @@ func init_comfortable() -> void:
 	
 		var hbox = get_hbox(terrain)
 		var input = {}
+		input.foreman = self
 		input.hbox = hbox
 		input.terrain = terrain
 		input.abundance = abundance
@@ -162,3 +164,52 @@ func find_worst_fieldwork(terrain_: String) -> Variant:
 				return fieldwork
 	
 	return null
+
+
+func find_worst_incomplete_comfortable_fieldwork() -> Variant:
+	var hbox = get_hbox("comfortable")
+	
+	for _i in range(hbox.get_child_count()-1,-1, -1):
+		var fieldwork = hbox.get_child(_i)
+		
+		if fieldwork.get("abundance") != null:
+			if fieldwork.get_freely() > 0:
+				return fieldwork
+	
+	return null
+
+
+func find_best_fieldwork(terrain_: String) -> Variant:
+	var hbox = get_hbox(terrain_)
+	
+	for fieldwork in hbox.get_children():
+		if fieldwork.get("abundance") != null:
+			if fieldwork.get_icon("current").get_number() > 0:
+				return fieldwork
+	
+	return null
+
+
+func empty_worst_workplaces(specialization_: String, population_: int) -> void:
+	var workplace = Global.dict.servant.workplace[specialization_]
+	var hbox = get_hbox(workplace)
+	var unemployed = 0
+	
+	while population_ > 0:
+		var fieldwork = find_worst_fieldwork(workplace)
+		#print(fieldwork)
+		
+		if fieldwork != null:
+			var current = min(fieldwork.get_icon("current").get_number(), population_)
+			fieldwork.set_servant_resupply(specialization_, -current)
+			population_ -= current
+			unemployed += current
+			var abundance = current * fieldwork.get_icon("abundance").get_number()
+			accountant.change_specialization_population(specialization_, fieldwork, -current)
+		else:
+			population_ = 0
+			print("error: not enough population for empty_worst_workplaces")
+	
+	accountant.change_unemployed_population(unemployed)
+	#accountant.change_specialization_population(specialization_, fieldwork, -current)
+	

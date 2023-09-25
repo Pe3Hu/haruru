@@ -66,7 +66,7 @@ func servants_simulation() -> void:
 		Global.node.sketch.day.text = str(0)
 		data.time = snapped(data.time, 0.01)
 		Global.save_statistics(data)
-		print(data)
+		#print(data)
 		#data[subtype] = input
 	
 	#Global.save_statistics(data)
@@ -120,3 +120,4 @@ func realms_are_harvesting() -> void:
 		realm.migration()
 		realm.education()
 		realm.accountant.update_resource_income()
+		realm.manager.update_resource_priority()

@@ -172,7 +172,9 @@ func init_time() -> void:
 	dict.time.year = dict.time.season * 4
 	
 	dict.period = {}
-	dict.period.study = 14#dict.time.week
+	dict.period.study = {}
+	dict.period.study.withmentor = 3#dict.time.week
+	dict.period.study.selftaught = dict.period.study.withmentor * 3
 
 
 func init_polygon() -> void:
@@ -373,23 +375,23 @@ func init_servant() -> void:
 	
 	for type in dict.facet.type:
 		for subtype in dict.facet.type[type]:
-			var servant = dict.facet.type[type][subtype]
-			servant.workouts = {}
+			var specialization = dict.facet.type[type][subtype]
+			specialization.workouts = {}
 			
-			for outcome in servant.outcomes:
-				var data = servant.outcomes[outcome]
+			for outcome in specialization.outcomes:
+				var data = specialization.outcomes[outcome]
 				
 				if data.has("resource"):
-					if !servant.workouts.has(data.resource):
-						servant.workouts[data.resource] = 0
+					if !specialization.workouts.has(data.resource):
+						specialization.workouts[data.resource] = 0
 					
-					servant.workouts[data.resource] += data.value * data.facets
+					specialization.workouts[data.resource] += data.value * data.facets
 					
 					if data.resource != data.raw:
-						if !servant.workouts.has(data.raw):
-							servant.workouts[data.raw] = 0
+						if !specialization.workouts.has(data.raw):
+							specialization.workouts[data.raw] = 0
 						
-						servant.workouts[data.raw] -= data.facets
+						specialization.workouts[data.raw] -= data.facets
 
 
 func init_abundance() -> void:
@@ -676,3 +678,23 @@ func get_workplace_based_on_specialization(specialization_: String) -> Variant:
 	var type = "servant"
 	var data =  dict.facet.type[type][specialization_]
 	return data.workplace
+
+
+func get_specializations_based_on_workplace(workplace_: String) -> Array:
+	var specializations = []
+	var type = "servant"
+	
+	for specialization in dict.facet.type[type]:
+		var data = dict.facet.type[type][specialization]
+		
+		if data.workplace == workplace_:
+			specializations.append(specialization)
+	
+	return specializations
+
+
+func get_workouts_based_on_specialization(specialization_: String) -> Dictionary:
+	var type = "servant"
+	var data =  dict.facet.type[type][specialization_]
+	return data.workouts
+

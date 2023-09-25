@@ -49,27 +49,78 @@ func fill_icons() -> void:
 
 
 func enrollment() -> void:
-	var workplaces = mm.get_number() - mc.get_number()
+	var workplaces = pm.get_number() - pc.get_number()
 	
 	if workplaces > 0:
-		var unemployeds = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("unemployed", "population").get_number()
+		var unemployeds = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype("unemployed", "population")
 		var entrants = min(unemployeds, workplaces)
 		
 		while entrants > 0:
 			var specialization = choose_specialization()
 			
 			if specialization != null:
-				mentor_takes_vacation(specialization)
-				add_to_schedule_graduation(specialization)
+				var flag = mentor_takes_vacation(specialization)
+				add_to_schedule_graduation(flag, specialization, false)
 			
 			entrants -= 1
 
 
 func choose_specialization() -> Variant:
 	var specialization = null
-	specialization = choose_product_specialization()
+	
+	specialization = choose_specialization_based_on_resource_priority()
+#	if int(settlement.realm.sketch.day.text) > 10:
+#		specialization = choose_raw_specialization()
+#	else:
+#		specialization = choose_product_specialization()
 	
 	return specialization
+
+
+func choose_raw_specialization() -> Variant:
+	return null
+
+
+func choose_specialization_based_on_resource_priority() -> Variant:
+	var fieldworks = []
+	
+	for terrain in Global.arr.terrain:
+		#var node = settlement.realm.accountant.foreman.terrains.get_node(terrain.capitalize())
+		var fieldwork = settlement.realm.accountant.foreman.find_best_fieldwork(terrain)
+		
+		if fieldwork != null:
+			fieldworks.append(fieldwork)
+	
+	fieldworks.sort_custom(func(a, b): return a.abundance > b.abundance)
+	
+	var specializations = []
+	
+	for fieldwork in fieldworks:
+		if fieldwork.abundance == fieldworks.front().abundance:
+			specializations.append_array(Global.get_specializations_based_on_workplace(fieldwork.terrain))
+	
+	var datas = []
+	
+	for specialization in specializations:
+		var workouts = Global.get_workouts_based_on_specialization(specialization)
+		
+		for resource in workouts:
+			if workouts[resource] > 0:
+				var data = {}
+				data.specialization = specialization
+				data.resource = resource
+				data.priority = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype("priority", resource)
+				datas.append(data)
+	
+	if !datas.is_empty():
+		datas.sort_custom(func(a, b): return a.priority < b.priority)
+		
+#		if settlement.realm.index == 0:
+#			print(datas)
+		var specialization = datas.front().specialization
+		return specialization
+	
+	return null
 
 
 func choose_product_specialization() -> Variant:
@@ -78,13 +129,13 @@ func choose_product_specialization() -> Variant:
 	for raw in Global.dict.conversion.raw:
 		var data = {}
 		data.product = Global.dict.conversion.raw[raw]
-		data.income = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("income", raw).get_number()
+		data.income = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype("income", raw)
 		data.specializations = Global.get_specializations_based_on_resource(data.product)
 		data.populations = {}
 		data.freely = 0
 		
 		for specialization in data.specializations:
-			data.populations[specialization] = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype(specialization, "population").get_number()
+			data.populations[specialization] = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype(specialization, "population")
 			data.freely += data.populations[specialization]
 		
 		if data.freely > 0:
@@ -99,28 +150,53 @@ func choose_product_specialization() -> Variant:
 	return null
 
 
-func mentor_takes_vacation(specialization_: String) -> void:
-	var workplace = Global.get_workplace_based_on_specialization(specialization_)
-	var fieldwork = settlement.realm.accountant.foreman.find_worst_fieldwork(workplace)
-	settlement.realm.accountant.change_specialization_population(specialization_, fieldwork, -1)
-	fieldwork.set_servant_resupply(specialization_, -1)
+func mentor_takes_vacation(specialization_: String) -> bool:
+	var population = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype(specialization_, "population")
+	
+	if population > 0:
+		settlement.realm.accountant.foreman.empty_worst_workplaces(specialization_, 1)
+		return true
+		#var workplace = Global.get_workplace_based_on_specialization(specialization_)
+		#var fieldwork = settlement.realm.accountant.foreman.find_worst_fieldwork(workplace)
+		#settlement.realm.accountant.change_specialization_population(specialization_, fieldwork, -1)
+		#fieldwork.set_servant_resupply(specialization_, -1)
+	
+	return false
 
 
-func add_to_schedule_graduation(specialization_: String) -> void:
+func add_to_schedule_graduation(mentor_availability_: bool, specialization_: String, skip_: bool) -> void:
 	var icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("unemployed", "population")
 	icon.change_number(-1)
-	icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("mentor", "population")
-	icon.change_number(1)
-	mc.change_number(1)
+	
 	icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("pupil", "population")
 	icon.change_number(1)
 	pc.change_number(1)
-	var day = int(settlement.realm.sketch.day.text) + Global.dict.period.study
+	
+	if mentor_availability_:
+		icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("mentor", "population")
+		icon.change_number(1)
+		mc.change_number(1)
+	
+	var study = 0
+	
+	if !skip_:
+		study = Global.dict.period.study.withmentor
+		
+		if !mentor_availability_:
+			study = Global.dict.period.study.selftaught
+	
+	var day = int(settlement.realm.sketch.day.text) + study
 	
 	if !graduations.has(day):
-		graduations[day] = []
+		graduations[day] = {}
+		
+	if !graduations[day].has(specialization_):
+		graduations[day][specialization_] = []
 	
-	graduations[day].append(specialization_)
+	graduations[day][specialization_].append("pupil")
+	
+	if mentor_availability_:
+		graduations[day][specialization_].append("mentor")
 
 
 func graduation_check() -> void:
@@ -128,18 +204,33 @@ func graduation_check() -> void:
 	
 	if graduations.has(day):
 		while !graduations[day].is_empty():
-			var specialization = graduations[day].pop_front()
-			prom(specialization)
+			var specialization = graduations[day].keys().front()
+			var scholars = graduations[day][specialization]
+			prom(specialization, scholars)
+			graduations[day].erase(specialization)
 
 
-func prom(specialization_: String) -> void:
-	var abundance = settlement.realm.accountant.foreman.fill_best_workplaces(specialization_, 2)
+func prom(specialization_: String, scholars_: Array) -> void:
+	if int(settlement.realm.sketch.day.text) > 0 and settlement.realm.index == 0:
+		print([int(settlement.realm.sketch.day.text), specialization_, scholars_])
 	
-	settlement.realm.accountant.change_icon_number_by_value(specialization_, "population", 2)
-	settlement.realm.accountant.change_icon_number_by_value("mentor", "population", -1)
-	settlement.realm.accountant.change_icon_number_by_value("pupil", "population", -1)
+	var abundance = settlement.realm.accountant.foreman.fill_best_workplaces(specialization_, scholars_.size())
 	
-	mc.change_number(-1)
-	pc.change_number(-1)
+	for scholar in scholars_:
+		settlement.realm.accountant.change_icon_number_by_value( scholar, "population", -1)
+		
+		match scholar:
+			"mentor":
+				mc.change_number(-1)
+			"pupil":
+				pc.change_number(-1)
+	
+	var icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("pupil", "population").get_number()
+	var a = null
+	#settlement.realm.accountant.change_icon_number_by_value(specialization_, "population", 2)
+#	settlement.realm.accountant.change_icon_number_by_value("mentor", "population", -1)
+#	settlement.realm.accountant.change_icon_number_by_value("pupil", "population", -1)
+#
+#	mc.change_number(-1)
+#	pc.change_number(-1)
 
-	

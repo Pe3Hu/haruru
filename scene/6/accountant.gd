@@ -11,7 +11,8 @@ var economy = null
 var realm = null
 var flaps = []
 var terrains = {}
-var servants = {}
+var specializations = {}
+var abundances = {}
 
 
 func set_attributes(input_: Dictionary):
@@ -115,7 +116,7 @@ func init_rss() -> void:
 	rss.add_child(icon)
 	
 	var titles = ["population"]
-	var comes = ["income", "outcome", "profit", "stockpile"]
+	var comes = ["income", "outcome", "profit", "stockpile", "priority"]
 	
 	rss.columns = Global.arr.resource.size() + titles.size() + 1
 	
@@ -156,8 +157,8 @@ func init_rss() -> void:
 			icon.set_attributes(input)
 			icon.name = "value of " + subtype + " " + resource
 		
-		if !servants.has(subtype):
-			servants[subtype] = 0
+		if !specializations.has(subtype):
+			specializations[subtype] = 0
 	
 	for subtype in comes:
 		input.type = "economy"
@@ -189,52 +190,100 @@ func get_rss_icon_based_on_type_and_subtype(type_: String, subtype_: String) -> 
 	return icon
 
 
+func get_rss_number_based_on_type_and_subtype(type_: String, subtype_: String) -> int:
+	var name_ = "value of " + type_ + " " + subtype_
+	var icon = rss.get_node(name_)
+	return icon.get_number()
+
+
 func change_specialization_population(specialization_: String, fieldwork_: MarginContainer ,population_: int) -> void:
 	change_icon_number_by_value(specialization_, "population", population_)
 	var abundance = fieldwork_.abundance * population_
+	var population = get_rss_number_based_on_type_and_subtype(specialization_, "population")
+	#print([population, "realm " + str(realm.index), specialization_, population_, fieldwork_.abundance, abundance])
 	
+	if !abundances.has(specialization_):
+		abundances[specialization_] = {}
 
 	for resource in Global.dict.facet.type["servant"][specialization_].workouts:
-		var workout = Global.dict.facet.type["servant"][specialization_].workouts[resource]
-		var a = Global.dict.facet.type["servant"][specialization_].workouts
-		if int(realm.sketch.day.text) > 0: #Global.dict.facet.type["servant"][specialization_].workouts.size() > 1 and
-			pass
-		change_specialization_resource_icon_by_abundance(specialization_, resource, abundance)
+		if !abundances[specialization_].has(resource):
+			abundances[specialization_][resource] = 0
+		
+		abundances[specialization_][resource] += abundance
+		#var workout = Global.dict.facet.type["servant"][specialization_].workouts[resource]
+		#var a = Global.dict.facet.type["servant"][specialization_].workouts
+		#if int(realm.sketch.day.text) > 0: #Global.dict.facet.type["servant"][specialization_].workouts.size() > 1 and
+		#	var b = null
+		update_specialization_resource_icon(specialization_, resource)
+		#change_specialization_resource_icon_by_abundance(specialization_, resource, abundance)
 
 
 func change_icon_number_by_value(subtype_: String, type_: String, value_: int) -> void:
 	var icon = get_rss_icon_based_on_type_and_subtype(subtype_, type_)
 	icon.change_number(value_)
+	
+	if specializations.has(subtype_):
+		specializations[subtype_] += value_
 
 
-func change_specialization_resource_icon_by_abundance(specialization_: String, resource_: String, abundance_: int) -> void:
+#func change_specialization_resource_icon_by_abundance(specialization_: String, resource_: String, abundance_: int) -> void:
+#	var data = Global.dict.facet.type["servant"][specialization_]
+#	var conversion = Global.get_conversion(resource_)
+#	var value = float(data.workouts[resource_]) / data.dice * abundance_
+#
+#	if data.workouts[resource_] > 0:
+#		value *= conversion
+#
+#	value = round(value)
+#	change_icon_number_by_value(specialization_, resource_, value)
+
+
+func update_specialization_resource_icon(specialization_: String, resource_: String) -> void:
 	var data = Global.dict.facet.type["servant"][specialization_]
 	var conversion = Global.get_conversion(resource_)
-	var value = float(data.workouts[resource_]) / data.dice * abundance_
+	var value = float(data.workouts[resource_]) / data.dice * abundances[specialization_][resource_]
 	
 	if data.workouts[resource_] > 0:
 		value *= conversion
 	
-	value = floor(value)
-	change_icon_number_by_value(specialization_, resource_, value)
+	var icon = get_rss_icon_based_on_type_and_subtype(specialization_, resource_)
+	icon.number.text = str(round(value))
+	
+#	if int(realm.sketch.day.text) > 0: #specialization_ == "cook" and resource_ == "food" and
+#		var population = get_rss_number_based_on_type_and_subtype(specialization_, "population")
+#		print([specialization_, resource_, population, value, abundances[specialization_][resource_], "realm " + str(realm.index), float(data.workouts[resource_]) / data.dice, conversion]) #specialization_, resource_ float(data.workouts[resource_]) / data.dice, conversion
 
 
 func update_resource_income() -> void:
 	for resource in Global.arr.resource:
-		var value = 0
+		var income = 0
 		
-		for servant in servants:
-			value += get_rss_icon_based_on_type_and_subtype(servant, resource).get_number()
+		for servant in specializations:
+			income += get_rss_icon_based_on_type_and_subtype(servant, resource).get_number()
 		
-		var icon = get_rss_icon_based_on_type_and_subtype("income", resource)
-		icon.number.text = str(value)
+		var icons = {}
+		icons.income = get_rss_icon_based_on_type_and_subtype("income", resource)
+		icons.income.number.text = str(income)
+		
+		var outcome = get_rss_number_based_on_type_and_subtype("outcome", resource)
+		
+		icons.profit = get_rss_icon_based_on_type_and_subtype("profit", resource)
+		icons.profit.number.text = str(income - outcome)
 
 
 func update_population() -> void:
 	var value = 0
 
-	for servant in servants:
+	for servant in specializations:
 		value += get_rss_icon_based_on_type_and_subtype(servant, "population").get_number()
 	
 	var icon = get_rss_icon_based_on_type_and_subtype("profit", "population")
 	icon.number.text = str(value)
+
+
+func change_unemployed_population(population_: int) -> void:
+	var specialization = "unemployed"
+	var fieldwork = foreman.find_worst_incomplete_comfortable_fieldwork()
+	fieldwork.set_servant_resupply(specialization, population_)
+	change_icon_number_by_value(specialization, "population", population_)
+	

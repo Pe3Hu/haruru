@@ -97,8 +97,8 @@ func meal() -> void:
 	var food = {}
 	food.output = 0
 	
-	for servant in accountant.servants:
-		var population = accountant.servants[servant]
+	for servant in accountant.specializations:
+		var population = accountant.specializations[servant]
 		food.output += population
 	
 	food.input = warehouse.get_value_of_resource("food")

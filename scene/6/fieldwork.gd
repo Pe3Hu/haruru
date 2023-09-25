@@ -6,6 +6,7 @@ extends MarginContainer
 @onready var ic = $VBox/Current
 @onready var im = $VBox/Max
 
+var foreman = null
 var hbox = null
 var terrain = null
 var abundance = null
@@ -13,6 +14,7 @@ var servants = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
+	foreman = input_.foreman
 	hbox = input_.hbox
 	terrain  = input_.terrain
 	abundance  = input_.abundance
@@ -38,7 +40,7 @@ func get_icon(name_: String) -> Variant:
 	return null
 
 
-func get_freely() -> Variant:
+func get_freely() -> int:
 	return im.get_number() - ic.get_number()
 
 
@@ -64,3 +66,6 @@ func update_visible() -> void:
 	
 	if freely > 0:
 		hbox.visible = true
+	else:
+		if foreman.find_worst_fieldwork(terrain) == self:
+			hbox.visible = false
