@@ -39,8 +39,28 @@ func set_attributes(input_: Dictionary) -> void:
 
 
 func get_number() -> int:
-	return int(number.text)
+	return subtype
 
 
 func change_number(value_: int) -> void:
-	number.text = str(int(number.text) + value_)
+	subtype += value_
+	var value = int(subtype) + 0
+	var suffix = ""
+	
+	while value >= 1000:
+		value /= 1000
+		suffix = Global.dict.thousand[suffix]
+	
+	number.text = str(value) + suffix
+
+
+func set_number(value_: int) -> void:
+	subtype = value_
+	var value = int(subtype) + 0
+	var suffix = ""
+	
+	while value >= 1000:
+		value /= 1000
+		suffix = Global.dict.thousand[suffix]
+	
+	number.text = str(value) + suffix

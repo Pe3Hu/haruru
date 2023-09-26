@@ -87,8 +87,8 @@ func init_settlement(knob_: Polygon2D) -> void:
 
 func harvest() -> void:
 	for raw in Global.dict.conversion.raw:
-		var income = accountant.get_rss_icon_based_on_type_and_subtype("income", raw)
-		warehouse.change_resource_value(raw, income.get_number())
+		var income = accountant.get_rss_number_based_on_type_and_subtype("income", raw)
+		warehouse.change_resource_value(raw, income)
 
 
 func meal() -> void:

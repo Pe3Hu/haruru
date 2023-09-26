@@ -517,6 +517,14 @@ func init_scene() -> void:
 	scene.fieldwork = load("res://scene/6/fieldwork.tscn")
 	
 	
+	scene.marketplace = load("res://scene/7/marketplace.tscn")
+	scene.room = load("res://scene/7/room.tscn")
+	scene.mediator = load("res://scene/7/mediator.tscn")
+	scene.vendor = load("res://scene/7/vendor.tscn")
+	scene.bidder = load("res://scene/7/bidder.tscn")
+	scene.purse = load("res://scene/7/purse.tscn")
+	
+	
 	pass
 
 

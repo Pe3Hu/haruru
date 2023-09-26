@@ -7,11 +7,13 @@ extends MarginContainer
 @onready var cloth = $HBox/Cloth
 @onready var day = $HBox/Day
 @onready var economy = $HBox/Economy
+@onready var marketplace = $HBox/Marketplace
 
 
 func _ready() -> void:
 	diplomacy.sketch = self
 	economy.sketch = self
+	marketplace.sketch = self
 
 
 func add_encounter(squads_: Array) -> void:

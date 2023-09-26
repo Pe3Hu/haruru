@@ -118,10 +118,12 @@ func init_reams() -> void:
 			for specialization in fieldwork.specializations:
 				n += fieldwork.specializations[specialization]
 			
-			print(["before next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
+			#print(["before next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
 	
-	for _i in 12:
+	for _i in Global.dict.time.month:
 		sketch.next_day()
+	
+	realms_are_trading()
 	
 	for realm in realms.get_children():
 		if realm.index == 0:
@@ -131,7 +133,7 @@ func init_reams() -> void:
 			for specialization in fieldwork.specializations:
 				n += fieldwork.specializations[specialization]
 			
-			print(["after next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
+			#print(["after next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
 
 
 func realms_are_harvesting() -> void:
@@ -144,3 +146,8 @@ func realms_are_harvesting() -> void:
 		realm.accountant.update_resource_income()
 		realm.manager.update_resource_priority()
 		realm.accountant.update_settlement_population()
+
+
+func realms_are_trading() -> void:
+	for realm in realms.get_children():
+		realm.manager.develop_strategy_for_market_behavior()

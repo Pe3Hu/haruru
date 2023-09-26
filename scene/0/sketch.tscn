@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c8p8p11wpyu27"]
+[gd_scene load_steps=9 format=3 uid="uid://c8p8p11wpyu27"]
 
 [ext_resource type="Script" path="res://scene/0/sketch.gd" id="1_0xhw1"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_b8lal"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b08r16e4wbqaq" path="res://scene/1/diplomacy.tscn" id="4_fc1hj"]
 [ext_resource type="PackedScene" uid="uid://ba8ehrd2knrux" path="res://scene/5/cloth.tscn" id="5_gj0xe"]
 [ext_resource type="PackedScene" uid="uid://ddggm7do3qty5" path="res://scene/6/economy.tscn" id="6_tyse2"]
+[ext_resource type="PackedScene" uid="uid://ewab4e6hybpi" path="res://scene/7/marketplace.tscn" id="7_vhnd7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 bg_color = Color(0.372549, 0.372549, 0.372549, 1)
@@ -70,4 +71,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Economy" parent="HBox" instance=ExtResource("6_tyse2")]
+layout_mode = 2
+
+[node name="Marketplace" parent="HBox" instance=ExtResource("7_vhnd7")]
 layout_mode = 2

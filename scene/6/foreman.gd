@@ -217,7 +217,6 @@ func find_best_incomplete_fieldwork(terrain_: String) -> Variant:
 
 func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 	var workplace = Global.dict.servant.workplace[specialization_]
-	var hbox = get_hbox(workplace)
 	var unemployed = 0
 	
 	while population_ > 0:

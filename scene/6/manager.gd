@@ -77,7 +77,6 @@ func init_handlers() -> void:
 			
 			for raw in raws:
 				var handler = Global.get_handler_based_on_raw(raw)
-				var donor = accountant.get_rss_icon_based_on_type_and_subtype(specialization, "population")
 				var population = round(accountant.specializations[specialization] * Global.num.realm.handler / raws.size())
 				foreman.empty_worst_workplaces(specialization, population)
 				
@@ -143,6 +142,28 @@ func update_resource_priority() -> void:
 	
 	for _i in resources.size():
 		var resource = resources[_i]
-		var icon = accountant.get_rss_icon_based_on_type_and_subtype("priority", resource)
-		icon.number.text = str(_i)
+		accountant.set_rss_number_based_on_type_and_subtype("priority", resource, _i)
 
+
+func develop_strategy_for_market_behavior() -> void:
+	update_resource_priority()
+	var datas = {}
+	
+	for resource in Global.arr.resource:
+		var data = {}
+		#data.resource = resource
+		data.priority = accountant.get_rss_number_based_on_type_and_subtype("priority", resource)
+		data.stockpile = accountant.get_rss_number_based_on_type_and_subtype("stockpile", resource)
+		
+		if data.stockpile > 0:
+			datas[resource] = data.stockpile
+#			var a = accountant.get_rss_icon_based_on_type_and_subtype("stockpile", resource)
+#			print([resource, data])
+	
+	var input = {}
+	input.realm = realm
+	input.resources = datas
+	var mediator = Global.scene.mediator.instantiate()
+	realm.sketch.marketplace.mediators.add_child(mediator)
+	mediator.set_attributes(input)
+	#mediator.purse.allocate_resources_for_bidding(datas)

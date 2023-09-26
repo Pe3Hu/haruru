@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://cxjqduhsv8f0w"]
+
+[ext_resource type="Script" path="res://scene/7/mediator.gd" id="1_mj437"]
+[ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_ui51g"]
+[ext_resource type="PackedScene" uid="uid://ngbfwtmm6qd8" path="res://scene/7/purse.tscn" id="3_jyobp"]
+[ext_resource type="PackedScene" uid="uid://x7srwbaim07d" path="res://scene/2/warehouse.tscn" id="4_f2qd2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
+
+[node name="Mediator" type="MarginContainer"]
+custom_minimum_size = Vector2(5, 5)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_mj437")
+
+[node name="BG" type="Panel" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7paps")
+
+[node name="Label" type="Label" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_ui51g")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Realm" type="Label" parent="VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_ui51g")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Purse" parent="VBox" instance=ExtResource("3_jyobp")]
+layout_mode = 2
+
+[node name="Warehouse" parent="VBox" instance=ExtResource("4_f2qd2")]
+visible = false
+layout_mode = 2

@@ -20,3 +20,14 @@ res://scene/6/realm.gd
 res://scene/1/diplomacy.gd
 res://scene/0/sketch.gd
 res://scene/2/settlement.gd
+res://scene/7/marketplace.tscn
+res://scene/7/bidder.tscn
+res://scene/7/room.tscn
+res://scene/7/vendor.tscn
+res://scene/7/purse.tscn
+res://scene/7/mediator.tscn
+res://scene/7/marketplace.gd
+res://scene/7/mediator.gd
+res://scene/2/warehouse.gd
+res://scene/7/purse.gd
+res://scene/0/icon.gd
