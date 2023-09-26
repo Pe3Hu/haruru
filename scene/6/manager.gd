@@ -87,6 +87,12 @@ func init_handlers() -> void:
 				school.graduation_check()
 	
 	school.fill_icons()
+	var unemployed = -school.settlement.fieldwork.get_specialization_population("unemployed")
+	school.settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
+	
+	
+	#if realm.index == 0:
+	#	print("reseted", accountant.get_rss_number_based_on_type_and_subtype("unemployed", "population"))
 
 
 func fill_fieldworks() -> void:

@@ -132,9 +132,11 @@ func migration() -> void:
 		settlers.max = min(fieldwork.get_freely(), settlers.max)
 		Global.rng.randomize()
 		settlers.current = Global.rng.randi_range(settlers.min, settlers.max)
-		var settlement = settlements.get_child(0)
+		var settlement = get_settlement_for_unemployeds()
 		settlement.bring_settlers(settlers.current)
-		accountant.update_population()
+		
+		#if index == 0:
+		#	print(["migration", settlers.current])
 	else:
 		print("error: no comfortable fieldworks")
 
@@ -145,3 +147,11 @@ func education() -> void:
 			if structure.type == "school":
 				structure.enrollment()
 				structure.graduation_check()
+
+
+func get_settlement_for_unemployeds() -> Variant:
+	for settlement in settlements.get_children():
+		if settlement.fieldwork.get_freely() > 0:
+			return settlement
+	
+	return null

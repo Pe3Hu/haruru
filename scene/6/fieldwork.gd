@@ -44,7 +44,7 @@ func get_freely() -> int:
 	return im.get_number() - ic.get_number()
 
 
-func set_sspecialization_resupply(specialization_: String, resupply_: int) -> int:
+func set_specialization_resupply(specialization_: String, resupply_: int) -> int:
 	if resupply_ != 0:
 		var population = null
 		var freely = get_freely()
@@ -67,6 +67,9 @@ func set_sspecialization_resupply(specialization_: String, resupply_: int) -> in
 			specializations[specialization_] = 0
 		
 		specializations[specialization_] += population
+		
+		#if foreman.accountant.realm.index == 0 and specialization_ == "unemployed" and int(foreman.accountant.realm.sketch.day.text) > 0:
+		#	print(["set_specialization_resupply", specialization_, specializations[specialization_]])
 		update_visible()
 		return population
 	
@@ -82,3 +85,12 @@ func update_visible() -> void:
 	else:
 		if foreman.find_worst_nonempty_fieldwork(terrain) == self:
 			hbox.visible = false
+
+
+func get_specialization_population(specialization_: String) -> int:
+	var population = 0
+	
+	if specializations.has(specialization_):
+		population += specializations[specialization_]
+	
+	return population

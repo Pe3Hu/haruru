@@ -76,6 +76,7 @@ func get_fieldwork(terrain_: String, abundance_: int) -> Variant:
 
 func init_comfortable() -> void:
 	var terrain = "comfortable"
+	
 	if !workplaces.has(terrain):
 		workplaces[terrain] = {}
 	
@@ -103,11 +104,11 @@ func init_comfortable() -> void:
 func add_settlement_fieldworks(settlement_: MarginContainer) -> void:
 	var terrain = "comfortable"
 	var abundance = 1
-	var fieldwork = get_fieldwork(terrain, abundance)
-	var icon = fieldwork.get_icon("max")
-	icon.change_number(settlement_.workplace.total)
-	fieldwork.update_visible()
-	workplaces[terrain][abundance].max += settlement_.workplace.total
+	settlement_.fieldwork = get_fieldwork(terrain, abundance)
+	var icon = settlement_.fieldwork.get_icon("max")
+	icon.change_number(Global.num.settlement.workplace[settlement_.grade])
+	settlement_.fieldwork.update_visible()
+	workplaces[terrain][abundance].max += icon.get_number()
 
 
 func sort_by_abundance() -> void:
@@ -136,9 +137,9 @@ func fill_best_workplaces(specialization_: String, population_: int) -> void:
 		if fieldwork.get("abundance") != null:
 			if population_ > 0:
 				var freely = min(fieldwork.get_freely(), population_)
-				var resupply = fieldwork.set_sspecialization_resupply(specialization_, freely)
+				var resupply = fieldwork.set_specialization_resupply(specialization_, freely)
 				population_ -= resupply
-				var abundance = resupply * fieldwork.get_icon("abundance").get_number()
+				#var abundance = resupply * fieldwork.get_icon("abundance").get_number()
 				accountant.change_specialization_population(specialization_, fieldwork, resupply)
 
 
@@ -224,7 +225,7 @@ func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 		
 		if fieldwork != null:
 			var current = -min(fieldwork.get_icon("current").get_number(), population_)
-			var resupply = fieldwork.set_sspecialization_resupply(specialization_, current)
+			var resupply = fieldwork.set_specialization_resupply(specialization_, current)
 			population_ += resupply
 			unemployed -= resupply
 			accountant.change_specialization_population(specialization_, fieldwork, resupply)
@@ -232,8 +233,10 @@ func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 			population_ = 0
 			print("error: not enough population for empty_worst_workplaces")
 	
-	if realm.index == 0:
-		print([specialization_, unemployed])
-	accountant.change_unemployed_population(unemployed)
-	#accountant.change_specialization_population(specialization_, fieldwork, -current)
+	#if  realm.index == 0:
+	#	print(["empty_worst_workplaces", specialization_, unemployed])
+	
+	
+	var settlement = realm.get_settlement_for_unemployeds()
+	settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
 	

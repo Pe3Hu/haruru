@@ -52,17 +52,21 @@ func enrollment() -> void:
 	var workplaces = pm.get_number() - pc.get_number()
 	
 	if workplaces > 0:
-		var unemployeds = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype("unemployed", "population")
+		var unemployeds = settlement.fieldwork.get_specialization_population("unemployed")
 		var entrants = min(unemployeds, workplaces)
 		
 		while entrants > 0:
-			var specialization = choose_specialization()
-			
-			if specialization != null:
-				var flag = mentor_takes_vacation(specialization)
-				add_to_schedule_graduation(flag, specialization, false)
-			
-			entrants -= 1
+			if settlement.fieldwork != null:
+				var specialization = choose_specialization()
+				
+				if specialization != null:
+					var flag = mentor_takes_vacation(specialization)
+					add_to_schedule_graduation(flag, specialization, false)
+				
+				entrants -= 1
+			else:
+				entrants = 0
+				print("error: no fieldwork for entrants")
 
 
 func choose_specialization() -> Variant:
@@ -114,9 +118,6 @@ func choose_specialization_based_on_resource_priority() -> Variant:
 	
 	if !datas.is_empty():
 		datas.sort_custom(func(a, b): return a.priority < b.priority)
-		
-#		if settlement.realm.index == 0:
-#			print(datas)
 		var specialization = datas.front().specialization
 		return specialization
 	
@@ -151,30 +152,32 @@ func choose_product_specialization() -> Variant:
 
 
 func mentor_takes_vacation(specialization_: String) -> bool:
-	var population = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype(specialization_, "population")
+	var population = settlement.fieldwork.get_specialization_population(specialization_)
 	
 	if population > 0:
+		#print(specialization_)
 		settlement.realm.accountant.foreman.empty_worst_workplaces(specialization_, 1)
+		
+		#if settlement.realm.index == 0:
+			#var n = settlement.realm.accountant.get_rss_number_based_on_type_and_subtype("unemployed", "population")
+			
+			#print(["mentor_takes_vacation", n, settlement.fieldwork.specializations["unemployed"]])
 		return true
-		#var workplace = Global.get_workplace_based_on_specialization(specialization_)
-		#var fieldwork = settlement.realm.accountant.foreman.find_worst_fieldwork(workplace)
-		#settlement.realm.accountant.change_specialization_population(specialization_, fieldwork, -1)
-		#fieldwork.set_servant_resupply(specialization_, -1)
 	
 	return false
 
 
 func add_to_schedule_graduation(mentor_availability_: bool, specialization_: String, skip_: bool) -> void:
-	var icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("unemployed", "population")
-	icon.change_number(-1)
 	
-	icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("pupil", "population")
-	icon.change_number(1)
+	#settlement.realm.accountant.change_unemployed_population(-1)
+	#settlement.realm.accountant.change_icon_number_by_value("pupil", "population", 1)
+	settlement.fieldwork.set_specialization_resupply("pupil", 1)
+	settlement.fieldwork.set_specialization_resupply("unemployed",  -1)
 	pc.change_number(1)
 	
 	if mentor_availability_:
-		icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("mentor", "population")
-		icon.change_number(1)
+		#settlement.realm.accountant.change_icon_number_by_value("mentor", "population", 1)
+		settlement.fieldwork.set_specialization_resupply("mentor",  1)
 		mc.change_number(1)
 	
 	var study = 0
@@ -201,6 +204,8 @@ func add_to_schedule_graduation(mentor_availability_: bool, specialization_: Str
 
 func graduation_check() -> void:
 	var day = int(settlement.realm.sketch.day.text) 
+	#if settlement.realm.index == 0:
+	#	print([day, graduations])
 	
 	if graduations.has(day):
 		while !graduations[day].is_empty():
@@ -208,24 +213,20 @@ func graduation_check() -> void:
 			var scholars = graduations[day][specialization]
 			prom(specialization, scholars)
 			graduations[day].erase(specialization)
+		
+		graduations.erase(day)
 
 
 func prom(specialization_: String, scholars_: Array) -> void:
 	settlement.realm.accountant.foreman.fill_best_workplaces(specialization_, scholars_.size())
-	
+	#if settlement.realm.index == 0:
+	#print([settlement.realm.index, "prom", specialization_, scholars_.size()])
 	for scholar in scholars_:
-		settlement.realm.accountant.change_icon_number_by_value(scholar, "population", -1)
+		#settlement.realm.accountant.change_icon_number_by_value(scholar, "population", -1)
+		settlement.fieldwork.set_specialization_resupply(scholar,  -1)
 		
 		match scholar:
 			"mentor":
 				mc.change_number(-1)
 			"pupil":
 				pc.change_number(-1)
-	
-	#settlement.realm.accountant.change_icon_number_by_value(specialization_, "population", 2)
-#	settlement.realm.accountant.change_icon_number_by_value("mentor", "population", -1)
-#	settlement.realm.accountant.change_icon_number_by_value("pupil", "population", -1)
-#
-#	mc.change_number(-1)
-#	pc.change_number(-1)
-

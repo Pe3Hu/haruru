@@ -92,7 +92,7 @@ func init_num() -> void:
 	num.structure = {}
 	num.structure.school = {}
 	num.structure.school.workplace = {}
-	num.structure.school.workplace[0] = 39
+	num.structure.school.workplace[0] = 9
 	num.structure.school.workplace[1] = 16
 	
 	num.conversion = {}

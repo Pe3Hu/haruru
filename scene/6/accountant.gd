@@ -222,20 +222,11 @@ func change_icon_number_by_value(subtype_: String, type_: String, value_: int) -
 	var icon = get_rss_icon_based_on_type_and_subtype(subtype_, type_)
 	icon.change_number(value_)
 	
+#	if subtype_ == "unemployed" and realm.index == 0 and int(realm.sketch.day.text) == 0:
+#		print(icon.get_number())
+	
 	if specializations.has(subtype_):
 		specializations[subtype_] += value_
-
-
-#func change_specialization_resource_icon_by_abundance(specialization_: String, resource_: String, abundance_: int) -> void:
-#	var data = Global.dict.facet.type["servant"][specialization_]
-#	var conversion = Global.get_conversion(resource_)
-#	var value = float(data.workouts[resource_]) / data.dice * abundance_
-#
-#	if data.workouts[resource_] > 0:
-#		value *= conversion
-#
-#	value = round(value)
-#	change_icon_number_by_value(specialization_, resource_, value)
 
 
 func update_specialization_resource_icon(specialization_: String, resource_: String) -> void:
@@ -248,10 +239,6 @@ func update_specialization_resource_icon(specialization_: String, resource_: Str
 	
 	var icon = get_rss_icon_based_on_type_and_subtype(specialization_, resource_)
 	icon.number.text = str(round(value))
-	
-#	if int(realm.sketch.day.text) > 0: #specialization_ == "cook" and resource_ == "food" and
-#		var population = get_rss_number_based_on_type_and_subtype(specialization_, "population")
-#		print([specialization_, resource_, population, value, abundances[specialization_][resource_], "realm " + str(realm.index), float(data.workouts[resource_]) / data.dice, conversion]) #specialization_, resource_ float(data.workouts[resource_]) / data.dice, conversion
 
 
 func update_resource_income() -> void:
@@ -277,13 +264,30 @@ func update_population() -> void:
 	for servant in specializations:
 		value += get_rss_icon_based_on_type_and_subtype(servant, "population").get_number()
 	
-	var icon = get_rss_icon_based_on_type_and_subtype("profit", "population")
-	icon.number.text = str(value)
+	set_rss_number_based_on_type_and_subtype("profit", "population", value)
 
 
-func change_unemployed_population(population_: int) -> void:
-	var specialization = "unemployed"
-	var workplace = "comfortable"
-	var fieldwork = foreman.find_worst_incomplete_fieldwork(workplace)
-	var resupply = fieldwork.set_sspecialization_resupply(specialization, population_)
-	change_icon_number_by_value(specialization, "population", resupply)
+func update_settlement_population() -> void:
+	var specializations = ["unemployed", "mentor", "pupil"]
+	
+	for specialization in specializations:
+		update_settlement_specialization_population(specialization)
+	
+	update_population()
+
+
+func update_settlement_specialization_population(specialization_: String) -> void:
+	var population = 0
+	
+	for settlement in realm.settlements.get_children():
+		population += settlement.fieldwork.get_specialization_population(specialization_)
+	
+	#if realm.index == 0 :
+	#	print([int(realm.sketch.day.text), specialization_, population])
+
+	set_rss_number_based_on_type_and_subtype(specialization_, "population", population)
+
+
+func set_rss_number_based_on_type_and_subtype(subtype_: String, type_: String, value_: int) -> void:
+	var icon = get_rss_icon_based_on_type_and_subtype(subtype_, type_)
+	icon.number.text = str(value_)

@@ -17,3 +17,6 @@ res://script/Global.gd
 res://scene/6/accountant.gd
 res://scene/0/game.gd
 res://scene/6/realm.gd
+res://scene/1/diplomacy.gd
+res://scene/0/sketch.gd
+res://scene/2/settlement.gd
