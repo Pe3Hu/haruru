@@ -67,7 +67,6 @@ func check_resource_availability(resource_: String, value_: int) -> bool:
 
 func change_resource_value(resource_: String, value_: int) -> void:
 	var label_ = get_resource_value_label(resource_)
-	
 	realm.accountant.change_rss_icon_number_based_on_type_and_subtype_value("stockpile", resource_, value_)
 	var icon = realm.accountant.get_rss_icon_based_on_type_and_subtype("stockpile", resource_)
 	label_.text = icon.number.text

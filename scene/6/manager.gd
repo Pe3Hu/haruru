@@ -156,9 +156,8 @@ func develop_strategy_for_market_behavior() -> void:
 		data.stockpile = accountant.get_rss_number_based_on_type_and_subtype("stockpile", resource)
 		
 		if data.stockpile > 0:
-			datas[resource] = data.stockpile
-#			var a = accountant.get_rss_icon_based_on_type_and_subtype("stockpile", resource)
-#			print([resource, data])
+			datas[resource] = round(data.stockpile * 0.75)
+			accountant.realm.warehouse.change_resource_value(resource, -datas[resource])
 	
 	var input = {}
 	input.realm = realm
@@ -166,4 +165,3 @@ func develop_strategy_for_market_behavior() -> void:
 	var mediator = Global.scene.mediator.instantiate()
 	realm.sketch.marketplace.mediators.add_child(mediator)
 	mediator.set_attributes(input)
-	#mediator.purse.allocate_resources_for_bidding(datas)

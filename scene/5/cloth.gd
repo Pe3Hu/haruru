@@ -21,6 +21,7 @@ var couplers = {}
 var selected = {}
 var corners = {}
 var liberty = null
+var center = null
 
 
 func _ready() -> void:
@@ -33,10 +34,10 @@ func _ready() -> void:
 	init_lairs()
 	init_frontiers()
 	init_flap_terrains()
-	init_flap_abundances()
-	init_states()
-	init_state_hubs()
-	init_state_capitals()
+#	init_flap_abundances()
+#	init_states()
+#	init_state_hubs()
+#	init_state_capitals()
 	shift_layer(0)
 	
 	selected.patch = 0
@@ -68,6 +69,7 @@ func reset() -> void:
 
 func init_knobs() -> void:
 	custom_minimum_size = Vector2(Global.num.size.flap.row, Global.num.size.flap.col) * Global.num.size.flap.a
+	center = custom_minimum_size * 0.5
 	grid.knob = {}
 	grid.lair = {}
 	grid.hub = {}
@@ -360,26 +362,50 @@ func init_frontiers() -> void:
 
 func init_flap_terrains() -> void:
 	var limit_square = square / 2 / Global.color.terrain.keys().size()
+	var junior_size = flaps.get_child_count()
 	var wastelands = []
 	var datas = []
 	var grands = {}
 	var hegemony = {}
 	var insulation = {}
 	
+	var step = max(center.x, center.y) * 0.8
+	var windroses = {}
+	
+	for neighbor in Global.dict.neighbor.linear2:
+		var vector = center + step * neighbor
+		windroses[vector] = []
+	
 	for flap in flaps.get_children():
-		var data = {}
-		data.square = flap.square
-		data.flap = flap
-		datas.append(data)
-		wastelands.append(flap)
+		for vector in windroses:
+			var data = {}
+			data.square = flap.square
+			data.flap = flap
+			datas.append(data)
+			wastelands.append(flap)
+			data.d = vector.distance_to(flap.center)
+			windroses[vector].append(data)
 	
-	datas.sort_custom(func(a, b): return a.square > b.square)
+	var terrains = Global.color.terrain.keys()
+	terrains.shuffle()
 	
-	for terrain in Global.color.terrain:
-		var flap = datas.pop_front().flap
+	for _i in windroses.keys().size():
+		var vector = windroses.keys()[_i]
+		var terrain = terrains[_i]
+		windroses[vector].sort_custom(func(a, b): return a.d < b.d)
+		var flap = windroses[vector].pop_front().flap
 		wastelands.erase(flap)
 		grands[terrain] = [flap]
 		flap.set_terrain(terrain)
+	
+	
+#	datas.sort_custom(func(a, b): return a.square > b.square)
+#
+#	for terrain in Global.color.terrain:
+#		var flap = datas.pop_front().flap
+#		wastelands.erase(flap)
+#		grands[terrain] = [flap]
+#		flap.set_terrain(terrain)
 	
 	for terrain in grands:
 		var grand_square = grands[terrain].front().square
@@ -391,7 +417,7 @@ func init_flap_terrains() -> void:
 				for seam in flap.neighbors:
 					var neighbor = flap.neighbors[seam]
 					
-					if wastelands.has(neighbor) and !insulation[terrain].has(neighbor):
+					if neighbor.terrain == null and !insulation[terrain].has(neighbor):
 						insulation[terrain].append(neighbor)
 			
 			if insulation[terrain].is_empty():
@@ -402,22 +428,34 @@ func init_flap_terrains() -> void:
 				grands[terrain].append(flap)
 				flap.set_terrain(terrain)
 				grand_square += flap.square
+				
+				for terrain_ in insulation:
+					insulation[terrain_].erase(flap)
 		
 		hegemony[terrain] = grand_square
+		
+		print([terrain, grands[terrain].size()])
+		if junior_size > grands[terrain].size():
+			junior_size = grands[terrain].size()
 	
 	var lobes = 0
+	var residue = wastelands.size()
 	var remnants = {}
-	
+
 	for terrain in Global.dict.terrain.prevalence:
 		lobes += Global.dict.terrain.prevalence[terrain]
-	
+
 	var weight = wastelands.size() / lobes
-	
+
 	for terrain in Global.dict.terrain.prevalence:
 		remnants[terrain] = weight * Global.dict.terrain.prevalence[terrain]
-		lobes -= Global.dict.terrain.prevalence[terrain]
+		residue -= remnants[terrain]
 	
-	remnants["plain"] += lobes
+	remnants["plain"] += residue
+	
+	junior_size = round(junior_size / 3)
+	for _i in 5:
+		add_junior_biome(wastelands, remnants, junior_size)
 	
 #	while !insulation.is_empty():
 #		refine_insulation(insulation, wastelands, remnants)
@@ -425,8 +463,118 @@ func init_flap_terrains() -> void:
 #	while !wastelands.is_empty():
 #		refine_wasteland(wastelands, remnants)
 	
-	while !wastelands.is_empty():
-		incentivize_minority(hegemony, insulation, wastelands)
+#	while !wastelands.is_empty():
+#		incentivize_minority(hegemony, insulation, wastelands)
+
+
+func add_junior_biome(wastelands_: Array, remnants_: Dictionary, junior_size_: int) -> void:
+	
+	var flap = wastelands_.pick_random()
+	var terrains = flap.get_non_neighbor_terrains()
+	var weights = []
+	print("____", wastelands_.size())
+	
+	for terrain in terrains:
+		weights.append(remnants_[terrain])
+	
+	weights.sort_custom(func(a, b): return a > b)
+	var weight = weights.front()
+	var terrain = null
+	
+	for terrain_ in remnants_:
+		if weight == remnants_[terrain_]:
+			terrain = terrain_
+			break
+	
+	if flap != null:
+		var biome = [flap]
+		var insulation = []
+		flap.set_terrain(terrain)
+		print(flap.get_non_neighbor_terrains())
+		for seam in flap.neighbors:
+			var neighbor = flap.neighbors[seam]
+			
+			if neighbor.terrain == null and neighbor.check_avalible_terrain_based_on_neighbors(terrain) and !insulation.has(neighbor):
+				insulation.append(neighbor)
+		
+		while !insulation.is_empty() and biome.size() < junior_size_:
+			if !insulation.is_empty():
+				var flap_ = insulation.pick_random()
+				biome.append(flap_)
+				insulation.erase(flap_)
+				
+				for seam in flap_.neighbors:
+					var neighbor = flap_.neighbors[seam]
+					
+					if neighbor.terrain == null and neighbor.check_avalible_terrain_based_on_neighbors(terrain) and !insulation.has(neighbor):
+						insulation.append(neighbor)
+		
+		print(["biome",biome.size()])#flap_.index)
+		for flap_ in biome:
+			flap_.set_terrain(terrain)
+			wastelands_.erase(flap_)
+			remnants_[terrain] -= 1
+
+
+
+func add_junior_biome_old(wastelands_: Array, remnants_: Dictionary, junior_size_: int) -> void:
+	var weights = []
+	print("____", wastelands_.size())
+	
+	for terrain in remnants_:
+		weights.append(remnants_[terrain])
+	
+	weights.sort_custom(func(a, b): return a > b)
+	
+	var weight = weights.front()
+	var terrain = null
+	
+	for terrain_ in remnants_:
+		if weight == remnants_[terrain_]:
+			terrain = terrain_
+			break
+	
+	var flap = null
+	var flaps = []
+	flaps.append_array(wastelands_)
+	
+	while flap == null and !flaps.is_empty():
+		
+		print("#", flaps.size())
+		flap = flaps.pick_random()
+		flaps.erase(flap)
+		
+		if flap.check_terrain_in_neighbors(terrain):
+			flap = null
+	
+	if flap != null:
+		var biome = [flap]
+		var insulation = []
+		flap.set_terrain(terrain)
+		
+		for seam in flap.neighbors:
+			var neighbor = flap.neighbors[seam]
+			
+			if neighbor.terrain == null and neighbor.check_avalible_terrain_based_on_neighbors(terrain) and !insulation.has(neighbor):
+				insulation.append(neighbor)
+		
+		while !insulation.is_empty() and biome.size() < junior_size_:
+			if !insulation.is_empty():
+				var flap_ = insulation.pick_random()
+				biome.append(flap_)
+				insulation.erase(flap_)
+				
+				for seam in flap_.neighbors:
+					var neighbor = flap_.neighbors[seam]
+					
+					if neighbor.terrain == null and neighbor.check_avalible_terrain_based_on_neighbors(terrain) and !insulation.has(neighbor):
+						insulation.append(neighbor)
+		
+		print(["biome",biome.size()])#flap_.index)
+		for flap_ in biome:
+			flap_.set_terrain(terrain)
+			wastelands_.erase(flap_)
+			remnants_[terrain] -= 1
 
 
 func refine_insulation(insulation_: Dictionary, wastelands_: Array, remnants_: Dictionary) -> void:

@@ -47,7 +47,6 @@ func allocate_resources_for_bidding(resources_: Dictionary) -> void:
 	for resource in resources_:
 		var value = resources_[resource]
 		change_resource_value(resource, value)
-		print([realm.index, resource, value])
 
 
 func get_icon_resource_icon(resource_: String) -> MarginContainer:
@@ -84,7 +83,6 @@ func change_resource_value(resource_: String, value_: int) -> void:
 	#label_.text = icon.number.text
 
 	var hbox = get_resource_hbox(resource_)
-	print([resource_, value_, icon.get_number()])
 	if icon.get_number() > 0:
 		hbox.visible = true
 	else:

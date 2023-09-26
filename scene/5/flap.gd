@@ -15,6 +15,7 @@ var knobs = []
 var seams = []
 var neighbors = {}
 var grand = false
+var center = Vector2()
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -36,7 +37,9 @@ func set_vertexs() -> void:
 	for knob in knobs:
 		var vertex = knob.position
 		vertexs.append(vertex)
+		center += vertex
 	
+	center /= knobs.size()
 	set_polygon(vertexs)
 
 
@@ -58,7 +61,10 @@ func paint_based_on_element() -> void:
 
 
 func paint_based_on_terrain() -> void:
-	set_color(Global.color.terrain[terrain])
+	if terrain != null:
+		set_color(Global.color.terrain[terrain])
+	else:
+		set_color(Color.GRAY)
 
 
 func paint_based_on_patch_index() -> void:
@@ -160,3 +166,44 @@ func set_terrain(terrain_: String) -> void:
 	else:
 		Global.fill_appellation_temp(terrain)
 		set_terrain(terrain_)
+
+
+func check_terrain_in_neighbors_old(terrain_: String) -> bool:
+	var flag = false
+	
+	for seam in neighbors:
+		var neighbor = neighbors[seam]
+		
+		if neighbor.terrain == terrain:
+			flag = true
+			break
+	
+	return flag
+
+
+func get_neighbor_terrains() -> Array:
+	var terrains = []
+	
+	for seam in neighbors:
+		var neighbor = neighbors[seam]
+		
+		if neighbor.terrain != null and terrains.has(neighbor.terrain):
+			terrains.append(neighbor.terrain)
+	
+	return terrains
+
+
+func get_non_neighbor_terrains() -> Array:
+	var terrains = []
+	
+	terrains.append_array(Global.arr.terrain)
+	
+	for terrain in get_neighbor_terrains():
+		terrains.erase(terrain)
+	
+	return terrains
+
+
+func check_avalible_terrain_based_on_neighbors(terrain_: String) -> bool:
+	var terrains = get_non_neighbor_terrains()
+	return terrains.has(terrain_)

@@ -64,7 +64,6 @@ layout_mode = 2
 alignment = 1
 
 [node name="Cloth" parent="HBox" instance=ExtResource("5_gj0xe")]
-visible = false
 layout_mode = 2
 
 [node name="Diplomacy" parent="HBox" instance=ExtResource("4_fc1hj")]

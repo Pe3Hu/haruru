@@ -31,3 +31,7 @@ res://scene/7/mediator.gd
 res://scene/2/warehouse.gd
 res://scene/7/purse.gd
 res://scene/0/icon.gd
+res://scene/5/cloth.gd
+res://scene/5/flap.gd
+res://scene/5/knob.gd
+res://scene/5/knob.tscn

@@ -109,10 +109,10 @@ func init_num() -> void:
 
 
 func init_dict() -> void:
+	init_neighbor()
 	init_time()
 	init_polygon()
 	init_business()
-	init_neighbor()
 	init_servant()
 	#init_mercenary()
 	init_abundance()
@@ -178,6 +178,52 @@ func init_time() -> void:
 	dict.period.study.selftaught = dict.period.study.withmentor * 3
 
 
+func init_neighbor() -> void:
+	dict.neighbor = {}
+	dict.neighbor.linear3 = [
+		Vector3( 0, 0, -1),
+		Vector3( 1, 0,  0),
+		Vector3( 0, 0,  1),
+		Vector3(-1, 0,  0)
+	]
+	dict.neighbor.linear2 = [
+		Vector2( 0,-1),
+		Vector2( 1, 0),
+		Vector2( 0, 1),
+		Vector2(-1, 0)
+	]
+	dict.neighbor.diagonal = [
+		Vector2( 1,-1),
+		Vector2( 1, 1),
+		Vector2(-1, 1),
+		Vector2(-1,-1)
+	]
+	dict.neighbor.zero = [
+		Vector2( 0, 0),
+		Vector2( 1, 0),
+		Vector2( 1, 1),
+		Vector2( 0, 1)
+	]
+	dict.neighbor.hex = [
+		[
+			Vector2( 1,-1), 
+			Vector2( 1, 0), 
+			Vector2( 0, 1), 
+			Vector2(-1, 0), 
+			Vector2(-1,-1),
+			Vector2( 0,-1)
+		],
+		[
+			Vector2( 1, 0),
+			Vector2( 1, 1),
+			Vector2( 0, 1),
+			Vector2(-1, 1),
+			Vector2(-1, 0),
+			Vector2( 0,-1)
+		]
+	]
+
+
 func init_polygon() -> void:
 	dict.order = {}
 	dict.pair = {}
@@ -230,52 +276,6 @@ func init_business() -> void:
 	dict.conversion.product["plank"] = "wood"
 	dict.conversion.product["ingot"] = "ore"
 	dict.conversion.product["jewel"] = "gem"
-
-
-func init_neighbor() -> void:
-	dict.neighbor = {}
-	dict.neighbor.linear3 = [
-		Vector3( 0, 0, -1),
-		Vector3( 1, 0,  0),
-		Vector3( 0, 0,  1),
-		Vector3(-1, 0,  0)
-	]
-	dict.neighbor.linear2 = [
-		Vector2( 0,-1),
-		Vector2( 1, 0),
-		Vector2( 0, 1),
-		Vector2(-1, 0)
-	]
-	dict.neighbor.diagonal = [
-		Vector2( 1,-1),
-		Vector2( 1, 1),
-		Vector2(-1, 1),
-		Vector2(-1,-1)
-	]
-	dict.neighbor.zero = [
-		Vector2( 0, 0),
-		Vector2( 1, 0),
-		Vector2( 1, 1),
-		Vector2( 0, 1)
-	]
-	dict.neighbor.hex = [
-		[
-			Vector2( 1,-1), 
-			Vector2( 1, 0), 
-			Vector2( 0, 1), 
-			Vector2(-1, 0), 
-			Vector2(-1,-1),
-			Vector2( 0,-1)
-		],
-		[
-			Vector2( 1, 0),
-			Vector2( 1, 1),
-			Vector2( 0, 1),
-			Vector2(-1, 1),
-			Vector2(-1, 0),
-			Vector2( 0,-1)
-		]
-	]
 
 
 func init_facet() -> void:
