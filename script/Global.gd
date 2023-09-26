@@ -30,6 +30,7 @@ func init_arr() -> void:
 	arr.color = ["Red","Green","Blue","Yellow"]
 	arr.element = ["aqua","wind","fire","earth"]
 	arr.terrain = ["pond", "plain", "forest", "mountain"]
+	arr.workplace = ["pond", "plain", "forest", "mountain", "comfortable"]
 	arr.resource = ["food", "wood", "ore", "gem", "canned", "plank", "ingot", "jewel"]
 	
 	arr.state = ["earldom", "dukedom", "kingdom", "empire"]

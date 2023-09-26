@@ -119,17 +119,24 @@ func craft() -> void:
 
 
 func migration() -> void:
-	var population = accountant.get_rss_icon_based_on_type_and_subtype("profit", "population").get_number()
-	var settlers = {}
+	var fieldwork = accountant.foreman.find_worst_incomplete_fieldwork("comfortable")
 	
-	for key in Global.num.settlement.migration:
-		settlers[key] = population * Global.num.settlement.migration[key]
-	
-	Global.rng.randomize()
-	settlers.current = Global.rng.randi_range(settlers.min, settlers.max)
-	var settlement = settlements.get_child(0)
-	settlement.bring_settlers(settlers.current)
-	accountant.update_population()
+	if fieldwork != null:
+		var population = accountant.get_rss_icon_based_on_type_and_subtype("profit", "population").get_number()
+		var settlers = {}
+		
+		for key in Global.num.settlement.migration:
+			settlers[key] = population * Global.num.settlement.migration[key]
+		
+		settlers.min = min(fieldwork.get_freely(), settlers.min)
+		settlers.max = min(fieldwork.get_freely(), settlers.max)
+		Global.rng.randomize()
+		settlers.current = Global.rng.randi_range(settlers.min, settlers.max)
+		var settlement = settlements.get_child(0)
+		settlement.bring_settlers(settlers.current)
+		accountant.update_population()
+	else:
+		print("error: no comfortable fieldworks")
 
 
 func education() -> void:

@@ -136,10 +136,10 @@ func fill_best_workplaces(specialization_: String, population_: int) -> void:
 		if fieldwork.get("abundance") != null:
 			if population_ > 0:
 				var freely = min(fieldwork.get_freely(), population_)
-				fieldwork.set_servant_resupply(specialization_, freely)
-				population_ -= freely
-				var abundance = freely * fieldwork.get_icon("abundance").get_number()
-				accountant.change_specialization_population(specialization_, fieldwork, freely)
+				var resupply = fieldwork.set_sspecialization_resupply(specialization_, freely)
+				population_ -= resupply
+				var abundance = resupply * fieldwork.get_icon("abundance").get_number()
+				accountant.change_specialization_population(specialization_, fieldwork, resupply)
 
 
 func update_visible() -> void:
@@ -153,7 +153,7 @@ func update_visible() -> void:
 		hbox.visible = freely > 0
 
 
-func find_worst_fieldwork(terrain_: String) -> Variant:
+func find_worst_nonempty_fieldwork(terrain_: String) -> Variant:
 	var hbox = get_hbox(terrain_)
 	
 	for _i in range(hbox.get_child_count()-1,-1, -1):
@@ -166,8 +166,8 @@ func find_worst_fieldwork(terrain_: String) -> Variant:
 	return null
 
 
-func find_worst_incomplete_comfortable_fieldwork() -> Variant:
-	var hbox = get_hbox("comfortable")
+func find_worst_incomplete_fieldwork(terrain_: String) -> Variant:
+	var hbox = get_hbox(terrain_)
 	
 	for _i in range(hbox.get_child_count()-1,-1, -1):
 		var fieldwork = hbox.get_child(_i)
@@ -179,12 +179,36 @@ func find_worst_incomplete_comfortable_fieldwork() -> Variant:
 	return null
 
 
-func find_best_fieldwork(terrain_: String) -> Variant:
+#func find_worst_incomplete_comfortable_fieldwork() -> Variant:
+#	var hbox = get_hbox("comfortable")
+#
+#	for _i in range(hbox.get_child_count()-1,-1, -1):
+#		var fieldwork = hbox.get_child(_i)
+#
+#		if fieldwork.get("abundance") != null:
+#			if fieldwork.get_freely() > 0:
+#				return fieldwork
+#
+#	return null
+
+
+func find_best_nonempty_fieldwork(terrain_: String) -> Variant:
 	var hbox = get_hbox(terrain_)
 	
 	for fieldwork in hbox.get_children():
 		if fieldwork.get("abundance") != null:
 			if fieldwork.get_icon("current").get_number() > 0:
+				return fieldwork
+	
+	return null
+
+
+func find_best_incomplete_fieldwork(terrain_: String) -> Variant:
+	var hbox = get_hbox(terrain_)
+	
+	for fieldwork in hbox.get_children():
+		if fieldwork.get("abundance") != null:
+			if fieldwork.get_freely() > 0:
 				return fieldwork
 	
 	return null
@@ -196,20 +220,20 @@ func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 	var unemployed = 0
 	
 	while population_ > 0:
-		var fieldwork = find_worst_fieldwork(workplace)
-		#print(fieldwork)
+		var fieldwork = find_worst_nonempty_fieldwork(workplace)
 		
 		if fieldwork != null:
-			var current = min(fieldwork.get_icon("current").get_number(), population_)
-			fieldwork.set_servant_resupply(specialization_, -current)
-			population_ -= current
-			unemployed += current
-			var abundance = current * fieldwork.get_icon("abundance").get_number()
-			accountant.change_specialization_population(specialization_, fieldwork, -current)
+			var current = -min(fieldwork.get_icon("current").get_number(), population_)
+			var resupply = fieldwork.set_sspecialization_resupply(specialization_, current)
+			population_ += resupply
+			unemployed -= resupply
+			accountant.change_specialization_population(specialization_, fieldwork, resupply)
 		else:
 			population_ = 0
 			print("error: not enough population for empty_worst_workplaces")
 	
+	if realm.index == 0:
+		print([specialization_, unemployed])
 	accountant.change_unemployed_population(unemployed)
 	#accountant.change_specialization_population(specialization_, fieldwork, -current)
 	

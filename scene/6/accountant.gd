@@ -283,7 +283,7 @@ func update_population() -> void:
 
 func change_unemployed_population(population_: int) -> void:
 	var specialization = "unemployed"
-	var fieldwork = foreman.find_worst_incomplete_comfortable_fieldwork()
-	fieldwork.set_servant_resupply(specialization, population_)
-	change_icon_number_by_value(specialization, "population", population_)
-	
+	var workplace = "comfortable"
+	var fieldwork = foreman.find_worst_incomplete_fieldwork(workplace)
+	var resupply = fieldwork.set_sspecialization_resupply(specialization, population_)
+	change_icon_number_by_value(specialization, "population", resupply)

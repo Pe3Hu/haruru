@@ -10,7 +10,7 @@ var foreman = null
 var hbox = null
 var terrain = null
 var abundance = null
-var servants = {}
+var specializations = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -44,28 +44,41 @@ func get_freely() -> int:
 	return im.get_number() - ic.get_number()
 
 
-func set_servant_resupply(servant_: String, resupply_: int) -> void:
-	var freely = get_freely()
-	var population = min(resupply_, freely)
-	ic.change_number(population)
+func set_sspecialization_resupply(specialization_: String, resupply_: int) -> int:
+	if resupply_ != 0:
+		var population = null
+		var freely = get_freely()
+		var current = ic.get_number()
+		
+		if resupply_ > 0:
+			population = min(resupply_, freely)
+			
+			if resupply_ > freely:
+				print("error: too many resupply in set_servant_populations")
+		else:
+			population = max(resupply_, -current)
+			
+			if resupply_ < -current:
+				print("error: too few specializations in set_servant_populations", [freely, current, im.get_number()])
+		
+		ic.change_number(population)
+		
+		if !specializations.has(specialization_):
+			specializations[specialization_] = 0
+		
+		specializations[specialization_] += population
+		update_visible()
+		return population
 	
-	if !servants.has(servant_):
-		servants[servant_] = 0
-	
-	servants[servant_] += population
-	update_visible()
-	
-	if resupply_ > freely:
-		print("too many in set_servant_populations")
+	return 0
 
 
 func update_visible() -> void:
 	var freely = get_freely()
-	#print(freely)
 	visible = freely > 0
 	
 	if freely > 0:
 		hbox.visible = true
 	else:
-		if foreman.find_worst_fieldwork(terrain) == self:
+		if foreman.find_worst_nonempty_fieldwork(terrain) == self:
 			hbox.visible = false

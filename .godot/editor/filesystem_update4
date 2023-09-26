@@ -9,12 +9,11 @@ res://scene/2/school.tscn
 res://scene/2/settlement.tscn
 res://scene/6/foreman.tscn
 res://scene/6/fieldwork.tscn
-res://scene/6/accountant.gd
-res://scene/2/school.gd
-res://scene/0/icon.gd
-res://scene/6/foreman.gd
 res://scene/6/manager.gd
-res://script/Global.gd
+res://scene/6/foreman.gd
+res://scene/2/school.gd
 res://scene/6/fieldwork.gd
+res://script/Global.gd
+res://scene/6/accountant.gd
+res://scene/0/game.gd
 res://scene/6/realm.gd
-res://scene/1/diplomacy.gd

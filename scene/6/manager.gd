@@ -14,16 +14,12 @@ func set_attributes(input_: Dictionary):
 
 
 func fill_accountant_rss() -> void:
-	share_responsibility()
-	fill_fieldworks()
+	init_harvesters()
+	#fill_fieldworks()
+	init_handlers()
 	accountant.update_resource_income()
 	accountant.update_population()
 	update_resource_priority()
-
-
-func share_responsibility() -> void:
-	init_harvesters()
-	init_handlers()
 
 
 func init_harvesters() -> void:
@@ -56,16 +52,7 @@ func init_harvesters() -> void:
 		
 		for specialization in distribution.specializations:
 			var population = round(workplaces[terrain].total * distribution.specializations[specialization])
-			
 			foreman.fill_best_workplaces(specialization, population)
-			#set_population(specialization, population)
-			#workplaces[terrain].specializations[servant] = accountant.specializations[servant]
-
-
-func set_population(subtype_: String, population_: int) -> void:
-	accountant.specializations[subtype_] = population_
-	var icon = accountant.get_rss_icon_based_on_type_and_subtype(subtype_, "population")
-	icon.number.text = str(population_)
 
 
 func init_handlers() -> void:
@@ -91,19 +78,13 @@ func init_handlers() -> void:
 			for raw in raws:
 				var handler = Global.get_handler_based_on_raw(raw)
 				var donor = accountant.get_rss_icon_based_on_type_and_subtype(specialization, "population")
-				var population = accountant.specializations[specialization] * Global.num.realm.handler / raws.size()
+				var population = round(accountant.specializations[specialization] * Global.num.realm.handler / raws.size())
 				foreman.empty_worst_workplaces(specialization, population)
 				
 				for _i in population:
 					school.add_to_schedule_graduation(false, handler, true)
 				
 				school.graduation_check()
-				
-				#donor.change_number(-population)
-				#set_population(servant, donor.get_number())
-				#var recipient = accountant.get_rss_icon_based_on_type_and_subtype(handler, "population")
-				#recipient.change_number(population)
-				#set_population(handler, recipient.get_number())
 	
 	school.fill_icons()
 

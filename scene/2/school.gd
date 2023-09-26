@@ -84,9 +84,9 @@ func choose_raw_specialization() -> Variant:
 func choose_specialization_based_on_resource_priority() -> Variant:
 	var fieldworks = []
 	
-	for terrain in Global.arr.terrain:
+	for terrain in Global.arr.workplace:
 		#var node = settlement.realm.accountant.foreman.terrains.get_node(terrain.capitalize())
-		var fieldwork = settlement.realm.accountant.foreman.find_best_fieldwork(terrain)
+		var fieldwork = settlement.realm.accountant.foreman.find_best_incomplete_fieldwork(terrain)
 		
 		if fieldwork != null:
 			fieldworks.append(fieldwork)
@@ -211,13 +211,10 @@ func graduation_check() -> void:
 
 
 func prom(specialization_: String, scholars_: Array) -> void:
-	if int(settlement.realm.sketch.day.text) > 0 and settlement.realm.index == 0:
-		print([int(settlement.realm.sketch.day.text), specialization_, scholars_])
-	
-	var abundance = settlement.realm.accountant.foreman.fill_best_workplaces(specialization_, scholars_.size())
+	settlement.realm.accountant.foreman.fill_best_workplaces(specialization_, scholars_.size())
 	
 	for scholar in scholars_:
-		settlement.realm.accountant.change_icon_number_by_value( scholar, "population", -1)
+		settlement.realm.accountant.change_icon_number_by_value(scholar, "population", -1)
 		
 		match scholar:
 			"mentor":
@@ -225,8 +222,6 @@ func prom(specialization_: String, scholars_: Array) -> void:
 			"pupil":
 				pc.change_number(-1)
 	
-	var icon = settlement.realm.accountant.get_rss_icon_based_on_type_and_subtype("pupil", "population").get_number()
-	var a = null
 	#settlement.realm.accountant.change_icon_number_by_value(specialization_, "population", 2)
 #	settlement.realm.accountant.change_icon_number_by_value("mentor", "population", -1)
 #	settlement.realm.accountant.change_icon_number_by_value("pupil", "population", -1)
