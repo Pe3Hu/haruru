@@ -398,7 +398,6 @@ func init_flap_terrains() -> void:
 		grands[terrain] = [flap]
 		flap.set_terrain(terrain)
 	
-	
 #	datas.sort_custom(func(a, b): return a.square > b.square)
 #
 #	for terrain in Global.color.terrain:
@@ -434,9 +433,15 @@ func init_flap_terrains() -> void:
 		
 		hegemony[terrain] = grand_square
 		
-		print([terrain, grands[terrain].size()])
 		if junior_size > grands[terrain].size():
 			junior_size = grands[terrain].size()
+	
+	
+	wastelands = []
+	
+	for flap in flaps.get_children():
+		if flap.terrain == null:
+			wastelands.append(flap)
 	
 	var lobes = 0
 	var residue = wastelands.size()
@@ -452,9 +457,14 @@ func init_flap_terrains() -> void:
 		residue -= remnants[terrain]
 	
 	remnants["plain"] += residue
+	#	print([flap.index, flap.terrain, flap.get_neighbor_terrains()])
 	
-	junior_size = round(junior_size / 3)
-	for _i in 5:
+	#for flap in grands["plain"]:
+	#	print([flap.index, flap.get_neighbor_terrains()])
+	
+	junior_size = round(junior_size / 2)
+	while !wastelands.is_empty():
+	#for _i in 10:
 		add_junior_biome(wastelands, remnants, junior_size)
 	
 #	while !insulation.is_empty():
@@ -468,29 +478,33 @@ func init_flap_terrains() -> void:
 
 
 func add_junior_biome(wastelands_: Array, remnants_: Dictionary, junior_size_: int) -> void:
-	
 	var flap = wastelands_.pick_random()
+	var terrain = null
+	
 	var terrains = flap.get_non_neighbor_terrains()
 	var weights = []
-	print("____", wastelands_.size())
 	
-	for terrain in terrains:
-		weights.append(remnants_[terrain])
+	for terrain_ in terrains:
+		weights.append(remnants_[terrain_])
 	
 	weights.sort_custom(func(a, b): return a > b)
 	var weight = weights.front()
-	var terrain = null
 	
 	for terrain_ in remnants_:
 		if weight == remnants_[terrain_]:
 			terrain = terrain_
 			break
 	
+	if flap.terrain != null:
+		wastelands_.erase(flap)
+		flap = null
+		remnants_[terrain] -= 1
+	
 	if flap != null:
 		var biome = [flap]
 		var insulation = []
-		flap.set_terrain(terrain)
-		print(flap.get_non_neighbor_terrains())
+		#flap.set_terrain(terrain)
+		#print(flap.get_non_neighbor_terrains())
 		for seam in flap.neighbors:
 			var neighbor = flap.neighbors[seam]
 			
@@ -539,12 +553,14 @@ func add_junior_biome_old(wastelands_: Array, remnants_: Dictionary, junior_size
 	flaps.append_array(wastelands_)
 	
 	while flap == null and !flaps.is_empty():
-		
 		print("#", flaps.size())
 		flap = flaps.pick_random()
 		flaps.erase(flap)
 		
-		if flap.check_terrain_in_neighbors(terrain):
+		if flap.terrain != null:
+			wastelands_.erase(flap)
+		
+		if !flap.check_avalible_terrain_based_on_neighbors(terrain):
 			flap = null
 	
 	if flap != null:

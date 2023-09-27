@@ -184,10 +184,12 @@ func check_terrain_in_neighbors_old(terrain_: String) -> bool:
 func get_neighbor_terrains() -> Array:
 	var terrains = []
 	
+	#print(neighbors.size())
 	for seam in neighbors:
 		var neighbor = neighbors[seam]
+		#print(neighbor.terrain)
 		
-		if neighbor.terrain != null and terrains.has(neighbor.terrain):
+		if neighbor.terrain != null and !terrains.has(neighbor.terrain):
 			terrains.append(neighbor.terrain)
 	
 	return terrains
@@ -195,7 +197,6 @@ func get_neighbor_terrains() -> Array:
 
 func get_non_neighbor_terrains() -> Array:
 	var terrains = []
-	
 	terrains.append_array(Global.arr.terrain)
 	
 	for terrain in get_neighbor_terrains():
@@ -206,4 +207,5 @@ func get_non_neighbor_terrains() -> Array:
 
 func check_avalible_terrain_based_on_neighbors(terrain_: String) -> bool:
 	var terrains = get_non_neighbor_terrains()
+	#print([terrain_, terrains])
 	return terrains.has(terrain_)
