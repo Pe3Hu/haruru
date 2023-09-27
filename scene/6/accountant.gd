@@ -96,14 +96,14 @@ func fill_tss() -> void:
 		set_tss_number_based_on_type_and_subtype(terrain, "abundance", workplace)
 
 
-func get_tss_icon_based_on_terrain_and_subtype(terrain_: String, subtype_: String) -> MarginContainer:
-	var name_ = "value of " + terrain_ + " " + subtype_
+func get_tss_icon_based_on_type_and_subtype(type_: String, subtype_: String) -> MarginContainer:
+	var name_ = "value of " + type_ + " " + subtype_
 	var icon = tss.get_node(name_)
 	return icon
 
 
 func set_tss_number_based_on_type_and_subtype(subtype_: String, type_: String, value_: int) -> void:
-	var icon = get_tss_icon_based_on_terrain_and_subtype(subtype_, type_)
+	var icon = get_tss_icon_based_on_type_and_subtype(subtype_, type_)
 	icon.set_number(value_)
 
 

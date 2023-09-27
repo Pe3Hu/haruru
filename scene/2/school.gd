@@ -168,7 +168,6 @@ func mentor_takes_vacation(specialization_: String) -> bool:
 
 
 func add_to_schedule_graduation(mentor_availability_: bool, specialization_: String, skip_: bool) -> void:
-	
 	#settlement.realm.accountant.change_unemployed_population(-1)
 	#settlement.realm.accountant.change_icon_number_by_value("pupil", "population", 1)
 	settlement.fieldwork.set_specialization_resupply("pupil", 1)

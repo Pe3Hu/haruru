@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ewab4e6hybpi"]
+[gd_scene load_steps=5 format=3 uid="uid://ewab4e6hybpi"]
 
 [ext_resource type="Script" path="res://scene/7/marketplace.gd" id="1_6o157"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_tk7aw"]
+[ext_resource type="PackedScene" uid="uid://b1bhn5qj4gabf" path="res://scene/7/bank.tscn" id="3_c8vvr"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
@@ -37,10 +38,19 @@ vertical_alignment = 1
 
 [node name="HBox" type="HBoxContainer" parent="."]
 layout_mode = 2
-
-[node name="Mediators" type="VBoxContainer" parent="."]
-layout_mode = 2
 alignment = 1
 
-[node name="Rooms" type="GridContainer" parent="."]
+[node name="Bank" parent="HBox" instance=ExtResource("3_c8vvr")]
 layout_mode = 2
+
+[node name="Mediators" type="GridContainer" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 3
+
+[node name="Rooms" type="GridContainer" parent="HBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 2

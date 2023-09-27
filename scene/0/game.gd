@@ -42,10 +42,13 @@ func _input(event) -> void:
 					#Global.node.sketch.cloth.add_states("earldom")
 					#Global.node.sketch.cloth.find_furthest_earldom_in_biggest_empire()
 					Global.node.sketch.next_day()
-					
 			KEY_1:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.diplomacy.realms.get_child(0).manager.init_handlers()
+					Global.node.sketch.next_day()
+			KEY_2:
+				if event.is_pressed() && !event.is_echo():
+					Global.node.sketch.marketplace.start_trading()
 					
 
 

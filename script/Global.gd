@@ -32,6 +32,7 @@ func init_arr() -> void:
 	arr.terrain = ["pond", "plain", "forest", "mountain"]
 	arr.workplace = ["pond", "plain", "forest", "mountain", "comfortable"]
 	arr.resource = ["food", "wood", "ore", "gem", "canned", "plank", "ingot", "jewel"]
+	arr.commodity = ["wood", "plank", "ore", "ingot", "gem", "jewel"]
 	
 	arr.state = ["earldom", "dukedom", "kingdom", "empire"]
 	
@@ -52,6 +53,7 @@ func init_num() -> void:
 	num.index.patch = 0
 	num.index.frontier = 0
 	num.index.realm = 0
+	num.index.mediator = 0
 	num.index.state = {}
 	num.index.appellation = {}
 	

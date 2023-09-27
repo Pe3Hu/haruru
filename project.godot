@@ -22,4 +22,4 @@ Global="*res://script/Global.gd"
 [display]
 
 window/size/viewport_width=1900
-window/size/viewport_height=850
+window/size/viewport_height=950

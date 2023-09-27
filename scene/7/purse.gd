@@ -32,6 +32,10 @@ func init_resources() -> void:
 			var icon = Global.scene.icon.instantiate()
 			hbox.add_child(icon)
 			icon.set_attributes(input)
+			
+			if input.subtype == "food":
+				hbox.visible = false
+			
 			icon.name = "Icon"#Global.dict.business[business][key].capitalize()
 			input.type = "number"
 			input.subtype = 0
@@ -71,7 +75,7 @@ func get_resource_hbox(resource_: String) -> HBoxContainer:
 
 
 func check_resource_availability(resource_: String, value_: int) -> bool:
-	var value = get_icon_resource_number(resource_).get_number()
+	var value = get_stockpile_of_resource(resource_)
 	return value + value_ >= 0
 
 
@@ -98,7 +102,7 @@ func get_value_of_resource_available_for_withdraw(resource_: String, value_: int
 	return icon.get_number()
 
 
-func get_value_of_resource(resource_: String) -> int:
+func get_stockpile_of_resource(resource_: String) -> int:
 	var icon = get_icon_resource_number(resource_)
 	return icon.get_number()
 
@@ -107,5 +111,5 @@ func reset() -> void:
 	for business in businesses.get_children():
 		for hbox in business.get_children():
 			var icon = hbox.get_node("Icon")
-			var value = get_value_of_resource(icon.subtype)
+			var value = get_stockpile_of_resource(icon.subtype)
 			change_resource_value(icon.subtype, -value)

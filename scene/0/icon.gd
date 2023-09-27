@@ -33,7 +33,7 @@ func set_attributes(input_: Dictionary) -> void:
 			custom_minimum_size = Vector2(Global.vec.size.number)
 			tr.visible = false
 			number.visible = true
-			number.text = str(subtype)
+			set_number(subtype)
 		"blank":
 			custom_minimum_size = Vector2(Global.vec.size.number)
 
@@ -42,25 +42,38 @@ func get_number() -> int:
 	return subtype
 
 
-func change_number(value_: int) -> void:
+func change_number(value_) -> void:
 	subtype += value_
-	var value = int(subtype) + 0
-	var suffix = ""
+	var value = subtype + 0
 	
-	while value >= 1000:
-		value /= 1000
-		suffix = Global.dict.thousand[suffix]
-	
-	number.text = str(value) + suffix
+	match typeof(value_):
+		TYPE_INT:
+			var suffix = ""
+			
+			while value >= 1000:
+				value /= 1000
+				suffix = Global.dict.thousand[suffix]
+			
+			number.text = str(value) + suffix
+		TYPE_FLOAT:
+			value = snapped(value, 0.01)
+			number.text = str(value)
 
 
-func set_number(value_: int) -> void:
+func set_number(value_) -> void:
 	subtype = value_
-	var value = int(subtype) + 0
-	var suffix = ""
+	var value = subtype + 0
 	
-	while value >= 1000:
-		value /= 1000
-		suffix = Global.dict.thousand[suffix]
+	match typeof(value_):
+		TYPE_INT:
+			var suffix = ""
+			
+			while value >= 1000:
+				value /= 1000
+				suffix = Global.dict.thousand[suffix]
+			
+			number.text = str(value) + suffix
+		TYPE_FLOAT:
+			value = snapped(value, 0.01)
+			number.text = str(value)
 	
-	number.text = str(value) + suffix

@@ -27,7 +27,7 @@ func init_harvesters() -> void:
 	
 	for terrain in Global.arr.terrain:
 		workplaces[terrain] = {}
-		workplaces[terrain].total = accountant.get_tss_icon_based_on_terrain_and_subtype(terrain, "workplace").get_number()#workplace
+		workplaces[terrain].total = accountant.get_tss_icon_based_on_type_and_subtype(terrain, "workplace").get_number()#workplace
 		workplaces[terrain].specializations = {}
 		var distribution = {}
 		distribution.limit = 1
@@ -147,21 +147,38 @@ func update_resource_priority() -> void:
 
 func develop_strategy_for_market_behavior() -> void:
 	update_resource_priority()
-	var datas = {}
+	var n = 3
 	
-	for resource in Global.arr.resource:
-		var data = {}
-		#data.resource = resource
-		data.priority = accountant.get_rss_number_based_on_type_and_subtype("priority", resource)
-		data.stockpile = accountant.get_rss_number_based_on_type_and_subtype("stockpile", resource)
+	var sale = 1
+	
+	for _i in n:
+		var procurement = 100 * (n - _i)
+		var stockpiles = {}
+		var goals = {}
 		
-		if data.stockpile > 0:
-			datas[resource] = round(data.stockpile * 0.75)
-			accountant.realm.warehouse.change_resource_value(resource, -datas[resource])
-	
-	var input = {}
-	input.realm = realm
-	input.resources = datas
-	var mediator = Global.scene.mediator.instantiate()
-	realm.sketch.marketplace.mediators.add_child(mediator)
-	mediator.set_attributes(input)
+		for resource in Global.arr.resource:
+			if resource != "food":
+				var data = {}
+				#data.resource = resource
+				data.priority = accountant.get_rss_number_based_on_type_and_subtype("priority", resource)
+				data.stockpile = accountant.get_rss_number_based_on_type_and_subtype("stockpile", resource)
+				
+				#if data.stockpile > 0:
+				stockpiles[resource] = round(data.stockpile * 0.4)
+				accountant.realm.warehouse.change_resource_value(resource, -stockpiles[resource])
+				
+				if stockpiles[resource] >= procurement:#stockpiles[resource] > 0 and 
+					data.goal = -stockpiles[resource] * sale
+				else:
+					data.goal = procurement - stockpiles[resource]
+				
+				goals[resource] = data.goal
+		
+		
+		var input = {}
+		input.realm = realm
+		input.resources = stockpiles
+		input.goals = goals
+		var mediator = Global.scene.mediator.instantiate()
+		realm.sketch.marketplace.mediators.add_child(mediator)
+		mediator.set_attributes(input)

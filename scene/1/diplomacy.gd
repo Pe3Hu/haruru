@@ -149,5 +149,9 @@ func realms_are_harvesting() -> void:
 
 
 func realms_are_trading() -> void:
+	sketch.marketplace.prepare_before_trading()
+	
 	for realm in realms.get_children():
 		realm.manager.develop_strategy_for_market_behavior()
+	
+	sketch.marketplace.start_trading()
