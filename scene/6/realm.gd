@@ -89,6 +89,7 @@ func harvest() -> void:
 	for raw in Global.dict.conversion.raw:
 		var income = accountant.get_rss_number_based_on_type_and_subtype("income", raw)
 		warehouse.change_resource_value(raw, income)
+		#print([raw, warehouse.get_resource_value(raw)])
 
 
 func meal() -> void:
@@ -101,7 +102,7 @@ func meal() -> void:
 		var population = accountant.specializations[servant]
 		food.output += population
 	
-	food.input = warehouse.get_value_of_resource("food")
+	food.input = warehouse.get_resource_value("food")
 	food.profit = food.input - food.output
 	
 	if food.profit > 0:

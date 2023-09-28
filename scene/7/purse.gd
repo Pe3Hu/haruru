@@ -4,14 +4,13 @@ extends MarginContainer
 @onready var label = $Label
 @onready var businesses = $Businesses
 
-var realm = null
+var mediator = null
 
 
 func set_attributes(input_: Dictionary) -> void:
-	realm = input_.realm
+	mediator = input_.mediator
 	init_resources()
 	allocate_resources_for_bidding(input_.resources)
-	label.visible = false
 
 
 func init_resources() -> void:
@@ -51,6 +50,7 @@ func allocate_resources_for_bidding(resources_: Dictionary) -> void:
 	for resource in resources_:
 		var value = resources_[resource]
 		change_resource_value(resource, value)
+		mediator.investments[resource] = 0 + value
 
 
 func get_icon_resource_icon(resource_: String) -> MarginContainer:
@@ -75,16 +75,24 @@ func get_resource_hbox(resource_: String) -> HBoxContainer:
 
 
 func check_resource_availability(resource_: String, value_: int) -> bool:
-	var value = get_stockpile_of_resource(resource_)
+	var value = get_resource_value(resource_)
 	return value + value_ >= 0
 
 
 func change_resource_value(resource_: String, value_: int) -> void:
 	var icon = get_icon_resource_number(resource_)
 	icon.change_number(value_)
-	#realm.accountant.change_rss_icon_number_based_on_type_and_subtype_value("stockpile", resource_, value_)
-	#var icon = realm.accountant.get_rss_icon_based_on_type_and_subtype("stockpile", resource_)
-	#label_.text = icon.number.text
+
+	var hbox = get_resource_hbox(resource_)
+	if icon.get_number() > 0:
+		hbox.visible = true
+	else:
+		hbox.visible = false
+
+
+func set_resource_value(resource_: String, value_: int) -> void:
+	var icon = get_icon_resource_number(resource_)
+	icon.set_number(value_)
 
 	var hbox = get_resource_hbox(resource_)
 	if icon.get_number() > 0:
@@ -102,7 +110,7 @@ func get_value_of_resource_available_for_withdraw(resource_: String, value_: int
 	return icon.get_number()
 
 
-func get_stockpile_of_resource(resource_: String) -> int:
+func get_resource_value(resource_: String) -> int:
 	var icon = get_icon_resource_number(resource_)
 	return icon.get_number()
 
@@ -111,5 +119,6 @@ func reset() -> void:
 	for business in businesses.get_children():
 		for hbox in business.get_children():
 			var icon = hbox.get_node("Icon")
-			var value = get_stockpile_of_resource(icon.subtype)
-			change_resource_value(icon.subtype, -value)
+			#var value = get_resource_value(icon.subtype)
+			#change_resource_value(icon.subtype, -value)
+			set_resource_value(icon.subtype, 0 )

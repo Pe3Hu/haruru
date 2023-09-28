@@ -54,6 +54,7 @@ func init_num() -> void:
 	num.index.frontier = 0
 	num.index.realm = 0
 	num.index.mediator = 0
+	num.index.accreditation = 0
 	num.index.state = {}
 	num.index.appellation = {}
 	

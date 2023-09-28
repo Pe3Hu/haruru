@@ -147,7 +147,7 @@ func update_resource_priority() -> void:
 
 func develop_strategy_for_market_behavior() -> void:
 	update_resource_priority()
-	var n = 3
+	var n = 1
 	
 	var sale = 1
 	

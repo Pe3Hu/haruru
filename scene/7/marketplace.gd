@@ -26,7 +26,12 @@ func init_rooms() -> void:
 		room.set_attributes(input)
 
 
-func start_trading() -> void:
+func skip_trading() -> void:
+	while rooms.get_child_count() > 0:
+		round_of_trading()
+
+
+func round_of_trading() -> void:
 	for room in rooms.get_children():
 		room.start_session()
 	

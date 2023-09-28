@@ -1,6 +1,7 @@
 extends MarginContainer
 
 
+@onready var bg = $BG
 @onready var index = $VBox/Index
 @onready var pp = $VBox/PreferredPrice
 @onready var lp = $VBox/LimitedPrice
@@ -38,11 +39,15 @@ func fill_icons() -> void:
 	input.subtype = 0
 	stack.set_attributes(input)
 	refill_stack()
+	
+	if greed:
+		var style = bg.get("theme_override_styles/panel")
+		style.bg_color = Color.INDIAN_RED
 
 
 func refill_stack() -> void:
 	var resource = room.get_resource()
-	var value = min(mediator.purse.get_stockpile_of_resource(resource), Global.num.marketplace.stack.limit)
+	var value = min(mediator.purse.get_resource_value(resource), Global.num.marketplace.stack.limit)
 	
 	if value > 0:
 		stack.set_number(value)
@@ -76,7 +81,7 @@ func get_offer(bidder_: MarginContainer) -> void:
 
 
 func ask_discount(bidder_: MarginContainer) -> Variant:
-	if bidder_.get_preferred_price() > get_limited_price():
+	if bidder_.get_preferred_price() > get_preferred_price():
 		var lot = {}
 		lot.base = float(bidder_.get_preferred_price() * get_stack_number())
 		var canned = {}

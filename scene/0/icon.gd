@@ -11,13 +11,6 @@ var subtype = null
 func set_attributes(input_: Dictionary) -> void:
 	type  = input_.type
 	subtype  = input_.subtype
-#	for key_ in input_:
-#		set(key_, input_[key_])
-#
-#	label.text = str(key)
-#
-#	if Global.arr.token.has(key):
-#		label.text = key[0]
 	
 	custom_minimum_size = Vector2(Global.vec.size.letter)
 	var path = "res://asset/png/icon/"

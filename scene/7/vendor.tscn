@@ -27,15 +27,6 @@ script = ExtResource("1_yqusf")
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_7paps")
 
-[node name="Label" type="Label" parent="."]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("1_x1p3n")
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
 alignment = 1

@@ -1,6 +1,7 @@
 extends MarginContainer
 
 
+@onready var bg = $BG
 @onready var index = $VBox/Index
 @onready var pp = $VBox/PreferredPrice
 @onready var lp = $VBox/LimitedPrice
@@ -23,6 +24,10 @@ func set_attributes(input_: Dictionary):
 	fails.limit = 7
 	
 	fill_icons()
+	
+	if greed:
+		var style = bg.get("theme_override_styles/panel")
+		style.bg_color = Color.SKY_BLUE
 
 
 func fill_icons() -> void:
@@ -35,7 +40,7 @@ func fill_icons() -> void:
 	input.subtype = mediator.appraisals[resource].limit.buy
 	lp.set_attributes(input)
 	input.type = "number"
-	input.subtype = mediator.purse.get_stockpile_of_resource("canned")
+	input.subtype = mediator.purse.get_resource_value("canned")
 	canned.set_attributes(input)
 
 
@@ -109,13 +114,19 @@ func keep_up_proposal() -> bool:
 
 
 func check_room_conditions() -> void:
-	var resource = room.get_resource()
+	var budget = mediator.purse.get_resource_value("canned") * mediator.marketplace.bank.get_resource_price("canned")
 	
-	if fails.current >= fails.limit:
-		leave_room()
-		return
-	
-	if abs(mediator.goals[resource]) <= abs(mediator.performances[resource]):
+	if budget > get_preferred_price() * Global.num.marketplace.stack.limit:
+		var resource = room.get_resource()
+		
+		if fails.current >= fails.limit:
+			leave_room()
+			return
+		
+		if abs(mediator.goals[resource]) <= abs(mediator.performances[resource]):
+			leave_room()
+			return
+	else:
 		leave_room()
 		return
 

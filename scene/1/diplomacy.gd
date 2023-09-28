@@ -7,6 +7,7 @@ extends MarginContainer
 var sketch = null
 var time = null
 var empires = []
+var accreditation = {}
 
 
 func _ready() -> void:
@@ -123,7 +124,8 @@ func init_reams() -> void:
 	for _i in Global.dict.time.month:
 		sketch.next_day()
 	
-	realms_are_trading()
+	for _i in 10:
+		realms_are_trading()
 	
 	for realm in realms.get_children():
 		if realm.index == 0:
@@ -154,4 +156,20 @@ func realms_are_trading() -> void:
 	for realm in realms.get_children():
 		realm.manager.develop_strategy_for_market_behavior()
 	
-	sketch.marketplace.start_trading()
+	sketch.marketplace.skip_trading()
+	
+	
+	for mediator in sketch.marketplace.mediators.get_children():
+		mediator.comeback()
+
+
+func calc_accreditation() -> void:
+	accreditation[Global.num.index.accreditation] = {}
+	for resource in Global.arr.resource:
+		accreditation[Global.num.index.accreditation][resource] = 0
+		
+		for realm in realms.get_children():
+			accreditation[Global.num.index.accreditation][resource] += realm.warehouse.get_resource_value(resource)
+	
+	print(["accreditation", Global.num.index.accreditation, accreditation[Global.num.index.accreditation]])
+	Global.num.index.accreditation += 1

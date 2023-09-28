@@ -9,6 +9,7 @@ var realm = null
 var marketplace = null
 var index = null
 var goals = null
+var investments = {}
 var performances = {}
 var rooms = {}
 var appraisals = {}
@@ -19,6 +20,7 @@ func set_attributes(input_: Dictionary):
 	realm = input_.realm
 	marketplace = realm.sketch.marketplace
 	goals = input_.goals
+	input_.mediator = self
 	purse.set_attributes(input_)
 	index = Global.num.index.mediator
 	Global.num.index.mediator += 1
@@ -66,10 +68,10 @@ func become_vendor(room_: MarginContainer, price_: float) -> void:
 	if !rooms.bidder.has(room_):
 		var resource = room_.get_resource()
 		
-		if purse.get_stockpile_of_resource(resource) > 0:
-			if price_ > appraisals[resource].limit.sell * 1.5:
-				room_.add_vendor(self, true)
+		if purse.get_resource_value(resource) > 0:
+			if price_ > appraisals[resource].limit.sell * 2:
 				appraisals[resource].expectation = price_
+				room_.add_vendor(self, true)
 				
 				for bidder in room_.bidders.get_children():
 					bidder.fails.current = 0
@@ -78,12 +80,23 @@ func become_vendor(room_: MarginContainer, price_: float) -> void:
 func become_bidder(room_: MarginContainer, price_: float) -> void:
 	if !rooms.vendor.has(room_):
 		var resource = room_.get_resource()
-		var budget = purse.get_stockpile_of_resource("canned") * marketplace.bank.get_resource_price("canned")
+		var budget = purse.get_resource_value("canned") * marketplace.bank.get_resource_price("canned")
 		
 		if budget > price_ * Global.num.marketplace.stack.limit:
-			if price_ * 1.5 < appraisals[resource].limit.buy:
-				room_.add_bidder(self, true)
+			if price_ * 2 < appraisals[resource].limit.buy:
 				appraisals[resource].expectation = price_
+				room_.add_bidder(self, true)
 				
 				for vendor in room_.vendors.get_children():
 					vendor.fails.current = 0
+
+
+func comeback() -> void:
+	for resource in investments:
+		var profit = purse.get_resource_value(resource) - investments[resource]
+		print(["realm", realm.index, resource, profit, investments[resource], purse.get_resource_value(resource)])
+		var value = purse.get_resource_value(resource)
+		purse.change_resource_value(resource, -value)
+		realm.warehouse.change_resource_value(resource, value)
+	
+	marketplace.mediators.remove_child(self)

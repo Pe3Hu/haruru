@@ -74,4 +74,5 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Marketplace" parent="HBox" instance=ExtResource("7_vhnd7")]
+visible = false
 layout_mode = 2

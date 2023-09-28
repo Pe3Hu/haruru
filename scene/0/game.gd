@@ -49,7 +49,9 @@ func _input(event) -> void:
 			KEY_2:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.marketplace.start_trading()
-					
+			KEY_3:
+				if event.is_pressed() && !event.is_echo():
+					Global.node.sketch.diplomacy.realms_are_trading()
 
 
 #func _process(delta_) -> void:
