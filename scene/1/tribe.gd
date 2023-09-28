@@ -5,18 +5,37 @@ extends MarginContainer
 @onready var members = $VBox/Members
 @onready var squads = $VBox/Squads
 @onready var warehouse = $VBox/Warehouse
+@onready var manager = $VBox/Manager
 
-var diplomacy = null
-var type = null
+var sketch = null
+var accountant = null
+var realm = null
 var phase = null
+var index = null
 
 
 func set_attributes(input_: Dictionary) -> void:
-	diplomacy = input_.diplomacy
-	type = input_.type
+	realm = input_.realm
+	sketch = realm.sketch
+	
+	
+	index = Global.num.index.tribe
+	Global.num.index.tribe += 1
+	
+	init_leadership()
 	reset()
 	#init_members()
 	#follow_phase()
+
+
+func init_leadership() -> void:
+	var input = {}
+	input.tribe = self
+	accountant = Global.scene.accountant.instantiate()
+	sketch.economy.accountants.add_child(accountant)
+	accountant.set_attributes(input)
+	manager.set_attributes(input)
+	warehouse.set_attributes(input)
 
 
 func reset() -> void:
@@ -57,10 +76,10 @@ func init_members() -> void:
 	fill_carton()
 
 
-func init_servants(subtype_: String, population_: int) -> void:
+func add_members(type_: String, subtype_: String, population_: int) -> void:
 	var input = {}
 	input.tribe = self
-	input.type = "servant"
+	input.type = type_
 	input.subtype = subtype_
 	input.population = population_
 	var member = Global.scene.member.instantiate()

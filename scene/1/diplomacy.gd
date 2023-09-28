@@ -121,11 +121,11 @@ func init_reams() -> void:
 			
 			#print(["before next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
 	
-	for _i in Global.dict.time.month:
-		sketch.next_day()
+	#for _i in Global.dict.time.month:
+	#	sketch.next_day()
 	
-	for _i in 10:
-		realms_are_trading()
+	#for _i in 10:
+	#	realms_are_trading()
 	
 	for realm in realms.get_children():
 		if realm.index == 0:

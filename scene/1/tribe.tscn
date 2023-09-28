@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://gd3cq8p7ecbl"]
+[gd_scene load_steps=7 format=3 uid="uid://gd3cq8p7ecbl"]
 
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_2ge6e"]
 [ext_resource type="Script" path="res://scene/1/tribe.gd" id="1_l4ldm"]
 [ext_resource type="PackedScene" uid="uid://dlm17rhsmtvrb" path="res://scene/3/carton.tscn" id="2_m4ra8"]
+[ext_resource type="PackedScene" uid="uid://j7vegg7d6w6k" path="res://scene/6/manager.tscn" id="3_ofxqy"]
 [ext_resource type="PackedScene" uid="uid://x7srwbaim07d" path="res://scene/2/warehouse.tscn" id="3_tkhle"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
@@ -40,6 +41,9 @@ vertical_alignment = 1
 [node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
 alignment = 1
+
+[node name="Manager" parent="VBox" instance=ExtResource("3_ofxqy")]
+layout_mode = 2
 
 [node name="Warehouse" parent="VBox" instance=ExtResource("3_tkhle")]
 layout_mode = 2

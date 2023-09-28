@@ -23,3 +23,7 @@ res://scene/6/manager.gd
 res://scene/2/warehouse.gd
 res://scene/2/warehouse.tscn
 res://scene/6/realm.gd
+res://scene/1/tribe.tscn
+res://scene/1/tribe.gd
+res://scene/6/accountant.gd
+res://scene/6/foreman.gd

@@ -1,14 +1,14 @@
 extends MarginContainer
 
 
-@onready var rt = $VBox/RealmTitle
+@onready var pt = $VBox/ProprietorTitle
 @onready var foreman = $VBox/Foreman
 @onready var tss = $VBox/TerrainSpreadsheet
 @onready var rss = $VBox/ResourceSpreadsheet
 @onready var barn = $VBox/Barn
 
 var economy = null
-var realm = null
+var proprietor = null
 var flaps = []
 var terrains = {}
 var specializations = {}
@@ -16,10 +16,14 @@ var abundances = {}
 
 
 func set_attributes(input_: Dictionary):
-	realm = input_.realm
-	economy = input_.realm.sketch.economy
+	if input_.keys().has("realm"):
+		proprietor = input_.realm
+	if input_.keys().has("tribe"):
+		proprietor = input_.tribe
 	
-	rt.text = str(realm.index)
+	economy = proprietor.sketch.economy
+	
+	pt.text = str(proprietor.index)
 	init_flaps()
 	init_tss()
 	fill_tss()
@@ -32,14 +36,15 @@ func set_attributes(input_: Dictionary):
 
 
 func init_flaps() -> void:
-	for patch in realm.patchs:
-		for flap in patch.flaps:
-			flaps.append(flap)
-			
-			if !terrains.has(flap.terrain):
-				terrains[flap.terrain] = []
-			
-			terrains[flap.terrain].append(flap)
+	if proprietor.get("proprietor") != null:
+		for patch in proprietor.proprietor:
+			for flap in patch.flaps:
+				flaps.append(flap)
+				
+				if !terrains.has(flap.terrain):
+					terrains[flap.terrain] = []
+				
+				terrains[flap.terrain].append(flap)
 
 
 func init_tss() -> void:
@@ -268,11 +273,11 @@ func update_settlement_population() -> void:
 func update_settlement_specialization_population(specialization_: String) -> void:
 	var population = 0
 	
-	for settlement in realm.settlements.get_children():
+	for settlement in proprietor.settlements.get_children():
 		population += settlement.fieldwork.get_specialization_population(specialization_)
 	
-	#if realm.index == 0 :
-	#	print([int(realm.sketch.day.text), specialization_, population])
+	#if proprietor.index == 0 :
+	#	print([int(proprietor.sketch.day.text), specialization_, population])
 
 	set_rss_number_based_on_type_and_subtype(specialization_, "population", population)
 

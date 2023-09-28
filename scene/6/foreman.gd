@@ -4,13 +4,13 @@ extends MarginContainer
 @onready var terrains = $Terrains
 
 var accountant = null
-var realm = null
+var proprietor = null
 var workplaces = {}
 
 
 func set_attributes(input_: Dictionary):
 	accountant = input_.accountant
-	realm = accountant.realm
+	proprietor = accountant.proprietor
 	
 	for box in terrains.get_children():
 		var input = {}
@@ -26,7 +26,7 @@ func set_attributes(input_: Dictionary):
 
 
 func init_fieldwork():
-	for patch in realm.patchs:
+	for patch in proprietor.patchs:
 		for flap in patch.flaps:
 			if !workplaces.has(flap.terrain):
 				workplaces[flap.terrain] = {}
@@ -97,7 +97,7 @@ func init_comfortable() -> void:
 		hbox.add_child(fieldwork)
 		fieldwork.set_attributes(input)
 	
-	for settlement in realm.settlements.get_children():
+	for settlement in proprietor.settlements.get_children():
 		add_settlement_fieldworks(settlement)
 
 
@@ -232,10 +232,10 @@ func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 			population_ = 0
 			print("error: not enough population for empty_worst_workplaces")
 	
-	#if  realm.index == 0:
+	#if  proprietor.index == 0:
 	#	print(["empty_worst_workplaces", specialization_, unemployed])
 	
 	
-	var settlement = realm.get_settlement_for_unemployeds()
+	var settlement = proprietor.get_settlement_for_unemployeds()
 	settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
 	

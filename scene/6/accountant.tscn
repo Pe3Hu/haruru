@@ -40,7 +40,7 @@ vertical_alignment = 1
 layout_mode = 2
 alignment = 1
 
-[node name="RealmTitle" type="Label" parent="VBox"]
+[node name="ProprietorTitle" type="Label" parent="VBox"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 4
@@ -53,7 +53,6 @@ vertical_alignment = 1
 layout_mode = 2
 
 [node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -61,6 +60,7 @@ theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
 [node name="ResourceSpreadsheet" type="GridContainer" parent="VBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -68,4 +68,5 @@ theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
 [node name="Barn" parent="VBox" instance=ExtResource("3_me4yp")]
+visible = false
 layout_mode = 2

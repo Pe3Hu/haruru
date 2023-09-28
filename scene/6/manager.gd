@@ -1,16 +1,20 @@
 extends MarginContainer
 
 
-var realm = null
+var proprietor = null
 var accountant = null
 var foreman = null
 
 
 func set_attributes(input_: Dictionary):
-	realm = input_.realm
-	accountant = realm.accountant
+	if input_.keys().has("realm"):
+		proprietor = input_.realm
+	if input_.keys().has("tribe"):
+		proprietor = input_.tribe
+	
+	accountant = proprietor.accountant
 	foreman = accountant.foreman
-	fill_accountant_rss()
+	#fill_accountant_rss()
 
 
 func fill_accountant_rss() -> void:
@@ -58,7 +62,7 @@ func init_harvesters() -> void:
 func init_handlers() -> void:
 	var school = null
 	
-	for settlement in realm.settlements.get_children():
+	for settlement in proprietor.settlements.get_children():
 		for structure in settlement.structures.get_children():
 			if structure.type == "school":
 				school = structure
@@ -77,7 +81,7 @@ func init_handlers() -> void:
 			
 			for raw in raws:
 				var handler = Global.get_handler_based_on_raw(raw)
-				var population = round(accountant.specializations[specialization] * Global.num.realm.handler / raws.size())
+				var population = round(accountant.specializations[specialization] * Global.num.proprietor.handler / raws.size())
 				foreman.empty_worst_workplaces(specialization, population)
 				
 				for _i in population:
@@ -90,7 +94,7 @@ func init_handlers() -> void:
 	school.settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
 	
 	
-	#if realm.index == 0:
+	#if proprietor.index == 0:
 	#	print("reseted", accountant.get_rss_number_based_on_type_and_subtype("unemployed", "population"))
 
 
@@ -165,7 +169,7 @@ func develop_strategy_for_market_behavior() -> void:
 				
 				#if data.stockpile > 0:
 				stockpiles[resource] = round(data.stockpile * 0.4)
-				accountant.realm.warehouse.change_resource_value(resource, -stockpiles[resource])
+				accountant.proprietor.warehouse.change_resource_value(resource, -stockpiles[resource])
 				
 				if stockpiles[resource] >= procurement:#stockpiles[resource] > 0 and 
 					data.goal = -stockpiles[resource] * sale
@@ -176,9 +180,9 @@ func develop_strategy_for_market_behavior() -> void:
 		
 		
 		var input = {}
-		input.realm = realm
+		input.realm = proprietor
 		input.resources = stockpiles
 		input.goals = goals
 		var mediator = Global.scene.mediator.instantiate()
-		realm.sketch.marketplace.mediators.add_child(mediator)
+		proprietor.sketch.marketplace.mediators.add_child(mediator)
 		mediator.set_attributes(input)

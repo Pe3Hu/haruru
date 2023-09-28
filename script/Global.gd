@@ -53,6 +53,7 @@ func init_num() -> void:
 	num.index.patch = 0
 	num.index.frontier = 0
 	num.index.realm = 0
+	num.index.tribe = 0
 	num.index.mediator = 0
 	num.index.accreditation = 0
 	num.index.state = {}
@@ -340,6 +341,7 @@ func init_mercenary() -> void:
 func init_servant() -> void:
 	dict.servant = {}
 	dict.servant.workplace = {}
+	dict.servant.contribution = {}
 	dict.facet = {}
 	dict.facet.type = {}
 	var path = "res://asset/json/haruru_servant.json"
@@ -350,6 +352,9 @@ func init_servant() -> void:
 	for facet in array:
 		if !dict.servant.workplace.has(facet.subtype):
 			dict.servant.workplace[facet.subtype] = facet.workplace
+		
+		if !dict.servant.contribution.has(facet.subtype):
+			dict.servant.contribution[facet.subtype] = facet.contribution
 		
 		var data = {}
 		
@@ -400,6 +405,15 @@ func init_servant() -> void:
 							specialization.workouts[data.raw] = 0
 						
 						specialization.workouts[data.raw] -= data.facets
+	
+	for terrain in arr.terrain:
+		var specializations = Global.get_specializations_based_on_workplace(terrain)
+		dict.servant.contribution[terrain] = 0.0
+		
+		for specialization in specializations:
+			dict.servant.contribution[terrain] += Global.dict.servant.contribution[specialization]
+		
+		dict.servant.contribution[terrain] /= specializations.size()
 
 
 func init_abundance() -> void:

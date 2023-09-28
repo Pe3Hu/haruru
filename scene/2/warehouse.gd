@@ -3,11 +3,16 @@ extends MarginContainer
 
 @onready var businesses = $Businesses
 
-var realm = null
+var proprietor = null
+var tribe = null
 
 
 func set_attributes(input_: Dictionary) -> void:
-	realm = input_.realm
+	if input_.keys().has("realm"):
+		proprietor = input_.realm
+	if input_.keys().has("tribe"):
+		proprietor = input_.tribe
+	
 	init_resources()
 	fill_resource_based_on_endowment()
 
@@ -75,7 +80,7 @@ func check_resource_availability(resource_: String, value_: int) -> bool:
 func change_resource_value(resource_: String, value_: int) -> void:
 	var icon = get_icon_resource_number(resource_)
 	icon.change_number(value_)
-	realm.accountant.set_rss_number_based_on_type_and_subtype("stockpile", resource_,  icon.get_number())
+	proprietor.accountant.set_rss_number_based_on_type_and_subtype("stockpile", resource_,  icon.get_number())
 
 	var hbox = get_resource_hbox(resource_)
 	if icon.get_number() > 0:
@@ -101,7 +106,7 @@ func get_resource_value(resource_: String) -> int:
 func set_resource_value(resource_: String, value_: int) -> void:
 	var icon = get_icon_resource_number(resource_)
 	icon.set_number(value_)
-	realm.accountant.set_rss_number_based_on_type_and_subtype("stockpile", resource_,  icon.get_number())
+	proprietor.accountant.set_rss_number_based_on_type_and_subtype("stockpile", resource_,  icon.get_number())
 
 	var hbox = get_resource_hbox(resource_)
 	

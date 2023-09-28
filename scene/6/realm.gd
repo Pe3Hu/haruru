@@ -4,6 +4,7 @@ extends MarginContainer
 @onready var manager = $VBox/Manager
 @onready var warehouse = $VBox/Warehouse
 @onready var settlements = $VBox/Settlements
+@onready var tribes = $VBox/Tribes
 
 var sketch = null
 var capital = null
@@ -24,6 +25,7 @@ func set_attributes(input_: Dictionary) -> void:
 	push_boundaries(input_.state)
 	init_settlement(capital)
 	init_leadership()
+	call_tribes()
 
 
 func set_states(state_: MarginContainer) -> void:
@@ -73,6 +75,66 @@ func init_leadership() -> void:
 	accountant.set_attributes(input)
 	manager.set_attributes(input)
 	warehouse.set_attributes(input)
+
+
+func call_tribes() -> void:
+	var workplaces = {}
+	var contribution = {}
+	contribution.total = 0
+	contribution.tribe = 120
+	
+	for terrain in Global.arr.terrain:
+		workplaces[terrain] = {}
+		workplaces[terrain].total = accountant.get_tss_icon_based_on_type_and_subtype(terrain, "workplace").get_number()#workplace
+		
+		if workplaces[terrain].total > 0:
+			workplaces[terrain].current = 0
+			contribution.total += Global.dict.servant.contribution[terrain] * workplaces[terrain].total
+		else:
+			workplaces.erase(terrain)
+	
+	while contribution.total > contribution.tribe:
+		init_tribe(workplaces, contribution)
+	
+
+
+func init_tribe(workplaces_: Dictionary, contribution_: Dictionary) -> void:
+	contribution_.current = 0
+	var terrains = {}
+	var servants = {}
+	
+	for terrain in workplaces_:
+		if workplaces_[terrain].current < workplaces_[terrain].total:
+			terrains[terrain] = workplaces_[terrain].total - workplaces_[terrain].current
+	
+	while contribution_.current < contribution_.tribe:
+		var terrain = Global.get_random_key(terrains)
+		var specializations = Global.get_specializations_based_on_workplace(terrain)
+		var specialization = specializations.pick_random()
+		
+		if !servants.has(specialization):
+			servants[specialization] = 0
+		
+		servants[specialization] += 1
+		contribution_.current += Global.dict.servant.contribution[specialization]
+		contribution_.total -= Global.dict.servant.contribution[terrain]
+		workplaces_[terrain].current += 1
+		terrains[terrain] -= 1
+		
+		if terrains[terrain] == 0:
+			terrains.erase(terrain)
+	
+	var input = {}
+	input.realm = self
+	var tribe = Global.scene.tribe.instantiate()
+	tribes.add_child(tribe)
+	tribe.set_attributes(input)
+	
+	for specialization in servants:
+		tribe.add_members("servant", specialization, servants[specialization])
+	
+
+
 
 
 func init_settlement(knob_: Polygon2D) -> void:
