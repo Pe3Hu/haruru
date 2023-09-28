@@ -97,6 +97,10 @@ func init_num() -> void:
 	num.structure.school.workplace[0] = 9
 	num.structure.school.workplace[1] = 16
 	
+	num.marketplace = {}
+	num.marketplace.stack = {}
+	num.marketplace.stack.limit = 10
+	
 	num.conversion = {}
 	num.conversion.raw = 0.01
 	num.conversion.product = 1

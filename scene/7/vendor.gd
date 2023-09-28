@@ -9,12 +9,15 @@ extends MarginContainer
 var room = null
 var mediator = null
 var fails = {}
+var greed = null
 
 
 func set_attributes(input_: Dictionary):
 	room = input_.room
 	mediator = input_.mediator
+	greed = input_.greed 
 	index.text = str(mediator.index)
+	mediator.rooms.vendor.append(room)
 	
 	fails.current = 0
 	fails.limit = 10
@@ -39,10 +42,13 @@ func fill_icons() -> void:
 
 func refill_stack() -> void:
 	var resource = room.get_resource()
-	var limit = 10
-	var value = min(mediator.purse.get_stockpile_of_resource(resource), limit)
-	stack.set_number(value)
-	mediator.purse.change_resource_value(resource, -value)
+	var value = min(mediator.purse.get_stockpile_of_resource(resource), Global.num.marketplace.stack.limit)
+	
+	if value > 0:
+		stack.set_number(value)
+		mediator.purse.change_resource_value(resource, -value)
+	else:
+		leave_room()
 
 
 func get_preferred_price() -> float:
@@ -58,8 +64,10 @@ func get_stack_number() -> int:
 
 
 func get_offer(bidder_: MarginContainer) -> void:
-	if bidder_.get_preferred_price() > get_limited_price():
-		accept_offer(bidder_)
+	var payment = ask_discount(bidder_)
+	
+	if payment!= null:
+		accept_offer(bidder_, payment)
 	else:
 		reject_offer(bidder_)
 	
@@ -67,17 +75,59 @@ func get_offer(bidder_: MarginContainer) -> void:
 	check_room_conditions()
 
 
-func accept_offer(bidder_: MarginContainer) -> void:
-	var resource = room.get_resource()
+func ask_discount(bidder_: MarginContainer) -> Variant:
+	if bidder_.get_preferred_price() > get_limited_price():
+		var lot = {}
+		lot.base = float(bidder_.get_preferred_price() * get_stack_number())
+		var canned = {}
+		canned.price = room.marketplace.bank.get_resource_price("canned")
+		canned.base = lot.base / canned.price
+		canned.discount = floor(canned.base)
+		canned.surcharge = ceil(canned.base)
+		
+		if canned.discount == canned.surcharge:
+			canned.surcharge += 1
+		
+		lot.discount = canned.price * canned.discount / get_stack_number()
+		lot.surcharge = canned.price * canned.surcharge / get_stack_number()
+		
+		if lot.discount > get_limited_price() and lot.surcharge < bidder_.get_limited_price():
+			var key = bidding()
+			return canned[key] 
+	
+	return null
+
+
+func bidding() -> String:
+	var coin = {}
+	Global.rng.randomize()
+	coin.discount = Global.rng.randf_range(0, 1)
+	Global.rng.randomize()
+	coin.surcharge = Global.rng.randf_range(0, 1)
+	
+	if coin.discount > coin.surcharge:
+		return "discount"
+	else:
+		return "surcharge"
+
+
+func accept_offer(bidder_: MarginContainer, payment_: int) -> void:
 	get_accept()
 	bidder_.get_accept()
 	
-	var value = get_stack_number()
-	mediator.performances[resource] -= value
-	bidder_.mediator.performances[resource] += value
-	bidder_.pick_up_purchase(value)
-	stack.set_number(0)
-	#print([room.get_resource(), "deal between", bidder_.index.text, index.text])
+	var purchase = get_stack_number()
+	pick_up_payment(bidder_, payment_)
+	bidder_.pick_up_purchase(self, purchase)
+	var resource = room.get_resource()
+	mediator.marketplace.bank.seal_deal(resource, purchase, payment_)
+
+
+func pick_up_payment(bidder_: MarginContainer, value_: int) -> void:
+	var resource = "canned"
+	#bidder_.mediator.performances[resource] -= value_
+	#mediator.performances[resource] += value_
+	mediator.purse.change_resource_value(resource, value_)
+	bidder_.mediator.purse.change_resource_value(resource, -value_)
 
 
 func reject_offer(bidder_: MarginContainer) -> void:
@@ -93,6 +143,9 @@ func get_accept() -> void:
 func get_reject() -> void:
 	change_preferred_price(-1)
 	fails.current += 1
+	
+	if get_preferred_price() == get_limited_price():
+		fails.current += 1
 
 
 func change_preferred_price(step_: int) -> void:
@@ -105,6 +158,13 @@ func change_preferred_price(step_: int) -> void:
 		mediator.appraisals[resource].expectation = mediator.appraisals[resource].limit.sell
 	
 	pp.set_number(mediator.appraisals[resource].expectation)
+
+
+func keep_up_demand() -> bool:
+	fails.current -= 1
+	Global.rng.randomize()
+	var insist = Global.rng.randf_range(0, 1)# + float(fails.current) / fails.limit
+	return insist > 0.1
 
 
 func check_room_conditions() -> void:

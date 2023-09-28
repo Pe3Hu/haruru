@@ -16,25 +16,25 @@ func set_attributes(input_: Dictionary):
 	commodity.set_attributes(input)
 
 
-func add_vendor(mediator_: MarginContainer) -> void:
+func add_vendor(mediator_: MarginContainer, greed_: bool) -> void:
 	var input = {}
 	input.room = self
 	input.mediator = mediator_
+	input.greed = greed_
 	var vendor = Global.scene.vendor.instantiate()
 	vendors.add_child(vendor)
 	vendor.set_attributes(input)
-	mediator_.rooms.vendor.append(self)
 	sort_vendors()
 
 
-func add_bidder(mediator_: MarginContainer) -> void:
+func add_bidder(mediator_: MarginContainer, greed_: bool) -> void:
 	var input = {}
 	input.room = self
 	input.mediator = mediator_
+	input.greed = greed_
 	var bidder = Global.scene.bidder.instantiate()
 	bidders.add_child(bidder)
 	bidder.set_attributes(input)
-	mediator_.rooms.bidder.append(self)
 	sort_bidders()
 
 
@@ -75,21 +75,62 @@ func sort_bidders() -> void:
 
 
 func start_session() -> void:
-	if vendors.get_child_count() > 0 and bidders.get_child_count() > 0:
-		var nodes = []
-		nodes.append_array(bidders.get_children())
-		nodes.shuffle()
+	if vendors.get_child_count() + bidders.get_child_count() > 1:
+		if vendors.get_child_count() > 0 and bidders.get_child_count() > 0:
+			var nodes = []
+			nodes.append_array(bidders.get_children())
+			nodes.shuffle()
+			
+			for bidder in nodes:
+				bidder.pick_vendor()
+			
+			for vendor in vendors.get_children():
+				if vendor.get_stack_number() == 0:
+					vendor.refill_stack()
+				else:
+					vendor.get_reject()
 		
-		for bidder in nodes:
-			bidder.pick_vendor()
+		if bidders.get_child_count() == 0:
+			oversupply()
 		
-		for vendor in vendors.get_children():
-			if vendor.get_stack_number() == 0:
-				vendor.refill_stack()
-			else:
-				vendor.get_reject()
+		if vendors.get_child_count() == 0:
+			deficit()
 	else:
 		close()
+
+
+func oversupply() -> void:
+	var avg = 0.0
+	
+	for vendor in vendors.get_children():
+		if vendor.keep_up_demand():
+			vendor.get_reject()
+			avg += vendor.get_preferred_price()
+		else:
+			vendor.leave_room()
+	
+	if vendors.get_child_count() > 0:
+		avg /= vendors.get_child_count()
+		
+		for mediator in marketplace.mediators.get_children():
+			mediator.become_bidder(self, avg)
+
+
+func deficit() -> void:
+	var avg = 0.0
+	
+	for bidder in bidders.get_children():
+		if bidder.keep_up_proposal():
+			bidder.get_reject()
+			avg += bidder.get_preferred_price()
+		else:
+			bidder.leave_room()
+	
+	if bidders.get_child_count() > 0:
+		avg /= bidders.get_child_count()
+		
+		for mediator in marketplace.mediators.get_children():
+			mediator.become_vendor(self, avg)
 
 
 func close() -> void:

@@ -57,6 +57,33 @@ func join_rooms() -> void:
 		
 		if abs(goals[resource]) > abs(performances[resource]):
 			if goals[resource] < 0:
-				room.add_vendor(self)
+				room.add_vendor(self, false)
 			else:
-				room.add_bidder(self)
+				room.add_bidder(self, false)
+
+
+func become_vendor(room_: MarginContainer, price_: float) -> void:
+	if !rooms.bidder.has(room_):
+		var resource = room_.get_resource()
+		
+		if purse.get_stockpile_of_resource(resource) > 0:
+			if price_ > appraisals[resource].limit.sell * 1.5:
+				room_.add_vendor(self, true)
+				appraisals[resource].expectation = price_
+				
+				for bidder in room_.bidders.get_children():
+					bidder.fails.current = 0
+
+
+func become_bidder(room_: MarginContainer, price_: float) -> void:
+	if !rooms.vendor.has(room_):
+		var resource = room_.get_resource()
+		var budget = purse.get_stockpile_of_resource("canned") * marketplace.bank.get_resource_price("canned")
+		
+		if budget > price_ * Global.num.marketplace.stack.limit:
+			if price_ * 1.5 < appraisals[resource].limit.buy:
+				room_.add_bidder(self, true)
+				appraisals[resource].expectation = price_
+				
+				for vendor in room_.vendors.get_children():
+					vendor.fails.current = 0

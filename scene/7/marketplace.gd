@@ -29,3 +29,5 @@ func init_rooms() -> void:
 func start_trading() -> void:
 	for room in rooms.get_children():
 		room.start_session()
+	
+	bank.update_prices()

@@ -9,12 +9,15 @@ extends MarginContainer
 var room = null
 var mediator = null
 var fails = {}
+var greed = null
 
 
 func set_attributes(input_: Dictionary):
 	room = input_.room
 	mediator = input_.mediator
+	greed = input_.greed 
 	index.text = str(mediator.index)
+	mediator.rooms.bidder.append(room)
 	
 	fails.current = 0
 	fails.limit = 7
@@ -67,6 +70,9 @@ func get_accept() -> void:
 func get_reject() -> void:
 	change_preferred_price(1)
 	fails.current += 1
+	
+	if get_preferred_price() == get_limited_price():
+		fails.current += 1
 
 
 func change_preferred_price(step_: int) -> void:
@@ -81,9 +87,25 @@ func change_preferred_price(step_: int) -> void:
 	pp.set_number(mediator.appraisals[resource].expectation)
 
 
-func pick_up_purchase(value_: int) -> void:
+func pick_up_purchase(vendor_: MarginContainer, value_: int) -> void:
 	var resource = room.get_resource()
+	
+	if !vendor_.greed:
+		vendor_.mediator.performances[resource] -= value_
+	
+	if !greed:
+		mediator.performances[resource] += value_
+	
 	mediator.purse.change_resource_value(resource, value_)
+	#vendor_.mediator.purse.change_resource_value(resource, -value_)
+	vendor_.stack.set_number(0)
+
+
+func keep_up_proposal() -> bool:
+	fails.current -= 1
+	Global.rng.randomize()
+	var insist = Global.rng.randf_range(0, 1)# + float(fails.current) / fails.limit
+	return insist > 0.1
 
 
 func check_room_conditions() -> void:
