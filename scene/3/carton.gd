@@ -71,7 +71,6 @@ func reroll_dices() -> void:
 func active_dices() -> void:
 	for dice in active.dices.get_children():
 		dice.apply_outcome()
-		#print(1)
 		push_dice_in_next_box(dice)
 
 

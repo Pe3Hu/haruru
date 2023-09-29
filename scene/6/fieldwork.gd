@@ -11,8 +11,9 @@ var foreman = null
 var hbox = null
 var terrain = null
 var abundance = null
+var upward = null
+var downgrade = null
 var specializations = {}
-var members = []
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -20,6 +21,7 @@ func set_attributes(input_: Dictionary) -> void:
 	hbox = input_.hbox
 	terrain  = input_.terrain
 	abundance  = input_.abundance
+	ladder.fieldwork = self
 	
 	fill_icons()
 
@@ -72,7 +74,7 @@ func set_specialization_resupply(specialization_: String, resupply_: int) -> int
 		
 		#if foreman.accountant.realm.index == 0 and specialization_ == "unemployed" and int(foreman.accountant.realm.sketch.day.text) > 0:
 		#	print(["set_specialization_resupply", specialization_, specializations[specialization_]])
-		update_visible()
+		#update_visible()
 		return population
 	
 	return 0
@@ -100,13 +102,17 @@ func get_specialization_population(specialization_: String) -> int:
 
 func employ_member(member_: MarginContainer) -> void:
 	member_.fieldwork = self
-	members.append(member_)
 	set_specialization_resupply(member_.specialization, 1)
+	member_.tribe.accountant.change_specialization_population(member_.specialization, self, 1)
+	member_.tribe.realm.accountant.change_specialization_population(member_.specialization, self, 1)
 	ladder.add_member(member_)
+	
+	#accountant.change_specialization_population(specialization_, population_)
 
 
-func layoff_from_fieldwork(member_: MarginContainer) -> void:
+func layoff_employ(member_: MarginContainer) -> void:
 	member_.fieldwork = null
-	members.append(self)
 	set_specialization_resupply(member_.specialization, -1)
+	member_.tribe.accountant.change_specialization_population(member_.specialization, self, -1)
+	member_.tribe.realm.accountant.change_specialization_population(member_.specialization, self, -1)
 	ladder.remove_member(member_)

@@ -120,6 +120,7 @@ func init_num() -> void:
 func init_dict() -> void:
 	init_neighbor()
 	init_time()
+	init_prize()
 	init_polygon()
 	init_business()
 	init_servant()
@@ -171,6 +172,7 @@ func init_dict() -> void:
 	dict.thousand[""] = "k"
 	dict.thousand["k"] = "m"
 	dict.thousand["m"] = "b"
+	
 
 
 func init_time() -> void:
@@ -185,6 +187,23 @@ func init_time() -> void:
 	dict.period.study = {}
 	dict.period.study.withmentor = 3#dict.time.week
 	dict.period.study.selftaught = dict.period.study.withmentor * 3
+
+
+func init_prize() -> void:
+	dict.prize = {}
+	var ratio = {}
+	ratio.top = 0.25
+	ratio.bot = 0.25
+	
+	for _i in range(3, 100):
+		var count = {}
+		count.mid = _i
+		
+		for key in ratio:
+			count[key] = round(max(1, float(_i) * ratio[key]))
+			count.mid -= count[key]
+		
+		dict.prize[_i] = count
 
 
 func init_neighbor() -> void:

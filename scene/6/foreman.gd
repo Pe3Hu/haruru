@@ -126,8 +126,17 @@ func sort_by_abundance() -> void:
 		
 		datas.sort_custom(func(a, b): return a.abundance > b.abundance)
 		
-		for data in datas:
+		for _i in datas.size():
+			var data = datas[_i]
 			hbox.add_child(data.fieldwork)
+			data.fieldwork.upward = null
+			data.fieldwork.downgrade = null
+			
+			if _i > 0:
+				data.fieldwork.upward = datas[_i - 1].fieldwork
+				
+			if _i < datas.size() - 1:
+				data.fieldwork.downgrade = datas[_i + 1].fieldwork
 
 
 func fill_best_workplaces(specialization_: String, population_: int) -> void:
@@ -181,7 +190,6 @@ func find_worst_incomplete_fieldwork(terrain_: String) -> Variant:
 	return null
 
 
-
 func find_best_nonempty_fieldwork(terrain_: String) -> Variant:
 	var hbox = get_hbox(terrain_)
 	
@@ -228,3 +236,22 @@ func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 	var settlement = proprietor.get_settlement_for_unemployeds()
 	settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
 
+
+func give_prizes() -> void:
+	for hbox in terrains.get_children():
+		for fieldwork in hbox.get_children():
+			if fieldwork.get("abundance") != null:
+				fieldwork.ladder.give_prizes()
+
+
+func rotate_members() -> void:
+	for hbox in terrains.get_children():
+		for fieldwork in hbox.get_children():
+			if fieldwork.get("abundance") != null:
+				fieldwork.ladder.rotate_members()
+		
+		for fieldwork in hbox.get_children():
+			if fieldwork.get("abundance") != null:
+				fieldwork.ladder.employ_newbies()
+		
+				fieldwork.ladder.reset_contributions()

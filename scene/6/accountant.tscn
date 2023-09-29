@@ -37,11 +37,17 @@ theme_override_fonts/font = ExtResource("1_p2mye")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Foreman" parent="HBox" instance=ExtResource("3_hvy4d")]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="HBox"]
 layout_mode = 2
 alignment = 1
 
-[node name="ProprietorTitle" type="Label" parent="VBox"]
+[node name="ProprietorTitle" type="Label" parent="HBox/VBox"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 4
@@ -50,25 +56,20 @@ theme_override_fonts/font = ExtResource("1_p2mye")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Foreman" parent="VBox" instance=ExtResource("3_hvy4d")]
-layout_mode = 2
-
-[node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
-visible = false
+[node name="TerrainSpreadsheet" type="GridContainer" parent="HBox/VBox"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
-[node name="ResourceSpreadsheet" type="GridContainer" parent="VBox"]
-visible = false
+[node name="ResourceSpreadsheet" type="GridContainer" parent="HBox/VBox"]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/h_separation = 0
 theme_override_constants/v_separation = 0
 
-[node name="Barn" parent="VBox" instance=ExtResource("3_me4yp")]
+[node name="Barn" parent="HBox/VBox" instance=ExtResource("3_me4yp")]
 visible = false
 layout_mode = 2

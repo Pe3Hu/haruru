@@ -45,48 +45,24 @@ func reset() -> void:
 	warehouse.reset()
 
 
-func init_members() -> void:
-#	var input = {}
-#	input.tribe = self
-#	input.type = type
-#	input.subtype = "ancestor"
-#	input.population = 1
-#	var member = Global.scene.member.instantiate()
-#	members.add_child(member)
-#	member.set_attributes(input)
+func add_members(type_: String, specialization_: String, population_: int) -> void:
+	for _i in population_:
+		var input = {}
+		input.tribe = self
+		input.type = type_
+		input.specialization = specialization_
+		input.population = population_
+		var member = Global.scene.member.instantiate()
+		members.add_child(member)
+		member.set_attributes(input)
 	
-	var type_ = "servant"
-	var subtype = "farmer"
-	
-	#for subtype in Global.dict.facet.type[type]:
-	var input = {}
-	input.tribe = self
-	input.type = type_
-	input.subtype = subtype
-	input.population = 50
-	var member = Global.scene.member.instantiate()
-	members.add_child(member)
-	member.set_attributes(input)
-	fill_carton()
-
-
-func add_members(type_: String, subtype_: String, population_: int) -> void:
-	var input = {}
-	input.tribe = self
-	input.type = type_
-	input.subtype = subtype_
-	input.population = population_
-	var member = Global.scene.member.instantiate()
-	members.add_child(member)
-	member.set_attributes(input)
 
 
 func fill_carton() -> void:
 	carton.tribe = self
 	
 	for member in members.get_children():
-		for _i in member.get_population():
-			carton.add_dice(member)
+		carton.add_dice(member)
 
 
 func fill_warehouse() -> void:
@@ -122,8 +98,8 @@ func next_phase() -> void:
 	if phase == null:
 		phase = Global.arr.phase.front()
 	else:
-		var index = (Global.arr.phase.find(phase) + 1) % Global.arr.phase.size()
-		phase = Global.arr.phase[index]
+		var index_ = (Global.arr.phase.find(phase) + 1) % Global.arr.phase.size()
+		phase = Global.arr.phase[index_]
 
 
 func prepare_squad() -> void:

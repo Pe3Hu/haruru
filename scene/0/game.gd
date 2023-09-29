@@ -43,7 +43,7 @@ func _input(event) -> void:
 					Global.node.sketch.cloth.shift_layer(1)
 			KEY_SPACE:
 				if event.is_pressed() && !event.is_echo():
-					Global.node.sketch.diplomacy.do_it()
+					Global.node.sketch.diplomacy.skip_day()
 			KEY_1:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.diplomacy.realms.get_child(0).manager.init_handlers()

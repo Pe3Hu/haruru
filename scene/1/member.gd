@@ -20,7 +20,7 @@ var index = null
 func set_attributes(input_: Dictionary) -> void:
 	tribe = input_.tribe
 	type = input_.type
-	specialization = input_.subtype
+	specialization = input_.specialization
 	index = Global.num.index.member
 	Global.num.index.member += 1
 	#workplace = Global.get_workplace_based_on_specialization(specialization)
@@ -33,24 +33,20 @@ func set_attributes(input_: Dictionary) -> void:
 #	series.standard.limit = 3
 	
 	
-	icon.set_attributes(input_)
-	input_.type = "number"
-	input_.subtype = input_.population
-	population.set_attributes(input_)
 	init_facets()
 
 
 func init_facets() -> void:
 	var data = Global.dict.facet.type[type][specialization]
-	var index = 0
+	var index_ = 0
 	
 	for outcome in data.outcomes:
 		for _i in data.outcomes[outcome].facets:
 			var input = data.outcomes[outcome].duplicate()
 			input.member = self
 			input.outcome = outcome
-			input.index = index
-			index += 1
+			input.index = index_
+			index_ += 1
 			input.erase("facets")
 			var facet = Global.scene.facet.instantiate()
 			facets.add_child(facet)
@@ -87,6 +83,7 @@ func produce_product(product_: String, value_: int) -> void:
 
 
 func add_outcome(outcome_: String) -> void:
+	#print([Global.node.sketch.day.text, index, outcome_])
 	if outcomes.size() >= 10:
 		outcomes.pop_front()
 	
@@ -111,16 +108,15 @@ func check_critical() -> void:
 			indexs.append(_i)
 	
 		if indexs.size() == limit.min:
-			for _j in range(indexs.size() - 1, -1, -1):
-				var index = indexs[_j]
-				outcomes.remove_at(index)
+			for _j in indexs.size():#range(indexs.size() - 1, -1, -1):
+				var index_ = indexs[_j]
+				outcomes.remove_at(index_)
 			
-			print([Global.node.sketch.day.text, "member check_critical is true", index, indexs])
+			#print([Global.node.sketch.day.text, "member check_critical is true", index, indexs])
 			return
 
 
 func check_standard() -> void:
-	var flag = true
 	var limit = {}
 	limit.max = min(3, outcomes.size())
 	limit.min = 3
@@ -135,11 +131,11 @@ func check_standard() -> void:
 			_i -= 1
 			
 			if indexs.size() == limit.min:
-				for _j in range(indexs.size() - 1, -1, -1):
-					var index = indexs[_j]
-					outcomes.remove_at(index)
+				for _j in indexs.size():#range(indexs.size() - 1, -1, -1):
+					var index_ = indexs[_j]
+					outcomes.remove_at(index_)
 				
-				print([Global.node.sketch.day.text, "member check_standard is true", index, indexs])
+				#print([Global.node.sketch.day.text, "member check_standard is true", index, indexs])
 				return
 		else:
 			_i = 0

@@ -174,7 +174,7 @@ func check_terrain_in_neighbors_old(terrain_: String) -> bool:
 	for seam in neighbors:
 		var neighbor = neighbors[seam]
 		
-		if neighbor.terrain == terrain:
+		if neighbor.terrain == terrain_:
 			flag = true
 			break
 	
@@ -199,8 +199,8 @@ func get_non_neighbor_terrains() -> Array:
 	var terrains = []
 	terrains.append_array(Global.arr.terrain)
 	
-	for terrain in get_neighbor_terrains():
-		terrains.erase(terrain)
+	for terrain_ in get_neighbor_terrains():
+		terrains.erase(terrain_)
 	
 	return terrains
 

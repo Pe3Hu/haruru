@@ -167,20 +167,20 @@ func rework_flaps() -> void:
 	
 	for _i in Global.num.size.flap.row:
 		for _j in Global.num.size.flap.col:
-			var center = Vector2(_i + 0.5 ,_j + 0.5) * Global.num.size.flap.a
-			centers[center] = []
+			var center_ = Vector2(_i + 0.5 ,_j + 0.5) * Global.num.size.flap.a
+			centers[center_] = []
 			
 			for edge in edges:
-				var d = abs(edge.position.x - center.x) + abs(edge.position.y - center.y)
+				var d = abs(edge.position.x - center_.x) + abs(edge.position.y - center_.y)
 				
 				if d < Global.num.size.flap.a:
-					centers[center].append(edge)
+					centers[center_].append(edge)
 	
 	
-	for center in centers:
+	for center_ in centers:
 		var trios = [[],[]]
-		trios[0].append_array(centers[center])
-		trios[1].append_array(centers[center])
+		trios[0].append_array(centers[center_])
+		trios[1].append_array(centers[center_])
 		var first = trios[0].pick_random()
 		trios[0].erase(first)
 		var second = null

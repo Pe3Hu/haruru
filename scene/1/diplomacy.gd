@@ -8,20 +8,32 @@ var sketch = null
 var time = null
 var empires = []
 var accreditation = {}
-var realm = null
-var tribe = null
+var selected = {}
 
 
 func do_it() -> void:
+	for _i in 2:#Global.dict.time.week:
+		skip_day()
+	
+
+
+func skip_day() -> void:
+	for phase in Global.arr.phase:
+		skip_phase()
+	
+	var day = int(Global.node.sketch.day.text) + 1
+	Global.node.sketch.day.text = str(day)
+	selected.realm.accountant.foreman.give_prizes()
+	print("day " + str(day))
+	
+	if day % 2 == 0:
+		selected.realm.accountant.foreman.rotate_members()
+
+
+func skip_phase() -> void:
 	for realm in realms.get_children():
 		for tribe in realm.tribes.get_children():
 			tribe.follow_phase()
-	
-	var tribe = realms.get_child(0).tribes.get_child(0)
-	
-	if Global.arr.phase.back() == tribe.phase:
-		var day = int(Global.node.sketch.day.text) + 1
-		Global.node.sketch.day.text = str(day)
 
 
 func servants_simulation() -> void:
@@ -89,8 +101,8 @@ func get_resource_analytics() -> Dictionary:
 
 
 func init_reams() -> void:
-	var empires = [sketch.cloth.empires.get_child(0)]#,sketch.cloth.empires.get_child(1), sketch.cloth.empires.get_child(2)]
-	for empire in empires:
+	var empires_ = [sketch.cloth.empires.get_child(0)]#,sketch.cloth.empires.get_child(1), sketch.cloth.empires.get_child(2)]
+	for empire in empires_:
 	#for empire in sketch.cloth.empires.get_children():
 		var input = {}
 		input.sketch = sketch
@@ -101,22 +113,22 @@ func init_reams() -> void:
 		realm.set_attributes(input)
 	
 	sketch.cloth.shift_layer(0)
-	realm = realms.get_child(0)
-	tribe = realm.tribes.get_child(0)
-	tribe.visible = true
-	tribe.accountant.visible = true
+	selected.realm = realms.get_child(0)
+	selected.tribe = selected.realm.tribes.get_child(0)
+	selected.tribe.visible = true
+	selected.tribe.accountant.visible = true
 	
 	for accountant in sketch.economy.accountants.get_children():
-		if accountant.proprietor == realm:
+		if accountant.proprietor == selected.realm:
 			accountant.visible = true
 			break
 	
 	#for _i in Global.dict.time.month:
 	#	sketch.next_day()
 	
-	for _i in 3:
+	#for _i in Global.dict.time.week:
 	#	realms_are_trading()
-		do_it()
+	do_it()
 
 
 func realms_are_harvesting() -> void:

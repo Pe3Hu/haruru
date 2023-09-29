@@ -154,3 +154,6 @@ func apply_outcome() -> void:
 			
 		if Global.dict.conversion.product.has(description.resource):
 			member.produce_product(description.resource, description.value)
+		
+		var contribution = description.value * Global.dict.merchandise.price[description.resource]
+		member.fieldwork.ladder.change_contribution(member, contribution)

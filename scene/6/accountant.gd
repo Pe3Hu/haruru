@@ -1,11 +1,11 @@
 extends MarginContainer
 
 
-@onready var pt = $VBox/ProprietorTitle
-@onready var foreman = $VBox/Foreman
-@onready var tss = $VBox/TerrainSpreadsheet
-@onready var rss = $VBox/ResourceSpreadsheet
-@onready var barn = $VBox/Barn
+@onready var pt = $HBox/VBox/ProprietorTitle
+@onready var foreman = $HBox/Foreman
+@onready var tss = $HBox/VBox/TerrainSpreadsheet
+@onready var rss = $HBox/VBox/ResourceSpreadsheet
+@onready var barn = $HBox/VBox/Barn
 
 var economy = null
 var proprietor = null
@@ -85,7 +85,7 @@ func init_tss() -> void:
 
 func fill_tss() -> void:
 	for terrain in terrains:
-		var flaps = terrains[terrain].size()
+		var flaps_size = terrains[terrain].size()
 		var abundance = 0
 		var square = 0
 		var workplace = 0
@@ -98,7 +98,7 @@ func fill_tss() -> void:
 		square = round(square / 100)
 		#workplace = round(square / 4)
 		abundance = round(abundance / 10)
-		set_tss_number_based_on_type_and_subtype(terrain, "flap", flaps)
+		set_tss_number_based_on_type_and_subtype(terrain, "flap", flaps_size)
 		set_tss_number_based_on_type_and_subtype(terrain, "square", square)
 		set_tss_number_based_on_type_and_subtype(terrain, "workplace", workplace)
 		set_tss_number_based_on_type_and_subtype(terrain, "abundance", workplace)
@@ -270,9 +270,9 @@ func update_population() -> void:
 
 
 func update_settlement_population() -> void:
-	var specializations = ["unemployed", "mentor", "pupil"]
+	var settlement_specializations = ["unemployed", "mentor", "pupil"]
 	
-	for specialization in specializations:
+	for specialization in settlement_specializations:
 		update_settlement_specialization_population(specialization)
 	
 	update_population()

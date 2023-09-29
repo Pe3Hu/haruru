@@ -90,7 +90,6 @@ func call_tribes() -> void:
 		
 		if workplaces[terrain].total > 0:
 			workplaces[terrain].current = 0
-			var a = Global.dict.servant.contribution[terrain]
 			contribution.total += Global.dict.servant.contribution[terrain] * workplaces[terrain].total
 		else:
 			workplaces.erase(terrain)
