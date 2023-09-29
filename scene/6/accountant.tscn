@@ -8,6 +8,7 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
 [node name="Accountant" type="MarginContainer"]
+visible = false
 custom_minimum_size = Vector2(5, 5)
 anchors_preset = 8
 anchor_left = 0.5
@@ -53,6 +54,7 @@ vertical_alignment = 1
 layout_mode = 2
 
 [node name="TerrainSpreadsheet" type="GridContainer" parent="VBox"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4

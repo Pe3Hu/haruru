@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://c7nge1r2wasms"]
+[gd_scene load_steps=6 format=3 uid="uid://c7nge1r2wasms"]
 
 [ext_resource type="Script" path="res://scene/6/fieldwork.gd" id="1_7dy82"]
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_dd4nd"]
 [ext_resource type="PackedScene" uid="uid://rgtjtuf31pht" path="res://scene/0/icon.tscn" id="3_xhky7"]
+[ext_resource type="PackedScene" uid="uid://cu3w4arpntdkf" path="res://scene/6/ladder.tscn" id="4_l4kga"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
@@ -36,15 +37,21 @@ theme_override_fonts/font = ExtResource("1_dd4nd")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="HBox"]
 layout_mode = 2
 alignment = 1
 
-[node name="Abundance" parent="VBox" instance=ExtResource("3_xhky7")]
+[node name="Abundance" parent="HBox/VBox" instance=ExtResource("3_xhky7")]
 layout_mode = 2
 
-[node name="Current" parent="VBox" instance=ExtResource("3_xhky7")]
+[node name="Current" parent="HBox/VBox" instance=ExtResource("3_xhky7")]
 layout_mode = 2
 
-[node name="Max" parent="VBox" instance=ExtResource("3_xhky7")]
+[node name="Max" parent="HBox/VBox" instance=ExtResource("3_xhky7")]
+layout_mode = 2
+
+[node name="Ladder" parent="HBox" instance=ExtResource("4_l4kga")]
 layout_mode = 2

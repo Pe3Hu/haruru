@@ -17,15 +17,11 @@ var index = null
 func set_attributes(input_: Dictionary) -> void:
 	realm = input_.realm
 	sketch = realm.sketch
-	
-	
 	index = Global.num.index.tribe
 	Global.num.index.tribe += 1
 	
 	init_leadership()
 	reset()
-	#init_members()
-	#follow_phase()
 
 
 func init_leadership() -> void:
@@ -46,9 +42,7 @@ func reset() -> void:
 		members.remove_child(member)
 		member.queue_free()
 	
-	#carton.reset()
 	warehouse.reset()
-	fill_warehouse()
 
 
 func init_members() -> void:
@@ -85,7 +79,6 @@ func add_members(type_: String, subtype_: String, population_: int) -> void:
 	var member = Global.scene.member.instantiate()
 	members.add_child(member)
 	member.set_attributes(input)
-	fill_carton()
 
 
 func fill_carton() -> void:

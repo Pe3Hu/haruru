@@ -52,8 +52,6 @@ func select_dices() -> void:
 		push_dice_in_next_box(dice)
 	
 	reroll_dices()
-	#while reserve.dices.get_child_count() < 3:
-	#	reroll_dices()
 
 
 func roll_dices() -> void:

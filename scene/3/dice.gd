@@ -143,20 +143,14 @@ func crush() -> void:
 
 func apply_outcome() -> void:
 	var facet = get_current_facet()
+	member.add_outcome(facet.outcome.subtype)
 	
 	if facet.outcome.subtype != "failure":
-		var description = Global.dict.facet.type[facet.member.type][facet.member.subtype][facet.outcome.subtype]
+		var data = Global.dict.facet.type[facet.member.type][facet.member.specialization]
+		var description = data.outcomes[facet.outcome.subtype]
 		
-		if Global.dict.raw.has(description.resource):
+		if Global.dict.conversion.raw.has(description.resource):
 			member.extract_raw(description.resource, description.value)
 			
-		if Global.dict.product.has(description.resource):
+		if Global.dict.conversion.product.has(description.resource):
 			member.produce_product(description.resource, description.value)
-		
-		match facet.outcome.subtype:
-			"success":
-				pass
-			"critical success":
-				pass
-			"critical failure":
-				pass

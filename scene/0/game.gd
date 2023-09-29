@@ -1,14 +1,18 @@
 extends Node
 
+var time = null
 
 func _ready() -> void:
+	
+	time = Time.get_unix_time_from_system()
 	Global.node.sketch = Global.scene.sketch.instantiate()
 	Global.node.game.get_node("Layer0").add_child(Global.node.sketch)
 	#datas.sort_custom(func(a, b): return a.value < b.value)
 	#012 description
 	Global.node.sketch.diplomacy.init_reams()
 	#Global.node.sketch.diplomacy.servants_simulation()
-	
+	time -= Time.get_unix_time_from_system()
+	print(-time)
 	#Global.rng.randomize()
 	#var value = Global.rng.randi_range(min, max)
 	pass
@@ -39,9 +43,7 @@ func _input(event) -> void:
 					Global.node.sketch.cloth.shift_layer(1)
 			KEY_SPACE:
 				if event.is_pressed() && !event.is_echo():
-					#Global.node.sketch.cloth.add_states("earldom")
-					#Global.node.sketch.cloth.find_furthest_earldom_in_biggest_empire()
-					Global.node.sketch.next_day()
+					Global.node.sketch.diplomacy.do_it()
 			KEY_1:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.diplomacy.realms.get_child(0).manager.init_handlers()
@@ -52,6 +54,11 @@ func _input(event) -> void:
 			KEY_3:
 				if event.is_pressed() && !event.is_echo():
 					Global.node.sketch.diplomacy.realms_are_trading()
+			KEY_4:
+				if event.is_pressed() && !event.is_echo():
+					#Global.node.sketch.cloth.add_states("earldom")
+					#Global.node.sketch.cloth.find_furthest_earldom_in_biggest_empire()
+					Global.node.sketch.next_day()
 
 
 #func _process(delta_) -> void:

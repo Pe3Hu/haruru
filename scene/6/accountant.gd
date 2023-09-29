@@ -13,13 +13,16 @@ var flaps = []
 var terrains = {}
 var specializations = {}
 var abundances = {}
+var type = null
 
 
 func set_attributes(input_: Dictionary):
 	if input_.keys().has("realm"):
 		proprietor = input_.realm
+		type = "realm"
 	if input_.keys().has("tribe"):
 		proprietor = input_.tribe
+		type = "tribe"
 	
 	economy = proprietor.sketch.economy
 	
@@ -36,8 +39,8 @@ func set_attributes(input_: Dictionary):
 
 
 func init_flaps() -> void:
-	if proprietor.get("proprietor") != null:
-		for patch in proprietor.proprietor:
+	if type == "realm":
+		for patch in proprietor.patchs:
 			for flap in patch.flaps:
 				flaps.append(flap)
 				
@@ -110,6 +113,11 @@ func get_tss_icon_based_on_type_and_subtype(type_: String, subtype_: String) -> 
 func set_tss_number_based_on_type_and_subtype(subtype_: String, type_: String, value_: int) -> void:
 	var icon = get_tss_icon_based_on_type_and_subtype(subtype_, type_)
 	icon.set_number(value_)
+
+
+func get_tss_number_based_on_type_and_subtype(type_: String, subtype_: String) -> int:
+	var icon = get_tss_icon_based_on_type_and_subtype(type_, subtype_)
+	return icon.get_number()
 
 
 func init_rss() -> void:

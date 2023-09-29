@@ -8,13 +8,14 @@ var tribe = null
 
 
 func set_attributes(input_: Dictionary) -> void:
+	init_resources()
+	
 	if input_.keys().has("realm"):
 		proprietor = input_.realm
+		fill_resource_based_on_endowment()
 	if input_.keys().has("tribe"):
 		proprietor = input_.tribe
 	
-	init_resources()
-	fill_resource_based_on_endowment()
 
 
 func init_resources() -> void:

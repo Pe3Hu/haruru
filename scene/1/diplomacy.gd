@@ -8,27 +8,16 @@ var sketch = null
 var time = null
 var empires = []
 var accreditation = {}
-
-
-func _ready() -> void:
-	#init_tribes()
-	pass
-
-
-func init_tribes() -> void:
-	var input = {}
-	input.diplomacy = self
-	input.type = "vampire"
-	var tribe = Global.scene.tribe.instantiate()
-	tribes.add_child(tribe)
-	tribe.set_attributes(input)
+var realm = null
+var tribe = null
 
 
 func do_it() -> void:
-	for tribe in tribes.get_children():
-		tribe.follow_phase()
+	for realm in realms.get_children():
+		for tribe in realm.tribes.get_children():
+			tribe.follow_phase()
 	
-	var tribe = tribes.get_child(0)
+	var tribe = realms.get_child(0).tribes.get_child(0)
 	
 	if Global.arr.phase.back() == tribe.phase:
 		var day = int(Global.node.sketch.day.text) + 1
@@ -100,7 +89,9 @@ func get_resource_analytics() -> Dictionary:
 
 
 func init_reams() -> void:
-	for empire in sketch.cloth.empires.get_children():
+	var empires = [sketch.cloth.empires.get_child(0)]#,sketch.cloth.empires.get_child(1), sketch.cloth.empires.get_child(2)]
+	for empire in empires:
+	#for empire in sketch.cloth.empires.get_children():
 		var input = {}
 		input.sketch = sketch
 		input.state = empire.capital.state["dukedom"]
@@ -110,32 +101,22 @@ func init_reams() -> void:
 		realm.set_attributes(input)
 	
 	sketch.cloth.shift_layer(0)
+	realm = realms.get_child(0)
+	tribe = realm.tribes.get_child(0)
+	tribe.visible = true
+	tribe.accountant.visible = true
 	
-	for realm in realms.get_children():
-		if realm.index == 0:
-			var fieldwork = realm.accountant.foreman.find_worst_incomplete_fieldwork("comfortable")
-			var n = 0
-			
-			for specialization in fieldwork.specializations:
-				n += fieldwork.specializations[specialization]
-			
-			#print(["before next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
+	for accountant in sketch.economy.accountants.get_children():
+		if accountant.proprietor == realm:
+			accountant.visible = true
+			break
 	
 	#for _i in Global.dict.time.month:
 	#	sketch.next_day()
 	
-	#for _i in 10:
+	for _i in 3:
 	#	realms_are_trading()
-	
-	for realm in realms.get_children():
-		if realm.index == 0:
-			var fieldwork = realm.accountant.foreman.find_worst_incomplete_fieldwork("comfortable")
-			var n = 0
-			
-			for specialization in fieldwork.specializations:
-				n += fieldwork.specializations[specialization]
-			
-			#print(["after next_day", fieldwork.specializations, n, fieldwork.ic.get_number()])
+		do_it()
 
 
 func realms_are_harvesting() -> void:

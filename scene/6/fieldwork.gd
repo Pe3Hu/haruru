@@ -1,16 +1,18 @@
 extends MarginContainer
 
 
-@onready var vbox = $VBox
-@onready var ia = $VBox/Abundance
-@onready var ic = $VBox/Current
-@onready var im = $VBox/Max
+@onready var vbox = $HBox/VBox
+@onready var ia = $HBox/VBox/Abundance
+@onready var ic = $HBox/VBox/Current
+@onready var im = $HBox/VBox/Max
+@onready var ladder = $HBox/Ladder
 
 var foreman = null
 var hbox = null
 var terrain = null
 var abundance = null
 var specializations = {}
+var members = []
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -94,3 +96,17 @@ func get_specialization_population(specialization_: String) -> int:
 		population += specializations[specialization_]
 	
 	return population
+
+
+func employ_member(member_: MarginContainer) -> void:
+	member_.fieldwork = self
+	members.append(member_)
+	set_specialization_resupply(member_.specialization, 1)
+	ladder.add_member(member_)
+
+
+func layoff_from_fieldwork(member_: MarginContainer) -> void:
+	member_.fieldwork = null
+	members.append(self)
+	set_specialization_resupply(member_.specialization, -1)
+	ladder.remove_member(member_)

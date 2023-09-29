@@ -186,3 +186,23 @@ func develop_strategy_for_market_behavior() -> void:
 		var mediator = Global.scene.mediator.instantiate()
 		proprietor.sketch.marketplace.mediators.add_child(mediator)
 		mediator.set_attributes(input)
+
+
+func hold_fieldwork_tenders() -> void:
+	for terrain in Global.arr.terrain:
+		var fieldwork = accountant.foreman.find_best_incomplete_fieldwork(terrain)
+		var unemployeds = []
+		
+		for tribe in proprietor.tribes.get_children():
+			for member in tribe.members.get_children():
+				if member.fieldwork == null and Global.get_workplace_based_on_specialization(member.specialization) == terrain:
+					unemployeds.append(member)
+		
+		while fieldwork != null and !unemployeds.is_empty():
+			fieldwork = accountant.foreman.find_best_incomplete_fieldwork(terrain)
+			var member = unemployeds.pick_random()
+			unemployeds.erase(member)
+			fieldwork.employ_member(member)
+			
+
+	

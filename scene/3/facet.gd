@@ -35,11 +35,13 @@ func paint_bg() -> void:
 	
 	match member.type:
 		"servant":
-			match member.subtype:
+			match member.specialization:
 				"farmer":
 					h = 60.0 / 360.0
 				"fisher":
 					h = 180.0 / 360.0
+				"diver":
+					h = 210.0 / 360.0
 				"hunter":
 					h = 120.0 / 360.0
 				"cook":

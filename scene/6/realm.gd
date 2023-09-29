@@ -26,6 +26,7 @@ func set_attributes(input_: Dictionary) -> void:
 	init_settlement(capital)
 	init_leadership()
 	call_tribes()
+	manager.hold_fieldwork_tenders()
 
 
 func set_states(state_: MarginContainer) -> void:
@@ -85,17 +86,17 @@ func call_tribes() -> void:
 	
 	for terrain in Global.arr.terrain:
 		workplaces[terrain] = {}
-		workplaces[terrain].total = accountant.get_tss_icon_based_on_type_and_subtype(terrain, "workplace").get_number()#workplace
+		workplaces[terrain].total = accountant.get_tss_number_based_on_type_and_subtype(terrain, "workplace")
 		
 		if workplaces[terrain].total > 0:
 			workplaces[terrain].current = 0
+			var a = Global.dict.servant.contribution[terrain]
 			contribution.total += Global.dict.servant.contribution[terrain] * workplaces[terrain].total
 		else:
 			workplaces.erase(terrain)
 	
 	while contribution.total > contribution.tribe:
 		init_tribe(workplaces, contribution)
-	
 
 
 func init_tribe(workplaces_: Dictionary, contribution_: Dictionary) -> void:
@@ -133,8 +134,7 @@ func init_tribe(workplaces_: Dictionary, contribution_: Dictionary) -> void:
 	for specialization in servants:
 		tribe.add_members("servant", specialization, servants[specialization])
 	
-
-
+	tribe.fill_carton()
 
 
 func init_settlement(knob_: Polygon2D) -> void:

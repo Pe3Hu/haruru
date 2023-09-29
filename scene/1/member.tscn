@@ -2,7 +2,7 @@
 
 [ext_resource type="FontFile" uid="uid://bvnpo88mdytkv" path="res://asset/font/letter/JosefinSans-Bold.ttf" id="1_refpb"]
 [ext_resource type="Script" path="res://scene/1/member.gd" id="1_ubd86"]
-[ext_resource type="PackedScene" uid="uid://rgtjtuf31pht" path="res://scene/3/icon.tscn" id="3_qi1t8"]
+[ext_resource type="PackedScene" uid="uid://rgtjtuf31pht" path="res://scene/0/icon.tscn" id="3_qi1t8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7paps"]
 
@@ -43,14 +43,10 @@ alignment = 1
 [node name="Icon" parent="HBox" instance=ExtResource("3_qi1t8")]
 layout_mode = 2
 
-[node name="Population" type="Label" parent="HBox"]
+[node name="Population" parent="HBox" instance=ExtResource("3_qi1t8")]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_fonts/font = ExtResource("1_refpb")
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="Facets" type="HBoxContainer" parent="HBox"]
+visible = false
 layout_mode = 2
 alignment = 1

@@ -26,33 +26,34 @@ func set_attributes(input_: Dictionary):
 
 
 func init_fieldwork():
-	for patch in proprietor.patchs:
-		for flap in patch.flaps:
-			if !workplaces.has(flap.terrain):
-				workplaces[flap.terrain] = {}
-			
-			if !workplaces[flap.terrain].has(flap.abundance):
-				workplaces[flap.terrain][flap.abundance] = {}
-				workplaces[flap.terrain][flap.abundance].current = 0
-				workplaces[flap.terrain][flap.abundance].max = 0
-			
-			if get_fieldwork(flap.terrain, flap.abundance) == null:
-				var hbox = get_hbox(flap.terrain)
-				var input = {}
-				input.foreman = self
-				input.hbox = hbox
-				input.terrain = flap.terrain
-				input.abundance = flap.abundance
-				var fieldwork = Global.scene.fieldwork.instantiate()
-				hbox.add_child(fieldwork)
-				fieldwork.set_attributes(input)
-			
-			var fieldwork = get_fieldwork(flap.terrain, flap.abundance)
-			var icon = fieldwork.get_icon("max")
-			icon.change_number(flap.workplaces)
-			workplaces[flap.terrain][flap.abundance].max += flap.workplaces
-	
-	init_comfortable()
+	if accountant.type == "realm":
+		for patch in proprietor.patchs:
+			for flap in patch.flaps:
+				if !workplaces.has(flap.terrain):
+					workplaces[flap.terrain] = {}
+				
+				if !workplaces[flap.terrain].has(flap.abundance):
+					workplaces[flap.terrain][flap.abundance] = {}
+					workplaces[flap.terrain][flap.abundance].current = 0
+					workplaces[flap.terrain][flap.abundance].max = 0
+				
+				if get_fieldwork(flap.terrain, flap.abundance) == null:
+					var hbox = get_hbox(flap.terrain)
+					var input = {}
+					input.foreman = self
+					input.hbox = hbox
+					input.terrain = flap.terrain
+					input.abundance = flap.abundance
+					var fieldwork = Global.scene.fieldwork.instantiate()
+					hbox.add_child(fieldwork)
+					fieldwork.set_attributes(input)
+				
+				var fieldwork = get_fieldwork(flap.terrain, flap.abundance)
+				var icon = fieldwork.get_icon("max")
+				icon.change_number(flap.workplaces)
+				workplaces[flap.terrain][flap.abundance].max += flap.workplaces
+		
+		init_comfortable()
 
 
 func get_hbox(terrain_: String) -> Variant:
@@ -180,18 +181,6 @@ func find_worst_incomplete_fieldwork(terrain_: String) -> Variant:
 	return null
 
 
-#func find_worst_incomplete_comfortable_fieldwork() -> Variant:
-#	var hbox = get_hbox("comfortable")
-#
-#	for _i in range(hbox.get_child_count()-1,-1, -1):
-#		var fieldwork = hbox.get_child(_i)
-#
-#		if fieldwork.get("abundance") != null:
-#			if fieldwork.get_freely() > 0:
-#				return fieldwork
-#
-#	return null
-
 
 func find_best_nonempty_fieldwork(terrain_: String) -> Variant:
 	var hbox = get_hbox(terrain_)
@@ -238,4 +227,4 @@ func empty_worst_workplaces(specialization_: String, population_: int) -> void:
 	
 	var settlement = proprietor.get_settlement_for_unemployeds()
 	settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
-	
+
