@@ -143,21 +143,21 @@ func rotate_members() -> void:
 			swap.upward = Global.dict.prize[treads.get_child_count()].bot
 			swap.downgrade = Global.dict.prize[fieldwork.downgrade.ladder.treads.get_child_count()].top
 			swap.current = min(swap.upward, swap.downgrade)
-			print([fieldwork.foreman.proprietor.index, fieldwork.terrain, fieldwork.abundance, swap])
+			#print([fieldwork.foreman.proprietor.index, fieldwork.terrain, fieldwork.abundance, swap])
 		
 			for _i in range(0, swap.current):
 				var tread = treads.get_child(_i)
 				var member = get_member_based_on_tread(tread)
 				fieldwork.downgrade.ladder.newbies.append(member)
 				fieldwork.layoff_employ(member)
-				print([fieldwork.foreman.proprietor.index, fieldwork.terrain, fieldwork.abundance, "downgrade", member.index])
+				#print([fieldwork.foreman.proprietor.index, fieldwork.terrain, fieldwork.abundance, "downgrade", member.index])
 			
 			for _i in range(fieldwork.downgrade.ladder.treads.get_child_count() - 1, fieldwork.downgrade.ladder.treads.get_child_count() - swap.current - 1, -1):
 				var tread = fieldwork.downgrade.ladder.treads.get_child(_i)
 				var member = fieldwork.downgrade.ladder.get_member_based_on_tread(tread)
 				newbies.append(member)
 				fieldwork.downgrade.layoff_employ(member)
-				print([fieldwork.foreman.proprietor.index, fieldwork.downgrade.terrain, fieldwork.downgrade.abundance, "upward", member.index])
+				#print([fieldwork.foreman.proprietor.index, fieldwork.downgrade.terrain, fieldwork.downgrade.abundance, "upward", member.index])
 
 
 func get_member_based_on_tread(tread_: HBoxContainer) -> Variant:

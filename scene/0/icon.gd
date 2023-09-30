@@ -69,4 +69,4 @@ func set_number(value_) -> void:
 		TYPE_FLOAT:
 			value = snapped(value, 0.01)
 			number.text = str(value)
-	
+

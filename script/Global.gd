@@ -33,6 +33,10 @@ func init_arr() -> void:
 	arr.workplace = ["pond", "plain", "forest", "mountain", "comfortable"]
 	arr.resource = ["food", "wood", "ore", "gem", "canned", "plank", "ingot", "jewel"]
 	arr.commodity = ["wood", "plank", "ore", "ingot", "gem", "jewel"]
+	arr.leftover = ["haystack", "skin", "fishbone", "rubble"]
+	arr.substance = []
+	arr.substance.append_array(Global.arr.resource)
+	arr.substance.append_array(Global.arr.leftover)
 	
 	arr.state = ["earldom", "dukedom", "kingdom", "empire"]
 	
@@ -40,10 +44,11 @@ func init_arr() -> void:
 	arr.layer.cloth = ["flap", "patch", "terrain", "abundance", "element", "earldom", "dukedom", "kingdom", "empire", "realm"]
 	
 	arr.phase = [
-		"select dices",
-		"roll dices",
-		"active dices",
-		"discard dices"
+		#"select dices",
+		#"roll dices",
+		#"active dices",
+		#"discard dices"
+		"all in one"
 	]
 
 
@@ -173,6 +178,29 @@ func init_dict() -> void:
 	dict.thousand["k"] = "m"
 	dict.thousand["m"] = "b"
 	
+	dict.outcome = {}
+	dict.outcome["critical failure"] = {}
+	dict.outcome["critical failure"].buff = 3
+	dict.outcome["critical failure"].debuff = 0
+	dict.outcome["failure"] = {}
+	dict.outcome["failure"].buff = 2
+	dict.outcome["failure"].debuff = 1
+	dict.outcome["success"] = {}
+	dict.outcome["success"].buff = 1
+	dict.outcome["success"].debuff = 2
+	dict.outcome["critical success"] = {}
+	dict.outcome["critical success"].buff = 3
+	dict.outcome["critical success"].debuff = 0
+	
+	dict.buff = {}
+	dict.buff["critical failure"] = "failure"
+	dict.buff["failure"] = "success"
+	dict.buff["success"] = "critical success"
+	
+	dict.debuff = {}
+	dict.debuff["critical success"] = "success"
+	dict.debuff["success"] = "failure"
+	dict.debuff["failure"] = "critical failure"
 
 
 func init_time() -> void:
@@ -291,6 +319,10 @@ func init_business() -> void:
 	dict.business["jewelry"] = {}
 	dict.business["jewelry"].raw = "gem"
 	dict.business["jewelry"].product = "jewel"
+	dict.business["recycling"] = {}
+	
+	for leftover in arr.leftover:
+		dict.business["recycling"][leftover] = "leftover"
 	
 	dict.conversion = {}
 	dict.conversion.raw = {}
@@ -362,6 +394,7 @@ func init_servant() -> void:
 	dict.servant = {}
 	dict.servant.workplace = {}
 	dict.servant.contribution = {}
+	dict.servant.leftover = {}
 	dict.facet = {}
 	dict.facet.type = {}
 	var path = "res://asset/json/haruru_servant.json"
@@ -375,6 +408,9 @@ func init_servant() -> void:
 		
 		if !dict.servant.contribution.has(facet.subtype):
 			dict.servant.contribution[facet.subtype] = facet.contribution
+		
+		if !dict.servant.leftover.has(facet.subtype) and facet.leftover != "no":
+			dict.servant.leftover[facet.subtype] = facet.leftover
 		
 		var data = {}
 		
@@ -636,11 +672,18 @@ func load_data(path_: String):
 func get_resource_path(resource_: String) -> Variant:
 	for business in dict.business:
 		for key in dict.business[business]:
-			if resource_ == dict.business[business][key]:
-				var path = {}
-				path.business = business
-				path.key = key
-				return path
+			if "recycling" != business:
+				if resource_ == dict.business[business][key]:
+					var path = {}
+					path.business = business
+					path.key = key
+					return path
+			else:
+				if resource_ == key:
+					var path = {}
+					path.business = business
+					path.key = key
+					return path
 	
 	return null
 

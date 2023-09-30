@@ -44,6 +44,7 @@ layout_mode = 2
 alignment = 1
 
 [node name="Manager" parent="VBox" instance=ExtResource("3_ofxqy")]
+visible = false
 layout_mode = 2
 
 [node name="Warehouse" parent="VBox" instance=ExtResource("3_tkhle")]

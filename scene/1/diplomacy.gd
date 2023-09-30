@@ -11,15 +11,50 @@ var accreditation = {}
 var selected = {}
 
 
+func init_reams() -> void:
+	var empires_ = [sketch.cloth.empires.get_child(0)]#,sketch.cloth.empires.get_child(1), sketch.cloth.empires.get_child(2)]
+	for empire in empires_:
+	#for empire in sketch.cloth.empires.get_children():
+		var input = {}
+		input.sketch = sketch
+		input.state = empire.capital.state["dukedom"]
+		
+		var realm = Global.scene.realm.instantiate()
+		realms.add_child(realm)
+		realm.set_attributes(input)
+	
+	sketch.cloth.shift_layer(0)
+	selected.realm = realms.get_child(0)
+	selected.tribe = selected.realm.tribes.get_child(0)
+	selected.tribe.visible = true
+	selected.tribe.accountant.visible = true
+	selected.realm.warehouse.visible = true
+	selected.realm.accountant.barn.visible = true
+	
+	for accountant in sketch.economy.accountants.get_children():
+		if accountant.proprietor == selected.realm:
+			accountant.visible = true
+			break
+	
+	#for _i in Global.dict.time.month:
+	#	sketch.next_day()
+	
+	#for _i in Global.dict.time.week:
+	#	realms_are_trading()
+	do_it()
+
+
 func do_it() -> void:
 	for _i in 2:#Global.dict.time.week:
 		skip_day()
-	
 
 
 func skip_day() -> void:
-	for phase in Global.arr.phase:
-		skip_phase()
+	for realm in realms.get_children():
+		realm.manager.meal()
+		
+		for tribe in realm.tribes.get_children():
+			tribe.skip_day()
 	
 	var day = int(Global.node.sketch.day.text) + 1
 	Global.node.sketch.day.text = str(day)
@@ -29,11 +64,6 @@ func skip_day() -> void:
 	if day % 2 == 0:
 		selected.realm.accountant.foreman.rotate_members()
 
-
-func skip_phase() -> void:
-	for realm in realms.get_children():
-		for tribe in realm.tribes.get_children():
-			tribe.follow_phase()
 
 
 func servants_simulation() -> void:
@@ -98,37 +128,6 @@ func get_resource_analytics() -> Dictionary:
 				analytics.erase(resource)
 	
 	return analytics
-
-
-func init_reams() -> void:
-	var empires_ = [sketch.cloth.empires.get_child(0)]#,sketch.cloth.empires.get_child(1), sketch.cloth.empires.get_child(2)]
-	for empire in empires_:
-	#for empire in sketch.cloth.empires.get_children():
-		var input = {}
-		input.sketch = sketch
-		input.state = empire.capital.state["dukedom"]
-		
-		var realm = Global.scene.realm.instantiate()
-		realms.add_child(realm)
-		realm.set_attributes(input)
-	
-	sketch.cloth.shift_layer(0)
-	selected.realm = realms.get_child(0)
-	selected.tribe = selected.realm.tribes.get_child(0)
-	selected.tribe.visible = true
-	selected.tribe.accountant.visible = true
-	
-	for accountant in sketch.economy.accountants.get_children():
-		if accountant.proprietor == selected.realm:
-			accountant.visible = true
-			break
-	
-	#for _i in Global.dict.time.month:
-	#	sketch.next_day()
-	
-	#for _i in Global.dict.time.week:
-	#	realms_are_trading()
-	do_it()
 
 
 func realms_are_harvesting() -> void:

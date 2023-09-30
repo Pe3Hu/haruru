@@ -11,28 +11,26 @@ var tribe = null
 var chain = {}
 
 
-func _ready() -> void:
-	preparation.title.text = "preparation"
-	roll.title.text = "roll"
-	reserve.title.text = "reserve"
-	active.title.text = "active"
-	discard.title.text = "discard"
+func set_attributes(input_: Dictionary) -> void:
+	tribe = input_.tribe
 	
-	chain["Preparation"] = "roll"
-	chain["Roll"] = "reserve"
-	chain["Reserve"] = "active"
-	chain["Active"] = "discard"
-	chain["Discard"] = "preparation"
+#	preparation.title.text = "preparation"
+#	roll.title.text = "roll"
+#	reserve.title.text = "reserve"
+#	active.title.text = "active"
+#	discard.title.text = "discard"
+#
+#	chain["Preparation"] = "roll"
+#	chain["Roll"] = "reserve"
+#	chain["Reserve"] = "active"
+#	chain["Active"] = "discard"
+#	chain["Discard"] = "preparation"
+	preparation.title.text = "preparation"
+	active.title.text = "active"
+	
+	chain["Preparation"] = "active"
+	chain["Active"] = "preparation"
 
-
-func add_dice(member_: MarginContainer) -> void:
-	var input = {}
-	input.member = member_
-	input.box = preparation
-	var dice = Global.scene.dice.instantiate()
-	preparation.dices.add_child(dice)
-	dice.set_attributes(input)
-	preparation.update_dices_columns()
 
 
 func push_dice_in_next_box(dice_) -> void:
@@ -77,6 +75,14 @@ func active_dices() -> void:
 func discard_dices() -> void:
 	for dice in discard.dices.get_children():
 		push_dice_in_next_box(dice)
+
+
+func all_in_one() -> void:
+	for dice in preparation.dices.get_children():
+		dice.skip_animation()
+		push_dice_in_next_box(dice)
+	
+	active_dices()
 
 
 #func reset() -> void:

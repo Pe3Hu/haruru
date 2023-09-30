@@ -48,6 +48,5 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Facets" type="HBoxContainer" parent="HBox"]
-visible = false
 layout_mode = 2
 alignment = 1

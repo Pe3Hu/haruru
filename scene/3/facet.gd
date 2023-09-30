@@ -2,14 +2,15 @@ extends MarginContainer
 
 
 @onready var bg = $BG
-@onready var icons = $HBox/Icons
-@onready var quantities = $HBox/Quantities
-@onready var outcome = $HBox/Outcome
+@onready var icon = $Icon
 
 var member = null
 var resource = null
 var index = null
 var fail = false
+var outcome = {}
+var buff = {}
+var debuff = {}
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -17,10 +18,13 @@ func set_attributes(input_: Dictionary) -> void:
 		if key != "outcome":
 			set(key, input_[key])
 	
-	var input = {}
-	input.type = "outcome"
-	input.subtype = input_.outcome
-	outcome.set_attributes(input)
+	outcome.original = input_.outcome
+	outcome.current = input_.outcome
+	debuff.current = 0
+	debuff.limit = Global.dict.outcome[input_.outcome].debuff
+	buff.current = 0
+	buff.limit = Global.dict.outcome[input_.outcome].buff
+	set_icon_subtype(input_.outcome)
 	
 	paint_bg()
 	custom_minimum_size = Vector2(Global.vec.size.facet)
@@ -74,3 +78,30 @@ func get_attributes() -> Dictionary:
 	input.outcome = outcome.subtype
 	
 	return input
+
+
+func add_debuff(value_: int) -> void:
+	var value = min(value_, debuff.limit - debuff.current)
+	
+	if value > 0:
+		debuff.current += value
+		buff.current -= value
+		outcome.current = Global.dict.debuff[outcome.current]
+		set_icon_subtype(outcome.current)
+
+
+func add_buff(value_: int) -> void:
+	var value = min(value_, buff.limit - buff.current)
+	
+	if value > 0:
+		buff.current += value
+		debuff.current -= value
+		outcome.current = Global.dict.buff[outcome.current]
+		set_icon_subtype(outcome.current)
+
+
+func set_icon_subtype(outcome_: String) -> void:
+	var input = {}
+	input.type = "outcome"
+	input.subtype = outcome_
+	icon.set_attributes(input)

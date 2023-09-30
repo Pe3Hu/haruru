@@ -44,13 +44,16 @@ alignment = 1
 layout_mode = 2
 
 [node name="Roll" parent="Boxs" instance=ExtResource("3_ta4ed")]
+visible = false
 layout_mode = 2
 
 [node name="Reserve" parent="Boxs" instance=ExtResource("3_ta4ed")]
+visible = false
 layout_mode = 2
 
 [node name="Active" parent="Boxs" instance=ExtResource("3_ta4ed")]
 layout_mode = 2
 
 [node name="Discard" parent="Boxs" instance=ExtResource("3_ta4ed")]
+visible = false
 layout_mode = 2

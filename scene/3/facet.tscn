@@ -27,20 +27,5 @@ script = ExtResource("1_iwim4")
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_m8g83")
 
-[node name="HBox" type="HBoxContainer" parent="."]
-layout_mode = 2
-theme_override_constants/separation = 0
-alignment = 1
-
-[node name="Icons" type="VBoxContainer" parent="HBox"]
-visible = false
-layout_mode = 2
-alignment = 1
-
-[node name="Quantities" type="VBoxContainer" parent="HBox"]
-visible = false
-layout_mode = 2
-alignment = 1
-
-[node name="Outcome" parent="HBox" instance=ExtResource("2_wxlvn")]
+[node name="Icon" parent="." instance=ExtResource("2_wxlvn")]
 layout_mode = 2

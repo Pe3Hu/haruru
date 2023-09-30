@@ -20,19 +20,33 @@ var temp = true
 func set_attributes(input_: Dictionary) -> void:
 	member = input_.member
 	box = input_.box
-	member.dices.append(self)
 	#time = Time.get_unix_time_from_system()
 	
-	for facet_ in member.facets.get_children():
-		var facet = Global.scene.facet.instantiate()
-		facets.add_child(facet)
-		var input = facet_.get_attributes()
-		facet.set_attributes(input)
-	
 	anchor = Vector2(0, -Global.vec.size.facet.y)
+	init_facets()
 	update_size()
 	reset()
 	#skip_animation()
+
+
+func init_facets() -> void:
+	var data = Global.dict.facet.type[member.type][member.specialization]
+	var index_ = 0
+	
+	for outcome in data.outcomes:
+		for _i in data.outcomes[outcome].facets:
+			var input = data.outcomes[outcome].duplicate()
+			input.member = member
+			input.outcome = outcome
+			input.index = index_
+			index_ += 1
+			input.erase("facets")
+			var facet = Global.scene.facet.instantiate()
+			facets.add_child(facet)
+			facet.set_attributes(input)
+	
+	var a = facets.get_children()
+	return
 
 
 func update_size() -> void:
@@ -102,11 +116,10 @@ func pop_up() -> void:
 
 
 func skip_animation() -> void:
-	var salvo = 1
-	
-	for _i in salvo:
-		var facet = facets.get_children().pick_random()
-		flip_to_index(facet.index)
+	#var salvo = 1
+	#for _i in salvo:
+	var facet = facets.get_children().pick_random()
+	flip_to_index(facet.index)
 	
 	#get_parent().remove_child(self)
 	#queue_free()
@@ -143,17 +156,81 @@ func crush() -> void:
 
 func apply_outcome() -> void:
 	var facet = get_current_facet()
-	member.add_outcome(facet.outcome.subtype)
 	
-	if facet.outcome.subtype != "failure":
+	if facet.icon.subtype != "failure":
 		var data = Global.dict.facet.type[facet.member.type][facet.member.specialization]
-		var description = data.outcomes[facet.outcome.subtype]
+		var description = data.outcomes[facet.icon.subtype]
+		var value = round(description.value * Global.num.conversion[description.resource] * member.fieldwork.abundance)
+		var contribution = value * Global.dict.merchandise.price[description.resource]
+		member.fieldwork.ladder.change_contribution(member, contribution)
+		member.add_outcome(facet.icon.subtype)
 		
 		if Global.dict.conversion.raw.has(description.resource):
-			member.extract_raw(description.resource, description.value)
+			member.extract_raw(description.resource, value)
 			
 		if Global.dict.conversion.product.has(description.resource):
-			member.produce_product(description.resource, description.value)
+			member.produce_product(description.resource, value)
+
+
+func add_debuffs(value_: int) -> void:
+	var unoriginals = {}
+	
+	for facet in facets.get_children():
+		if facet.outcome.current != facet.outcome.original and facet.buff.current > 0:
+			unoriginals[facet] = facet.buff.current
+	
+	while value_ > 0 and !unoriginals.keys().is_empty():
+		value_ -= 1
+		var facet = Global.get_random_key(unoriginals)
+		facet.add_debuff(1)
+		unoriginals[facet] -= 1
 		
-		var contribution = description.value * Global.dict.merchandise.price[description.resource]
-		member.fieldwork.ladder.change_contribution(member, contribution)
+		if unoriginals[facet] == 0:
+			unoriginals.erase(facet)
+	
+	if value_ > 0:
+		var originals = {}
+		
+		for facet in facets.get_children():
+			unoriginals[facet] = facet.debuff.limit
+		
+		while value_ > 0 and !originals.keys().is_empty():
+			value_ -= 1
+			var facet = Global.get_random_key(originals)
+			facet.add_debuff(1)
+			originals[facet] -= 1
+			
+			if originals[facet] == 0:
+				originals.erase(facet)
+
+
+func add_buffs(value_: int) -> void:
+	var unoriginals = {}
+	
+	for facet in facets.get_children():
+		if facet.outcome.current != facet.outcome.original and facet.debuff.current > 0:
+			unoriginals[facet] = facet.debuff.current
+	
+	while value_ > 0 and !unoriginals.keys().is_empty():
+		value_ -= 1
+		var facet = Global.get_random_key(unoriginals)
+		facet.add_buff(1)
+		unoriginals[facet] -= 1
+		
+		if unoriginals[facet] == 0:
+			unoriginals.erase(facet)
+	
+	if value_ > 0:
+		var originals = {}
+		
+		for facet in facets.get_children():
+			unoriginals[facet] = facet.buff.limit
+		
+		while value_ > 0 and !originals.keys().is_empty():
+			value_ -= 1
+			var facet = Global.get_random_key(originals)
+			facet.add_buff(1)
+			originals[facet] -= 1
+			
+			if originals[facet] == 0:
+				originals.erase(facet)

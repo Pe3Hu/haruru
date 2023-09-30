@@ -4,6 +4,10 @@ extends MarginContainer
 var proprietor = null
 var accountant = null
 var foreman = null
+var warehouse = null
+var coupons = {}
+var queues = {}
+var members = []
 
 
 func set_attributes(input_: Dictionary):
@@ -14,13 +18,20 @@ func set_attributes(input_: Dictionary):
 	
 	accountant = proprietor.accountant
 	foreman = accountant.foreman
+	warehouse = proprietor.warehouse
+	
+	for resource in Global.arr.resource:
+		coupons[resource] = {}
+	
+	queues.meal = []
+	queues.homeless = []
 	#fill_accountant_rss()
 
 
-func fill_accountant_rss() -> void:
-	init_harvesters()
+func update_accountant_rss() -> void:
+	#init_harvesters()
 	#fill_fieldworks()
-	init_handlers()
+	#init_handlers()
 	accountant.update_resource_income()
 	accountant.update_population()
 	update_resource_priority()
@@ -178,7 +189,6 @@ func develop_strategy_for_market_behavior() -> void:
 				
 				goals[resource] = data.goal
 		
-		
 		var input = {}
 		input.realm = proprietor
 		input.resources = stockpiles
@@ -191,18 +201,58 @@ func develop_strategy_for_market_behavior() -> void:
 func hold_fieldwork_tenders() -> void:
 	for terrain in Global.arr.terrain:
 		var fieldwork = accountant.foreman.find_best_incomplete_fieldwork(terrain)
-		var unemployeds = []
+		var pool = []
+		var tribes = {}
 		
 		for tribe in proprietor.tribes.get_children():
+			tribes[tribe] = []
+			
 			for member in tribe.members.get_children():
 				if member.fieldwork == null and Global.get_workplace_based_on_specialization(member.specialization) == terrain:
-					unemployeds.append(member)
+					tribes[tribe].append(member)
+					pool.append(tribe)
 		
-		while fieldwork != null and !unemployeds.is_empty():
+		
+		while fieldwork != null and !pool.is_empty():
 			fieldwork = accountant.foreman.find_best_incomplete_fieldwork(terrain)
-			var member = unemployeds.pick_random()
-			unemployeds.erase(member)
+			var tribe = pool.pick_random()
+			var member = tribes[tribe].pick_random()
+			tribes[tribe].erase(member)
+			pool.erase(tribe)
 			fieldwork.employ_member(member)
 			
+			if tribes[tribe].is_empty():
+				while pool.has(tribe):
+					pool.erase(tribe)
 
+
+func meal() -> void:
+	accountant.barn.reduce_shelf_life()
+	var food = {}
+	food.output = queues.meal.size()
+	food.input = warehouse.get_resource_value("food")
+	food.profit = food.input - food.output
 	
+	if food.profit > 0:
+		accountant.barn.restock(food.profit)
+	else:
+		accountant.barn.absorption(-food.profit)
+	
+	warehouse.change_resource_value("food", -food.input)
+	
+	for member in members:
+		member.meal()
+	
+	queues.meal = []
+	
+
+
+func sleep() -> void:
+	
+	
+	
+	for member in members:
+		member.sleep(1)
+
+
+

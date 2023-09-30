@@ -7,14 +7,15 @@ extends MarginContainer
 
 var tribe = null
 var fieldwork = null
-var dices = []
-#var workplace = null
-#var series = {}
+var dice = null
 var outcomes = []
 var type = null
 var specialization = null
 var index = null
-
+var hunger = 0
+var malady = 0
+var abode = null
+var lunch = 1
 
 
 func set_attributes(input_: Dictionary) -> void:
@@ -23,56 +24,38 @@ func set_attributes(input_: Dictionary) -> void:
 	specialization = input_.specialization
 	index = Global.num.index.member
 	Global.num.index.member += 1
-	#workplace = Global.get_workplace_based_on_specialization(specialization)
-#	series.standard = {}
-#	series.standard.success = 0
-#	series.standard.limit = 3
-#	series.critical = {}
-#	series.critical.success = 0
-#	series.critical.fail = 3
-#	series.standard.limit = 3
 	
+	tribe.realm.manager.members.append(self)
+	tribe.realm.manager.queues.homeless.append(self)
 	
-	init_facets()
+	init_dice()
 
 
-func init_facets() -> void:
-	var data = Global.dict.facet.type[type][specialization]
-	var index_ = 0
-	
-	for outcome in data.outcomes:
-		for _i in data.outcomes[outcome].facets:
-			var input = data.outcomes[outcome].duplicate()
-			input.member = self
-			input.outcome = outcome
-			input.index = index_
-			index_ += 1
-			input.erase("facets")
-			var facet = Global.scene.facet.instantiate()
-			facets.add_child(facet)
-			facet.set_attributes(input)
-
-
-func get_population() -> int:
-	return population.get_number()
-
-
-func change_population(value_: int) -> void:
-	population.change_number(value_)
+func init_dice() -> void:
+	var input = {}
+	input.member = self
+	input.box = tribe.carton.preparation
+	dice = Global.scene.dice.instantiate()
+	tribe.carton.preparation.dices.add_child(dice)
+	dice.set_attributes(input)
+	tribe.carton.preparation.update_dices_columns()
 
 
 func get_attributes() -> Dictionary:
 	var input = {}
 	input.tribe = tribe
 	input.type = type
-	input.subtype = specialization
-	input.population = population.text
+	input.specialization = specialization
 	
 	return input
 
 
 func extract_raw(raw_: String, value_: int) -> void:
 	tribe.warehouse.change_resource_value(raw_, value_)
+	if Global.dict.servant.leftover.has(specialization):
+		var leftover = Global.dict.servant.leftover[specialization]
+		var value = value_ * 1.0
+		tribe.warehouse.change_resource_value(leftover, value)
 
 
 func produce_product(product_: String, value_: int) -> void:
@@ -139,4 +122,51 @@ func check_standard() -> void:
 				return
 		else:
 			_i = 0
+
+
+func meal() -> void:
+	var thresholds = [3, 6, 9]
+	var charge = 0
+	
+	if hunger + lunch > 0:
+		for _i in abs(lunch):
+			hunger += sign(lunch)
+			
+			if thresholds.has(hunger):
+				charge += 1
+	else:
+		hunger = 0
+	
+	if sign(lunch) > 0:
+		dice.add_debuffs(charge)
+	else:
+		dice.add_buffs(charge)
+	
+	lunch = 1
+
+
+func sleep() -> void:
+	var value = 0
+	
+	if abode == null:
+		value = 1
+	else:
+		value = -1
+
+	var thresholds = [5, 10, 15, 20, 25]
+	var charge = 0
+	
+	if malady + value > 0:
+		for _i in abs(value):
+			malady += sign(value)
+			
+			if thresholds.has(hunger):
+				charge += 1
+	else:
+		malady = 0
+	
+	if sign(value) > 0:
+		dice.add_debuffs(charge)
+	else:
+		dice.add_buffs(charge)
 	

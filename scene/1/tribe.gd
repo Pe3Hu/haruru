@@ -32,6 +32,7 @@ func init_leadership() -> void:
 	accountant.set_attributes(input)
 	manager.set_attributes(input)
 	warehouse.set_attributes(input)
+	carton.set_attributes(input)
 
 
 func reset() -> void:
@@ -51,18 +52,9 @@ func add_members(type_: String, specialization_: String, population_: int) -> vo
 		input.tribe = self
 		input.type = type_
 		input.specialization = specialization_
-		input.population = population_
 		var member = Global.scene.member.instantiate()
 		members.add_child(member)
 		member.set_attributes(input)
-	
-
-
-func fill_carton() -> void:
-	carton.tribe = self
-	
-	for member in members.get_children():
-		carton.add_dice(member)
 
 
 func fill_warehouse() -> void:
@@ -83,15 +75,7 @@ func follow_phase() -> void:
 		if _i < words.size() - 1:
 			func_name += "_"
 	
-	match phase:
-		"select dices":
-			carton.call(func_name)
-		"roll dices":
-			carton.call(func_name)
-		"active dices":
-			carton.call(func_name)
-		"discard dices":
-			carton.call(func_name)
+	carton.call(func_name)
 
 
 func next_phase() -> void:
@@ -120,3 +104,30 @@ func choose_mercenaries() -> void:
 			var troop = member.get_population()
 			squad.add_member(member, troop)
 			member.change_population(troop)
+
+
+func skip_day() -> void:
+	morning()
+	afternoon()
+	evening()
+
+
+func morning() -> void:
+	pass
+
+
+func afternoon() -> void:
+	for phase in Global.arr.phase:
+		follow_phase()
+
+
+func evening() -> void:
+	exchange_resources_for_coupons()
+
+
+func exchange_resources_for_coupons() -> void:
+	for substance in Global.arr.substance:
+		var value = warehouse.get_resource_value(substance)
+		realm.warehouse.change_resource_value(substance, value)
+		warehouse.change_resource_value(substance, -value)
+	

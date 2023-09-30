@@ -130,7 +130,8 @@ func init_rss() -> void:
 	var titles = ["population"]
 	var comes = ["income", "outcome", "profit", "stockpile", "priority"]
 	
-	rss.columns = Global.arr.resource.size() + titles.size() + 1
+	var resources = Global.arr.substance
+	rss.columns = resources.size() + titles.size() + 1
 	
 	for title in titles:
 		input.type = "economy"
@@ -139,7 +140,7 @@ func init_rss() -> void:
 		rss.add_child(icon)
 		icon.set_attributes(input)
 	
-	for resource in Global.arr.resource:
+	for resource in resources:
 		input.type = "resource"
 		input.subtype = resource
 		icon = Global.scene.icon.instantiate()
@@ -161,7 +162,7 @@ func init_rss() -> void:
 			icon.set_attributes(input)
 			icon.name = "value of " + subtype + " " + title
 		
-		for resource in Global.arr.resource:
+		for resource in resources:
 			input.type = "number"
 			input.subtype = 0
 			icon = Global.scene.icon.instantiate()
@@ -187,7 +188,7 @@ func init_rss() -> void:
 			icon.set_attributes(input)
 			icon.name = "value of " + subtype + " " + title
 		
-		for resource in Global.arr.resource:
+		for resource in resources:
 			input.type = "number"
 			input.subtype = 0
 			icon = Global.scene.icon.instantiate()

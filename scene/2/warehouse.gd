@@ -15,7 +15,6 @@ func set_attributes(input_: Dictionary) -> void:
 		fill_resource_based_on_endowment()
 	if input_.keys().has("tribe"):
 		proprietor = input_.tribe
-	
 
 
 func init_resources() -> void:
@@ -32,7 +31,12 @@ func init_resources() -> void:
 			vbox.add_child(hbox)
 			var input = {}
 			input.type = "resource"
-			input.subtype = Global.dict.business[business][key]
+			
+			if business != "recycling":
+				input.subtype = Global.dict.business[business][key]
+			else:
+				input.subtype = key
+			
 			var icon = Global.scene.icon.instantiate()
 			hbox.add_child(icon)
 			icon.set_attributes(input)
@@ -62,7 +66,12 @@ func get_icon_resource_icon(resource_: String) -> MarginContainer:
 func get_icon_resource_number(resource_: String) -> MarginContainer:
 	var path = Global.get_resource_path(resource_)
 	var business = businesses.get_node(path.business.capitalize())
-	var resource = business.get_node(path.key.capitalize())
+	var resource = null
+	
+	if path.business != "recycling":
+		resource = business.get_node(path.key.capitalize())
+	else:
+		resource = business.get_node(path.key.capitalize())
 	return resource.get_node("Value")
 
 
