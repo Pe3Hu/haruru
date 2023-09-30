@@ -132,6 +132,7 @@ func init_tribe(workplaces_: Dictionary, contribution_: Dictionary) -> void:
 	
 	for resource in Global.arr.resource:
 		manager.coupons[resource][tribe] = 0
+		tribe.manager.coupons[resource] = 0
 	
 	for specialization in servants:
 		tribe.add_members("servant", specialization, servants[specialization])

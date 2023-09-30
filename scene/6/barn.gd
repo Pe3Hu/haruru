@@ -33,30 +33,30 @@ func fill_sl() -> void:
 
 func restock(value_: int) -> void:
 	var first = sl.get_child(sl.get_child_count()-1)
-	first.number.text = str(value_)
+	first.set_number(value_)
 
 
 func absorption(value_: int) -> void:
 	for _i in sl.get_child_count():
 		var icon_ = sl.get_child(_i)
-		var value = min(int(icon_.number.text), value_)
+		var value = min(icon_.get_number(), value_)
 		
 		if value > 0:
 			value_ -= value
-			icon_.number.text = str(int(icon_.number.text) - value)
+			icon_.change_number(-value)
 		
 		if value_ == 0:
 			return
 	
-	accountant.realm.warehouse.change_resource_value("canned", -value_)
+	accountant.proprietor.warehouse.change_resource_value("canned", -value_)
 
 
 func reduce_shelf_life() -> void:
 	for _i in sl.get_child_count():
 		var recipient = sl.get_child(_i)
-		recipient.number.text = str(0)
+		recipient.set_number(0)
 		
 		if _i != sl.get_child_count() - 1:
 			var donor = sl.get_child(_i + 1)
-			recipient.number.text = donor.number.text
+			donor.set_number(donor.get_number())
 

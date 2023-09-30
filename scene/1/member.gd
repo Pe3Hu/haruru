@@ -26,7 +26,7 @@ func set_attributes(input_: Dictionary) -> void:
 	Global.num.index.member += 1
 	
 	tribe.realm.manager.members.append(self)
-	tribe.realm.manager.queues.homeless.append(self)
+	tribe.manager.members.append(self)
 	
 	init_dice()
 

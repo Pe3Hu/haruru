@@ -35,6 +35,6 @@ theme_override_fonts/font = ExtResource("1_g6qao")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Accountants" type="HBoxContainer" parent="."]
+[node name="Accountants" type="VBoxContainer" parent="."]
 layout_mode = 2
 alignment = 1

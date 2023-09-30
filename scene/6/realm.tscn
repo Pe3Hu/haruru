@@ -50,7 +50,6 @@ layout_mode = 2
 alignment = 1
 
 [node name="Warehouse" parent="VBox" instance=ExtResource("4_wkf7c")]
-visible = false
 layout_mode = 2
 
 [node name="Manager" parent="VBox" instance=ExtResource("3_nwj80")]
@@ -58,5 +57,6 @@ visible = false
 layout_mode = 2
 
 [node name="Tribes" type="HBoxContainer" parent="VBox"]
+visible = false
 layout_mode = 2
 alignment = 1

@@ -24,3 +24,6 @@ res://scene/6/accountant.gd
 res://scene/3/facet.gd
 res://scene/3/dice.tscn
 res://scene/3/facet.tscn
+res://scene/1/diplomacy.tscn
+res://scene/6/economy.tscn
+res://scene/6/barn.gd

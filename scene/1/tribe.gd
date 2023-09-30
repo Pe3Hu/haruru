@@ -113,6 +113,7 @@ func skip_day() -> void:
 
 
 func morning() -> void:
+	manager.pick_diners()
 	pass
 
 
@@ -130,4 +131,7 @@ func exchange_resources_for_coupons() -> void:
 		var value = warehouse.get_resource_value(substance)
 		realm.warehouse.change_resource_value(substance, value)
 		warehouse.change_resource_value(substance, -value)
+		
+		if manager.coupons.has(substance):
+			manager.coupons[substance] += value
 	

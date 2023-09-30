@@ -13,6 +13,7 @@ var members = []
 func set_attributes(input_: Dictionary):
 	if input_.keys().has("realm"):
 		proprietor = input_.realm
+		queues.meal = 0
 	if input_.keys().has("tribe"):
 		proprietor = input_.tribe
 	
@@ -23,98 +24,13 @@ func set_attributes(input_: Dictionary):
 	for resource in Global.arr.resource:
 		coupons[resource] = {}
 	
-	queues.meal = []
-	queues.homeless = []
 	#fill_accountant_rss()
 
 
 func update_accountant_rss() -> void:
-	#init_harvesters()
-	#fill_fieldworks()
-	#init_handlers()
 	accountant.update_resource_income()
 	accountant.update_population()
 	update_resource_priority()
-
-
-func init_harvesters() -> void:
-	var workplaces = {}
-	
-	for terrain in Global.arr.terrain:
-		workplaces[terrain] = {}
-		workplaces[terrain].total = accountant.get_tss_icon_based_on_type_and_subtype(terrain, "workplace").get_number()#workplace
-		workplaces[terrain].specializations = {}
-		var distribution = {}
-		distribution.limit = 1
-		distribution.min = 0.1
-		distribution.specializations = {}
-		
-		for subtype in Global.dict.facet.type["servant"]:
-			var specialization = Global.dict.facet.type["servant"][subtype]
-			
-			if specialization.workplace == terrain:
-				workplaces[terrain].specializations[subtype] = 0
-				distribution.specializations[subtype] = distribution.min
-				distribution.limit -= distribution.min
-		
-		Global.rng.randomize()
-		var value = Global.rng.randf_range(0, distribution.limit)
-		distribution.limit -= value
-		var first = distribution.specializations.keys().front()
-		distribution.specializations[first] += value
-		var last = distribution.specializations.keys().back()
-		distribution.specializations[last] += distribution.limit
-		
-		for specialization in distribution.specializations:
-			var population = round(workplaces[terrain].total * distribution.specializations[specialization])
-			foreman.fill_best_workplaces(specialization, population)
-
-
-func init_handlers() -> void:
-	var school = null
-	
-	for settlement in proprietor.settlements.get_children():
-		for structure in settlement.structures.get_children():
-			if structure.type == "school":
-				school = structure
-				break
-	
-	for specialization in accountant.specializations:
-		if accountant.specializations[specialization] > 0:
-			var raws = []
-			
-			for outcome in Global.dict.facet.type["servant"][specialization].outcomes:
-				var data = Global.dict.facet.type["servant"][specialization].outcomes[outcome]
-				
-				if data.has("raw"):
-					if data.raw == data.resource and !raws.has(data.raw):
-						raws.append(data.raw)
-			
-			for raw in raws:
-				var handler = Global.get_handler_based_on_raw(raw)
-				var population = round(accountant.specializations[specialization] * Global.num.proprietor.handler / raws.size())
-				foreman.empty_worst_workplaces(specialization, population)
-				
-				for _i in population:
-					school.add_to_schedule_graduation(false, handler, true)
-				
-				school.graduation_check()
-	
-	school.fill_icons()
-	var unemployed = -school.settlement.fieldwork.get_specialization_population("unemployed")
-	school.settlement.fieldwork.set_specialization_resupply("unemployed", unemployed)
-	
-	
-	#if proprietor.index == 0:
-	#	print("reseted", accountant.get_rss_number_based_on_type_and_subtype("unemployed", "population"))
-
-
-func fill_fieldworks() -> void:
-	for specialization in accountant.specializations:
-		var population = accountant.get_rss_icon_based_on_type_and_subtype(specialization, "population").get_number()
-		
-		if population > 0:
-			foreman.fill_best_workplaces(specialization, population)
 
 
 func update_resource_priority() -> void:
@@ -228,31 +144,32 @@ func hold_fieldwork_tenders() -> void:
 
 func meal() -> void:
 	accountant.barn.reduce_shelf_life()
-	var food = {}
-	food.output = queues.meal.size()
-	food.input = warehouse.get_resource_value("food")
-	food.profit = food.input - food.output
-	
-	if food.profit > 0:
-		accountant.barn.restock(food.profit)
-	else:
-		accountant.barn.absorption(-food.profit)
-	
-	warehouse.change_resource_value("food", -food.input)
+	var food = warehouse.get_resource_value("food")
+	#food.profit = food.input - food.output
+	accountant.barn.absorption(queues.meal)
+	accountant.barn.restock(food)
+	warehouse.change_resource_value("food", -food)
 	
 	for member in members:
 		member.meal()
-	
-	queues.meal = []
-	
 
 
 func sleep() -> void:
-	
-	
-	
 	for member in members:
 		member.sleep(1)
 
+
+func pick_diners() -> void:
+	var value = min(coupons.food, members.size())
+	var mouths = []
+	mouths.append_array(members)
+	coupons.food -= value
+	
+	while value > 0:
+		value -= 1
+		var member = mouths.pick_random()
+		member.lunch = -1
+		mouths.erase(member)
+		proprietor.realm.manager.queues.meal += 1
 
 

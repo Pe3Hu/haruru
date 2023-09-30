@@ -22,19 +22,21 @@ func init_reams() -> void:
 		var realm = Global.scene.realm.instantiate()
 		realms.add_child(realm)
 		realm.set_attributes(input)
+		realm.accountant.visible = true
+		realm.accountant.barn.visible = true
 	
 	sketch.cloth.shift_layer(0)
 	selected.realm = realms.get_child(0)
 	selected.tribe = selected.realm.tribes.get_child(0)
-	selected.tribe.visible = true
-	selected.tribe.accountant.visible = true
-	selected.realm.warehouse.visible = true
-	selected.realm.accountant.barn.visible = true
+	#selected.tribe.visible = true
+	#selected.tribe.accountant.visible = true
+	#selected.realm.warehouse.visible = true
+	#selected.realm.accountant.barn.visible = true
 	
-	for accountant in sketch.economy.accountants.get_children():
-		if accountant.proprietor == selected.realm:
-			accountant.visible = true
-			break
+#	for accountant in sketch.economy.accountants.get_children():
+#		if accountant.proprietor == selected.realm:
+#			accountant.visible = true
+#			break
 	
 	#for _i in Global.dict.time.month:
 	#	sketch.next_day()
